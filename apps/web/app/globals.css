@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "@repo/tailwind-config";
-@source "../../packages/ui/src";
+@source "../../../packages/ui/src";
 
 @theme inline {
   --font-mono: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
@@ -72,6 +72,10 @@
   animation: var(--animate-scan);
   pointer-events: none;
   z-index: 50;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 
   &::after {
     content: "";

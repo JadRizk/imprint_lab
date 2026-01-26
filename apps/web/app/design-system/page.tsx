@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+import { ArrowDownRight } from "lucide-react";
+
+import { ImageFrame } from "@repo/ui/components/image-frame";
+
+import { HeroSection } from "../sections/hero/hero-section";
+
 const SPACING_STEPS = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24] as const;
 
 const CORE_COLORS = [
@@ -28,7 +34,7 @@ const TOKEN_REFERENCE = [
   { property: "--font-mono", value: "JetBrains Mono", utility: "font-mono" },
   { property: "--shadow-lime-glow", value: "0 0 15px rgba(223,255,0,0.3)", utility: "shadow-lime-glow" },
   { property: "--shadow-lime-glow-lg", value: "0 0 30px rgba(223,255,0,0.4) ...", utility: "shadow-lime-glow-lg" },
-  { property: "--animate-scan", value: "scan 8s linear infinite", utility: "animate-scan" },
+  { property: "--animate-scan", value: "scan 4s linear infinite", utility: "animate-scan" },
 ] as const;
 
 function SectionHeader({ number, label }: { number: string; label: string }) {
@@ -277,6 +283,45 @@ export default function DesignSystemPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </section>
+
+        {/* 06 COMPONENTS */}
+        <section className="space-y-8">
+          <SectionHeader number="06" label="COMPONENTS" />
+
+          {/* ImageFrame */}
+          <div className="space-y-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              IMAGE_FRAME
+            </p>
+            <p className="max-w-lg text-xs text-text-secondary">
+              Animated image reveal with grid overlay, scan line pulse, corner
+              markers, and status badge. Uses framer-motion for height-reveal
+              and opacity animations.
+            </p>
+            <div className="h-[400px]">
+              <ImageFrame
+                src="https://picsum.photos/1200/800"
+                alt="Placeholder schematic image"
+                badge={{ label: "IMG_SRC_LOADED", icon: <ArrowDownRight size={12} className="text-lime" /> }}
+                className="h-full"
+              />
+            </div>
+          </div>
+
+          {/* HeroSection */}
+          <div className="space-y-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              HERO_SECTION
+            </p>
+            <p className="max-w-lg text-xs text-text-secondary">
+              Full hero composition — text column with badge, heading, accent,
+              and description on the left; ImageFrame on the right.
+            </p>
+            <div>
+              <HeroSection />
+            </div>
           </div>
         </section>
       </div>
