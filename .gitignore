@@ -36,3 +36,11 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# AI / Agent tooling
+.agents/
+.claude/
+.gemini/
+
+# Prototype reference
+The Human Laboratory/
