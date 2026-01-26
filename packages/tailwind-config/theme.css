@@ -1,0 +1,39 @@
+@theme {
+  /* ── Reset defaults (brutalist clean slate) ── */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-*: initial;
+
+  /* ── Core palette ── */
+  --color-obsidian: #0F0F0F;
+  --color-lime: #DFFF00;
+  --color-steel: #333333;
+  --color-text: #8E8E93;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* ── Semantic palette ── */
+  --color-surface: #0A0A0A;
+  --color-text-secondary: #A3A3A3;
+  --color-text-tertiary: #555555;
+
+  /* ── Typography ── */
+  --font-mono: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+
+  /* ── Shadows ── */
+  --shadow-lime-glow: 0 0 15px rgba(223, 255, 0, 0.3);
+  --shadow-lime-glow-lg: 0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1);
+
+  /* ── Animation ── */
+  --animate-scan: scan 4s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    top: -2px;
+  }
+  100% {
+    top: 100%;
+  }
+}
