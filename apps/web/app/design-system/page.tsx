@@ -1,3 +1,5 @@
+import { BentoCard } from '@repo/ui/components/bento-card';
+import { BentoGrid } from '@repo/ui/components/bento-grid';
 import { Button } from '@repo/ui/components/button';
 import { ImageFrame } from '@repo/ui/components/image-frame';
 import {
@@ -454,6 +456,141 @@ export default function DesignSystemPage() {
           </p>
           <div>
             <HeroSection />
+          </div>
+        </section>
+
+        {/* 09 BENTO_CARD */}
+        <section className="space-y-8">
+          <SectionHeader number="09" label="BENTO_CARD" />
+          <p className="max-w-lg text-xs text-text-secondary">
+            Animated card surface with corner bracket decorations. Uses framer-motion for entrance,
+            hover, and tap animations with reduced-motion support. Consumers control sizing via
+            className grid-span utilities.
+          </p>
+
+          {/* Single card */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">SINGLE</span>
+            <div className="max-w-sm">
+              <BentoCard>
+                <div className="p-6">
+                  <span className="text-[10px] font-bold tracking-widest text-lime">
+                    CARD_LABEL
+                  </span>
+                  <p className="mt-2 text-sm text-text-secondary">
+                    A single BentoCard with placeholder content. Hover to see corner brackets
+                    highlight and scale animation.
+                  </p>
+                </div>
+              </BentoCard>
+            </div>
+          </div>
+
+          {/* Staggered entrance */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">STAGGERED ENTRANCE</span>
+            <BentoGrid className="md:grid-cols-3">
+              {[0, 1, 2].map((i) => (
+                <BentoCard key={i}>
+                  <div className="p-6">
+                    <span className="text-[10px] font-bold tracking-widest text-lime">
+                      CARD_{String(i + 1).padStart(2, '0')}
+                    </span>
+                    <p className="mt-2 text-sm text-text-secondary">Auto-staggered by BentoGrid</p>
+                  </div>
+                </BentoCard>
+              ))}
+            </BentoGrid>
+          </div>
+
+          {/* Grid span sizing */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">GRID SPAN SIZING</span>
+            <BentoGrid>
+              <BentoCard className="md:col-span-2">
+                <div className="p-6">
+                  <span className="text-[10px] font-bold tracking-widest text-lime">
+                    COL_SPAN_2
+                  </span>
+                  <p className="mt-2 text-sm text-text-secondary">md:col-span-2</p>
+                </div>
+              </BentoCard>
+              <BentoCard>
+                <div className="p-6">
+                  <span className="text-[10px] font-bold tracking-widest text-lime">DEFAULT</span>
+                  <p className="mt-2 text-sm text-text-secondary">1 column</p>
+                </div>
+              </BentoCard>
+              <BentoCard>
+                <div className="p-6">
+                  <span className="text-[10px] font-bold tracking-widest text-lime">DEFAULT</span>
+                  <p className="mt-2 text-sm text-text-secondary">1 column</p>
+                </div>
+              </BentoCard>
+            </BentoGrid>
+          </div>
+        </section>
+
+        {/* 10 BENTO_GRID */}
+        <section className="space-y-8">
+          <SectionHeader number="10" label="BENTO_GRID" />
+          <p className="max-w-lg text-xs text-text-secondary">
+            Grid layout primitive that composes BentoCards into a responsive 4-column grid.
+            Consumers override columns, gap, and height via className.
+          </p>
+
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">LAYOUT / 6 CARDS</span>
+            <BentoGrid className="md:h-[500px] md:grid-rows-[1fr_1fr_auto]">
+              <BentoCard className="md:col-span-2 md:row-span-2">
+                <div className="flex h-full items-center justify-center p-6">
+                  <div className="text-center">
+                    <span className="text-[10px] font-bold tracking-widest text-lime">CARD_01</span>
+                    <p className="mt-1 text-sm text-text-secondary">col-span-2 · row-span-2</p>
+                  </div>
+                </div>
+              </BentoCard>
+              <BentoCard>
+                <div className="flex h-full items-center justify-center p-6">
+                  <div className="text-center">
+                    <span className="text-[10px] font-bold tracking-widest text-lime">CARD_02</span>
+                    <p className="mt-1 text-sm text-text-secondary">1×1</p>
+                  </div>
+                </div>
+              </BentoCard>
+              <BentoCard>
+                <div className="flex h-full items-center justify-center p-6">
+                  <div className="text-center">
+                    <span className="text-[10px] font-bold tracking-widest text-lime">CARD_03</span>
+                    <p className="mt-1 text-sm text-text-secondary">1×1</p>
+                  </div>
+                </div>
+              </BentoCard>
+              <BentoCard>
+                <div className="flex h-full items-center justify-center p-6">
+                  <div className="text-center">
+                    <span className="text-[10px] font-bold tracking-widest text-lime">CARD_04</span>
+                    <p className="mt-1 text-sm text-text-secondary">1×1</p>
+                  </div>
+                </div>
+              </BentoCard>
+              <BentoCard>
+                <div className="flex h-full items-center justify-center p-6">
+                  <div className="text-center">
+                    <span className="text-[10px] font-bold tracking-widest text-lime">CARD_05</span>
+                    <p className="mt-1 text-sm text-text-secondary">1×1</p>
+                  </div>
+                </div>
+              </BentoCard>
+              <BentoCard className="md:col-span-2">
+                <div className="flex h-full items-center justify-center p-6">
+                  <div className="text-center">
+                    <span className="text-[10px] font-bold tracking-widest text-lime">CARD_06</span>
+                    <p className="mt-1 text-sm text-text-secondary">col-span-2</p>
+                  </div>
+                </div>
+              </BentoCard>
+            </BentoGrid>
           </div>
         </section>
       </div>
