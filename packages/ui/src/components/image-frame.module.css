@@ -87,6 +87,49 @@
   border-right: 2px solid var(--color-lime);
 }
 
+/* ── Error state ── */
+
+.errorOverlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--spacing) * 3);
+  width: 100%;
+  height: 100%;
+}
+
+.errorCrosshair {
+  position: relative;
+  width: calc(var(--spacing) * 6);
+  height: calc(var(--spacing) * 6);
+}
+
+.errorCrosshairH {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-text-tertiary);
+}
+
+.errorCrosshairV {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background-color: var(--color-text-tertiary);
+}
+
+.errorLabel {
+  font-size: 10px;
+  font-family: var(--font-geist-mono), monospace;
+  letter-spacing: 0.2em;
+  color: var(--color-text-tertiary);
+}
+
 /* ── Status badge ── */
 
 .badge {

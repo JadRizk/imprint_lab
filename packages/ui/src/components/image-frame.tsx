@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { motion, useInView, useReducedMotion } from "framer-motion";
 
@@ -34,6 +34,13 @@ export function ImageFrame({
   const prefersReducedMotion = useReducedMotion();
   const [loaded, setLoaded] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const [errored, setErrored] = useState(false);
+
+  useEffect(() => {
+    setLoaded(false);
+    setRevealed(false);
+    setErrored(false);
+  }, [src]);
 
   const shouldReveal = loaded && inView;
 
@@ -63,17 +70,37 @@ export function ImageFrame({
           !revealed && styles.imageLayerBorder,
         )}
       >
-        <img
-          src={src}
-          alt={alt}
-          className={styles.image}
-          onLoad={() => setLoaded(true)}
-          style={{
-            opacity: imageOpacity,
-            filter: grayscale ? "grayscale(100%)" : "none",
-            visibility: loaded ? "visible" : "hidden",
-          }}
-        />
+        {errored ? (
+          <div className={styles.errorOverlay} role="img" aria-label={`${alt} — failed to load`}>
+            <div className={styles.errorCrosshair}>
+              <div className={styles.errorCrosshairH} />
+              <div className={styles.errorCrosshairV} />
+            </div>
+            <span className={styles.errorLabel}>SIGNAL_LOST</span>
+          </div>
+        ) : (
+          <img
+            ref={(img) => {
+              if (img?.complete) {
+                setLoaded(true);
+                if (img.naturalWidth === 0) setErrored(true);
+              }
+            }}
+            src={src}
+            alt={alt}
+            className={styles.image}
+            onLoad={() => setLoaded(true)}
+            onError={() => {
+              setLoaded(true);
+              setErrored(true);
+            }}
+            style={{
+              opacity: imageOpacity,
+              filter: grayscale ? "grayscale(100%)" : "none",
+              visibility: loaded ? "visible" : "hidden",
+            }}
+          />
+        )}
         {/* Scan line — pulses at the growing edge */}
         <motion.div
           className={styles.scanLine}

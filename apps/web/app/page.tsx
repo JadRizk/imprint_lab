@@ -18,6 +18,12 @@ export default function Home() {
           >
             DESIGN_SYSTEM
           </Link>
+          <Link
+            href="/demo"
+            className="border border-steel px-6 py-2 text-xs font-bold tracking-widest text-text-secondary transition-colors hover:border-lime hover:text-lime"
+          >
+            DEMO
+          </Link>
         </div>
       </div>
     </div>
