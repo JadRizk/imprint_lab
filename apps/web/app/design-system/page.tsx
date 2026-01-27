@@ -1,6 +1,18 @@
+import { Button } from '@repo/ui/components/button';
 import { ImageFrame } from '@repo/ui/components/image-frame';
-
-import { ArrowDownRight } from 'lucide-react';
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Download,
+  ExternalLink,
+  Menu,
+  Plus,
+  Search,
+  X
+} from 'lucide-react';
 import Link from 'next/link';
 
 import { HeroSection } from '../sections/hero/hero-section';
@@ -258,44 +270,190 @@ export default function DesignSystemPage() {
           </div>
         </section>
 
-        {/* 06 COMPONENTS */}
+        {/* 06 IMAGE_FRAME */}
         <section className="space-y-8">
-          <SectionHeader number="06" label="COMPONENTS" />
+          <SectionHeader number="06" label="IMAGE_FRAME" />
+          <p className="max-w-lg text-xs text-text-secondary">
+            Animated image reveal with grid overlay, scan line pulse, corner markers, and status
+            badge. Uses framer-motion for height-reveal and opacity animations.
+          </p>
+          <div className="h-100">
+            <ImageFrame
+              src="https://picsum.photos/1200/800"
+              alt="Placeholder schematic image"
+              badge={{
+                label: 'IMG_SRC_LOADED',
+                icon: <ArrowDownRight size={12} className="text-lime" />
+              }}
+              className="h-full"
+            />
+          </div>
+        </section>
 
-          {/* ImageFrame */}
-          <div className="space-y-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
-              IMAGE_FRAME
-            </p>
-            <p className="max-w-lg text-xs text-text-secondary">
-              Animated image reveal with grid overlay, scan line pulse, corner markers, and status
-              badge. Uses framer-motion for height-reveal and opacity animations.
-            </p>
-            <div className="h-[400px]">
-              <ImageFrame
-                src="https://picsum.photos/1200/800"
-                alt="Placeholder schematic image"
-                badge={{
-                  label: 'IMG_SRC_LOADED',
-                  icon: <ArrowDownRight size={12} className="text-lime" />
-                }}
-                className="h-full"
-              />
+        {/* 07 BUTTON */}
+        <section className="space-y-8">
+          <SectionHeader number="07" label="BUTTON" />
+          <p className="max-w-lg text-xs text-text-secondary">
+            Variant-based button with CVA + Radix Slot for polymorphism. Supports primary, outline,
+            ghost, and tag variants in sm, default, lg, and icon sizes.
+          </p>
+
+          {/* Variants */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">VARIANTS</span>
+            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+              <Button variant="primary">Primary</Button>
+              <Button variant="outline">Outline</Button>
+              <Button variant="ghost">Ghost</Button>
+              <Button variant="tag">Tag</Button>
             </div>
           </div>
 
-          {/* HeroSection */}
-          <div className="space-y-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
-              HERO_SECTION
-            </p>
-            <p className="max-w-lg text-xs text-text-secondary">
-              Full hero composition — text column with badge, heading, accent, and description on
-              the left; ImageFrame on the right.
-            </p>
-            <div>
-              <HeroSection />
+          {/* Sizes */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">SIZES</span>
+            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+              <Button size="sm">Small</Button>
+              <Button size="default">Default</Button>
+              <Button size="lg">Large</Button>
+              <Button size="icon">
+                <ArrowDownRight size={20} />
+              </Button>
             </div>
+          </div>
+
+          {/* Outline sizes */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">OUTLINE / ALL SIZES</span>
+            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+              <Button variant="outline" size="sm">
+                Small
+              </Button>
+              <Button variant="outline" size="default">
+                Default
+              </Button>
+              <Button variant="outline" size="lg">
+                Large
+              </Button>
+            </div>
+          </div>
+
+          {/* Tags row */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">TAG / ROW</span>
+            <div className="flex flex-wrap items-center gap-2 border border-steel bg-surface p-6">
+              <Button variant="tag" size="sm">
+                React
+              </Button>
+              <Button variant="tag" size="sm">
+                TypeScript
+              </Button>
+              <Button variant="tag" size="sm">
+                Next.js
+              </Button>
+              <Button variant="tag" size="sm">
+                Tailwind
+              </Button>
+              <Button variant="tag" size="sm">
+                Node
+              </Button>
+            </div>
+          </div>
+
+          {/* Icon only */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">ICON_ONLY</span>
+            <div className="space-y-4 border border-steel bg-surface p-6">
+              <div className="flex flex-wrap items-center gap-4">
+                <span className="w-16 text-[10px] text-text-tertiary">PRIMARY</span>
+                <Button variant="primary" size="icon">
+                  <Plus size={20} />
+                </Button>
+                <Button variant="primary" size="icon">
+                  <Search size={20} />
+                </Button>
+                <Button variant="primary" size="icon">
+                  <Download size={20} />
+                </Button>
+                <Button variant="primary" size="icon">
+                  <ArrowUpRight size={20} />
+                </Button>
+              </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <span className="w-16 text-[10px] text-text-tertiary">OUTLINE</span>
+                <Button variant="outline" size="icon">
+                  <Menu size={20} />
+                </Button>
+                <Button variant="outline" size="icon">
+                  <X size={20} />
+                </Button>
+                <Button variant="outline" size="icon">
+                  <Copy size={20} />
+                </Button>
+                <Button variant="outline" size="icon">
+                  <ExternalLink size={20} />
+                </Button>
+              </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <span className="w-16 text-[10px] text-text-tertiary">GHOST</span>
+                <Button variant="ghost" size="icon">
+                  <ChevronLeft size={20} />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <ChevronRight size={20} />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <X size={20} />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Search size={20} />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Disabled states */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">DISABLED</span>
+            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+              <Button variant="primary" disabled>
+                Primary
+              </Button>
+              <Button variant="outline" disabled>
+                Outline
+              </Button>
+              <Button variant="ghost" disabled>
+                Ghost
+              </Button>
+              <Button variant="tag" disabled>
+                Tag
+              </Button>
+            </div>
+          </div>
+
+          {/* asChild with Link */}
+          <div className="space-y-3">
+            <span className="block text-[10px] text-text-tertiary">AS_CHILD / LINK</span>
+            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+              <Button asChild variant="primary">
+                <Link href="/">Home Link</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/">Outline Link</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* 08 HERO_SECTION */}
+        <section className="space-y-8">
+          <SectionHeader number="08" label="HERO_SECTION" />
+          <p className="max-w-lg text-xs text-text-secondary">
+            Full hero composition — text column with badge, heading, accent, and description on the
+            left; ImageFrame on the right.
+          </p>
+          <div>
+            <HeroSection />
           </div>
         </section>
       </div>
