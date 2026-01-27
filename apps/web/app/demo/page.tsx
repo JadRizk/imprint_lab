@@ -1,10 +1,9 @@
-import Link from "next/link";
+import { ImageFrame } from '@repo/ui/components/image-frame';
 
-import { ArrowDownRight } from "lucide-react";
+import { ArrowDownRight } from 'lucide-react';
+import Link from 'next/link';
 
-import { ImageFrame } from "@repo/ui/components/image-frame";
-
-import { HeroSection } from "../sections/hero/hero-section";
+import { HeroSection } from '../sections/hero/hero-section';
 
 export default function DemoPage() {
   return (
@@ -18,6 +17,7 @@ export default function DemoPage() {
           &lt;- HOME
         </Link>
         <span className="text-xs font-bold tracking-[0.2em] text-text-tertiary">
+          {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
           DEMO // <span className="text-lime">LANDING_PAGE</span>
         </span>
       </nav>
@@ -40,8 +40,8 @@ export default function DemoPage() {
               src="https://picsum.photos/seed/demo-a/800/600"
               alt="Field sample alpha"
               badge={{
-                label: "SAMPLE_A",
-                icon: <ArrowDownRight size={12} className="text-lime" />,
+                label: 'SAMPLE_A',
+                icon: <ArrowDownRight size={12} className="text-lime" />
               }}
               className="h-75"
             />
@@ -49,8 +49,8 @@ export default function DemoPage() {
               src="https://picsum.photos/seed/demo-b/800/600"
               alt="Field sample beta"
               badge={{
-                label: "SAMPLE_B",
-                icon: <ArrowDownRight size={12} className="text-lime" />,
+                label: 'SAMPLE_B',
+                icon: <ArrowDownRight size={12} className="text-lime" />
               }}
               className="h-75"
             />
@@ -58,8 +58,8 @@ export default function DemoPage() {
               src="https://picsum.photos/seed/demo-c/this-will-404"
               alt="Field sample gamma — broken src"
               badge={{
-                label: "SAMPLE_C // ERR",
-                icon: <ArrowDownRight size={12} className="text-lime" />,
+                label: 'SAMPLE_C // ERR',
+                icon: <ArrowDownRight size={12} className="text-lime" />
               }}
               className="h-75 md:col-span-2 lg:col-span-1"
             />
@@ -70,9 +70,8 @@ export default function DemoPage() {
       {/* Footer */}
       <footer className="w-full py-8">
         <div className="container mx-auto flex items-center justify-between px-4 md:px-8">
-          <span className="text-xs text-text-tertiary">
-            THE_HUMAN_LABORATORY // DEMO_PAGE
-          </span>
+          {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
+          <span className="text-xs text-text-tertiary">THE_HUMAN_LABORATORY // DEMO_PAGE</span>
           <span className="text-xs text-text-tertiary">
             STATUS: <span className="text-lime">RENDERING</span>
           </span>

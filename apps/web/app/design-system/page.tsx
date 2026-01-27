@@ -1,40 +1,51 @@
-import Link from "next/link";
+import { ImageFrame } from '@repo/ui/components/image-frame';
 
-import { ArrowDownRight } from "lucide-react";
+import { ArrowDownRight } from 'lucide-react';
+import Link from 'next/link';
 
-import { ImageFrame } from "@repo/ui/components/image-frame";
-
-import { HeroSection } from "../sections/hero/hero-section";
+import { HeroSection } from '../sections/hero/hero-section';
 
 const SPACING_STEPS = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24] as const;
 
 const CORE_COLORS = [
-  { name: "SAFETY LIME", hex: "#DFFF00", utility: "bg-lime" },
-  { name: "OBSIDIAN", hex: "#0F0F0F", utility: "bg-obsidian" },
-  { name: "COLD STEEL", hex: "#333333", utility: "bg-steel" },
-  { name: "TEXT GREY", hex: "#8E8E93", utility: "bg-text" },
-  { name: "PURE WHITE", hex: "#FFFFFF", utility: "bg-white" },
+  { name: 'SAFETY LIME', hex: '#DFFF00', utility: 'bg-lime' },
+  { name: 'OBSIDIAN', hex: '#0F0F0F', utility: 'bg-obsidian' },
+  { name: 'COLD STEEL', hex: '#333333', utility: 'bg-steel' },
+  { name: 'TEXT GREY', hex: '#8E8E93', utility: 'bg-text' },
+  { name: 'PURE WHITE', hex: '#FFFFFF', utility: 'bg-white' }
 ] as const;
 
 const SEMANTIC_COLORS = [
-  { name: "SURFACE", hex: "#0A0A0A", utility: "bg-surface" },
-  { name: "TEXT SECONDARY", hex: "#A3A3A3", utility: "bg-text-secondary" },
-  { name: "TEXT TERTIARY", hex: "#555555", utility: "bg-text-tertiary" },
+  { name: 'SURFACE', hex: '#0A0A0A', utility: 'bg-surface' },
+  { name: 'TEXT SECONDARY', hex: '#A3A3A3', utility: 'bg-text-secondary' },
+  { name: 'TEXT TERTIARY', hex: '#555555', utility: 'bg-text-tertiary' }
 ] as const;
 
 const TOKEN_REFERENCE = [
-  { property: "--color-obsidian", value: "#0F0F0F", utility: "bg-obsidian, text-obsidian, border-obsidian" },
-  { property: "--color-lime", value: "#DFFF00", utility: "bg-lime, text-lime, border-lime" },
-  { property: "--color-steel", value: "#333333", utility: "bg-steel, text-steel, border-steel" },
-  { property: "--color-text", value: "#8E8E93", utility: "bg-text, text-text, border-text" },
-  { property: "--color-white", value: "#FFFFFF", utility: "bg-white, text-white, border-white" },
-  { property: "--color-surface", value: "#0A0A0A", utility: "bg-surface, text-surface" },
-  { property: "--color-text-secondary", value: "#A3A3A3", utility: "text-text-secondary" },
-  { property: "--color-text-tertiary", value: "#555555", utility: "text-text-tertiary" },
-  { property: "--font-mono", value: "JetBrains Mono", utility: "font-mono" },
-  { property: "--shadow-lime-glow", value: "0 0 15px rgba(223,255,0,0.3)", utility: "shadow-lime-glow" },
-  { property: "--shadow-lime-glow-lg", value: "0 0 30px rgba(223,255,0,0.4) ...", utility: "shadow-lime-glow-lg" },
-  { property: "--animate-scan", value: "scan 4s linear infinite", utility: "animate-scan" },
+  {
+    property: '--color-obsidian',
+    value: '#0F0F0F',
+    utility: 'bg-obsidian, text-obsidian, border-obsidian'
+  },
+  { property: '--color-lime', value: '#DFFF00', utility: 'bg-lime, text-lime, border-lime' },
+  { property: '--color-steel', value: '#333333', utility: 'bg-steel, text-steel, border-steel' },
+  { property: '--color-text', value: '#8E8E93', utility: 'bg-text, text-text, border-text' },
+  { property: '--color-white', value: '#FFFFFF', utility: 'bg-white, text-white, border-white' },
+  { property: '--color-surface', value: '#0A0A0A', utility: 'bg-surface, text-surface' },
+  { property: '--color-text-secondary', value: '#A3A3A3', utility: 'text-text-secondary' },
+  { property: '--color-text-tertiary', value: '#555555', utility: 'text-text-tertiary' },
+  { property: '--font-mono', value: 'JetBrains Mono', utility: 'font-mono' },
+  {
+    property: '--shadow-lime-glow',
+    value: '0 0 15px rgba(223,255,0,0.3)',
+    utility: 'shadow-lime-glow'
+  },
+  {
+    property: '--shadow-lime-glow-lg',
+    value: '0 0 30px rgba(223,255,0,0.4) ...',
+    utility: 'shadow-lime-glow-lg'
+  },
+  { property: '--animate-scan', value: 'scan 4s linear infinite', utility: 'animate-scan' }
 ] as const;
 
 function SectionHeader({ number, label }: { number: string; label: string }) {
@@ -55,20 +66,16 @@ export default function DesignSystemPage() {
         {/* Header */}
         <header className="border-b border-steel pb-8">
           <div className="mb-4 flex items-center gap-4">
-            <Link
-              href="/"
-              className="text-xs text-text-tertiary transition-colors hover:text-lime"
-            >
+            <Link href="/" className="text-xs text-text-tertiary transition-colors hover:text-lime">
               &lt;- HOME
             </Link>
           </div>
           <h1 className="mb-4 text-4xl font-bold text-white">
-            DESIGN_SYSTEM //{" "}
-            <span className="text-lime">v1.0</span>
+            {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
+            DESIGN_SYSTEM // <span className="text-lime">v1.0</span>
           </h1>
           <p className="max-w-2xl text-lg">
-            The core building blocks of The Human Laboratory. Functional,
-            brutalist, and atomic.
+            The core building blocks of The Human Laboratory. Functional, brutalist, and atomic.
           </p>
         </header>
 
@@ -78,21 +85,15 @@ export default function DesignSystemPage() {
           <div className="grid grid-cols-1 items-center gap-8 border border-steel bg-surface p-8 md:grid-cols-2">
             <div className="space-y-6">
               <div>
-                <span className="mb-1 block text-[10px] text-text-tertiary">
-                  H1 / 5XL / BOLD
-                </span>
+                <span className="mb-1 block text-[10px] text-text-tertiary">H1 / 5XL / BOLD</span>
                 <h1 className="text-5xl font-bold text-white">Heading 1</h1>
               </div>
               <div>
-                <span className="mb-1 block text-[10px] text-text-tertiary">
-                  H2 / 3XL / BOLD
-                </span>
+                <span className="mb-1 block text-[10px] text-text-tertiary">H2 / 3XL / BOLD</span>
                 <h2 className="text-3xl font-bold text-white">Heading 2</h2>
               </div>
               <div>
-                <span className="mb-1 block text-[10px] text-text-tertiary">
-                  H3 / XL / BOLD
-                </span>
+                <span className="mb-1 block text-[10px] text-text-tertiary">H3 / XL / BOLD</span>
                 <h3 className="text-xl font-bold text-white">Heading 3</h3>
               </div>
               <div>
@@ -104,27 +105,19 @@ export default function DesignSystemPage() {
             </div>
             <div className="space-y-6">
               <div>
-                <span className="mb-1 block text-[10px] text-text-tertiary">
-                  BODY / BASE
-                </span>
+                <span className="mb-1 block text-[10px] text-text-tertiary">BODY / BASE</span>
                 <p className="text-base text-white">
-                  Body Text (Base) — The quick brown fox jumps over the lazy
-                  dog.
+                  Body Text (Base) — The quick brown fox jumps over the lazy dog.
                 </p>
               </div>
               <div>
-                <span className="mb-1 block text-[10px] text-text-tertiary">
-                  SECONDARY / SM
-                </span>
+                <span className="mb-1 block text-[10px] text-text-tertiary">SECONDARY / SM</span>
                 <p className="text-sm text-text-secondary">
-                  Secondary Text — Information density is critical for technical
-                  interfaces.
+                  Secondary Text — Information density is critical for technical interfaces.
                 </p>
               </div>
               <div>
-                <span className="mb-1 block text-[10px] text-text-tertiary">
-                  TERTIARY / XS
-                </span>
+                <span className="mb-1 block text-[10px] text-text-tertiary">TERTIARY / XS</span>
                 <p className="text-xs text-text-tertiary">
                   Tertiary / Metadata — SYSTEM_ID: 0x8291
                 </p>
@@ -133,9 +126,7 @@ export default function DesignSystemPage() {
                 <span className="mb-1 block text-[10px] text-text-tertiary">
                   MONOSPACE / XS / ACCENT
                 </span>
-                <p className="text-xs text-lime">
-                  console.log(&apos;Hello World&apos;);
-                </p>
+                <p className="text-xs text-lime">console.log(&apos;Hello World&apos;);</p>
               </div>
             </div>
           </div>
@@ -194,16 +185,9 @@ export default function DesignSystemPage() {
           <div className="space-y-3 border border-steel bg-surface p-8">
             {SPACING_STEPS.map((step) => (
               <div key={step} className="flex items-center gap-4">
-                <span className="w-8 text-right text-xs text-text-tertiary">
-                  {step}
-                </span>
-                <div
-                  className="h-4 bg-lime"
-                  style={{ width: `${step * 4}px` }}
-                />
-                <span className="text-xs text-text-secondary">
-                  {step * 4}px
-                </span>
+                <span className="w-8 text-right text-xs text-text-tertiary">{step}</span>
+                <div className="h-4 bg-lime" style={{ width: `${step * 4}px` }} />
+                <span className="text-xs text-text-secondary">{step * 4}px</span>
               </div>
             ))}
           </div>
@@ -229,9 +213,7 @@ export default function DesignSystemPage() {
                 BORDER / HOVER_TRANSITION
               </span>
               <div className="flex h-40 cursor-pointer items-center justify-center border border-steel bg-surface transition-colors hover:border-lime">
-                <span className="text-xs text-text-secondary">
-                  hover:border-lime
-                </span>
+                <span className="text-xs text-text-secondary">hover:border-lime</span>
               </div>
             </div>
 
@@ -242,9 +224,7 @@ export default function DesignSystemPage() {
               </span>
               <div className="relative flex h-40 items-center justify-center overflow-hidden border border-steel bg-surface">
                 <div className="scan-line absolute" />
-                <span className="text-xs text-text-secondary">
-                  .scan-line
-                </span>
+                <span className="text-xs text-text-secondary">.scan-line</span>
               </div>
             </div>
           </div>
@@ -257,15 +237,9 @@ export default function DesignSystemPage() {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-steel bg-surface">
-                  <th className="px-4 py-3 font-bold text-text-secondary">
-                    CSS PROPERTY
-                  </th>
-                  <th className="px-4 py-3 font-bold text-text-secondary">
-                    VALUE
-                  </th>
-                  <th className="px-4 py-3 font-bold text-text-secondary">
-                    TAILWIND UTILITY
-                  </th>
+                  <th className="px-4 py-3 font-bold text-text-secondary">CSS PROPERTY</th>
+                  <th className="px-4 py-3 font-bold text-text-secondary">VALUE</th>
+                  <th className="px-4 py-3 font-bold text-text-secondary">TAILWIND UTILITY</th>
                 </tr>
               </thead>
               <tbody>
@@ -276,9 +250,7 @@ export default function DesignSystemPage() {
                   >
                     <td className="px-4 py-2.5 text-lime">{token.property}</td>
                     <td className="px-4 py-2.5 text-white">{token.value}</td>
-                    <td className="px-4 py-2.5 text-text-secondary">
-                      {token.utility}
-                    </td>
+                    <td className="px-4 py-2.5 text-text-secondary">{token.utility}</td>
                   </tr>
                 ))}
               </tbody>
@@ -296,15 +268,17 @@ export default function DesignSystemPage() {
               IMAGE_FRAME
             </p>
             <p className="max-w-lg text-xs text-text-secondary">
-              Animated image reveal with grid overlay, scan line pulse, corner
-              markers, and status badge. Uses framer-motion for height-reveal
-              and opacity animations.
+              Animated image reveal with grid overlay, scan line pulse, corner markers, and status
+              badge. Uses framer-motion for height-reveal and opacity animations.
             </p>
             <div className="h-[400px]">
               <ImageFrame
                 src="https://picsum.photos/1200/800"
                 alt="Placeholder schematic image"
-                badge={{ label: "IMG_SRC_LOADED", icon: <ArrowDownRight size={12} className="text-lime" /> }}
+                badge={{
+                  label: 'IMG_SRC_LOADED',
+                  icon: <ArrowDownRight size={12} className="text-lime" />
+                }}
                 className="h-full"
               />
             </div>
@@ -316,8 +290,8 @@ export default function DesignSystemPage() {
               HERO_SECTION
             </p>
             <p className="max-w-lg text-xs text-text-secondary">
-              Full hero composition — text column with badge, heading, accent,
-              and description on the left; ImageFrame on the right.
+              Full hero composition — text column with badge, heading, accent, and description on
+              the left; ImageFrame on the right.
             </p>
             <div>
               <HeroSection />

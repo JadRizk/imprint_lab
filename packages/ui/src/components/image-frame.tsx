@@ -1,12 +1,11 @@
-"use client";
+'use client';
 
-import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { motion, useInView, useReducedMotion } from 'framer-motion';
+import type { ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { motion, useInView, useReducedMotion } from "framer-motion";
-
-import { cn } from "../lib/utils";
-import styles from "./image-frame.module.css";
+import { cn } from '../lib/utils';
+import styles from './image-frame.module.css';
 
 interface ImageFrameProps {
   src: string;
@@ -27,7 +26,7 @@ export function ImageFrame({
   badge,
   grayscale = true,
   imageOpacity = 0.7,
-  className,
+  className
 }: ImageFrameProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const inView = useInView(containerRef, { once: true });
@@ -36,6 +35,7 @@ export function ImageFrame({
   const [revealed, setRevealed] = useState(false);
   const [errored, setErrored] = useState(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: src prop change should reset state
   useEffect(() => {
     setLoaded(false);
     setRevealed(false);
@@ -44,31 +44,25 @@ export function ImageFrame({
 
   const shouldReveal = loaded && inView;
 
-  const BadgeElement = badge?.onClick ? "button" : "div";
+  const BadgeElement = badge?.onClick ? 'button' : 'div';
 
   return (
     <div
       ref={containerRef}
-      className={cn(
-        "group relative overflow-hidden border border-steel bg-surface",
-        className,
-      )}
+      className={cn('group relative overflow-hidden border border-steel bg-surface', className)}
     >
       {/* Grid Background */}
       <div className={styles.gridBackground} />
 
       {/* Image layer — height reveal from top to bottom */}
       <motion.div
-        initial={{ height: "0%" }}
-        animate={{ height: shouldReveal ? "100%" : "0%" }}
-        transition={{ duration: prefersReducedMotion ? 0 : 1.5, ease: "circInOut" }}
+        initial={{ height: '0%' }}
+        animate={{ height: shouldReveal ? '100%' : '0%' }}
+        transition={{ duration: prefersReducedMotion ? 0 : 1.5, ease: 'circInOut' }}
         onAnimationComplete={() => {
           if (shouldReveal) setRevealed(true);
         }}
-        className={cn(
-          styles.imageLayer,
-          !revealed && styles.imageLayerBorder,
-        )}
+        className={cn(styles.imageLayer, !revealed && styles.imageLayerBorder)}
       >
         {errored ? (
           <div className={styles.errorOverlay} role="img" aria-label={`${alt} — failed to load`}>
@@ -96,8 +90,8 @@ export function ImageFrame({
             }}
             style={{
               opacity: imageOpacity,
-              filter: grayscale ? "grayscale(100%)" : "none",
-              visibility: loaded ? "visible" : "hidden",
+              filter: grayscale ? 'grayscale(100%)' : 'none',
+              visibility: loaded ? 'visible' : 'hidden'
             }}
           />
         )}
@@ -113,9 +107,7 @@ export function ImageFrame({
                 : { opacity: [0, 1, 0] }
           }
           transition={
-            revealed || prefersReducedMotion
-              ? { duration: 0.3 }
-              : { duration: 2, repeat: Infinity }
+            revealed || prefersReducedMotion ? { duration: 0.3 } : { duration: 2, repeat: Infinity }
           }
         />
       </motion.div>
@@ -131,10 +123,11 @@ export function ImageFrame({
         <BadgeElement
           className={cn(
             styles.badge,
-            "flex items-center gap-2 border border-steel bg-obsidian",
-            badge.onClick && "cursor-pointer focus-visible:outline-2 focus-visible:outline-lime focus-visible:outline-offset-2",
+            'flex items-center gap-2 border border-steel bg-obsidian',
+            badge.onClick &&
+              'cursor-pointer focus-visible:outline-2 focus-visible:outline-lime focus-visible:outline-offset-2'
           )}
-          {...(badge.onClick ? { onClick: badge.onClick, type: "button" as const } : {})}
+          {...(badge.onClick ? { onClick: badge.onClick, type: 'button' as const } : {})}
         >
           <span className="text-[10px] text-lime">{badge.label}</span>
           {badge.icon}

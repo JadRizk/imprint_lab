@@ -11,7 +11,7 @@ Personal portfolio website built as a Turborepo monorepo. The main application l
 - **UI**: React 19, shadcn/ui, Tailwind CSS v4
 - **Language**: TypeScript 5.9 (strict mode)
 - **Monorepo**: Turborepo 2.7
-- **Linting**: ESLint 9 (flat config), Prettier
+- **Linting/Formatting**: Biome 2.2
 - **Fonts**: Geist Sans + Geist Mono
 
 ## Monorepo Structure
@@ -38,7 +38,6 @@ wtf/
 │   │   ├── package.json
 │   │   └── tsconfig.json
 │   ├── tailwind-config/              # Shared Tailwind preset (design tokens)
-│   ├── eslint-config/                # Shared ESLint configs
 │   └── typescript-config/            # Shared TypeScript configs
 ```
 
@@ -141,9 +140,10 @@ import { cn } from "@repo/ui/lib/utils";
 bun install              # Install dependencies
 bun run dev              # Start all dev servers (turbo)
 bun run build            # Build all packages + apps
-bun run lint             # Lint all workspaces
+bun run lint             # Lint all workspaces (biome check)
 bun run check-types      # Type-check all workspaces
-bun run format           # Format with Prettier
+bun run format           # Format with Biome
+bun run check            # Run Biome check (lint + format) from root
 ```
 
 ## Key Decisions Log
@@ -156,3 +156,4 @@ bun run format           # Format with Prettier
 | Content strategy | Static TypeScript constants | Simple, type-safe, no external dependencies; co-located with sections |
 | Rendering default | React Server Components | Performance-first; client boundaries only when needed |
 | Package manager | Bun | Already configured; fast installs and script execution |
+| Linting/Formatting | Biome | Single tool replacing ESLint + Prettier; faster, simpler config |

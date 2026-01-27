@@ -1,8 +1,7 @@
-import { ArrowDownRight } from "lucide-react";
+import { ImageFrame } from '@repo/ui/components/image-frame';
+import { ArrowDownRight } from 'lucide-react';
 
-import { ImageFrame } from "@repo/ui/components/image-frame";
-
-import { heroContent } from "./data";
+import { heroContent } from './data';
 
 export function HeroSection() {
   return (
@@ -34,7 +33,10 @@ export function HeroSection() {
           <ImageFrame
             src={heroContent.image.src}
             alt={heroContent.image.alt}
-            badge={{ label: heroContent.image.badge.label, icon: <ArrowDownRight size={12} className="text-lime" /> }}
+            badge={{
+              label: heroContent.image.badge.label,
+              icon: <ArrowDownRight size={12} className="text-lime" />
+            }}
             className="h-[400px] lg:col-span-7 lg:h-[600px]"
           />
         </div>
