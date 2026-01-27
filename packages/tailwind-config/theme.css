@@ -19,7 +19,8 @@
   --color-text-tertiary: #555555;
 
   /* ── Typography ── */
-  --font-mono: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+  --font-sans: var(--font-sans-face, sans-serif);
+  --font-mono: var(--font-mono-face, monospace);
 
   /* ── Shadows ── */
   --shadow-lime-glow: 0 0 15px rgba(223, 255, 0, 0.3);

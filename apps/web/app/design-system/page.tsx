@@ -75,7 +75,7 @@ function SectionHeader({ number, label }: { number: string; label: string }) {
 
 export default function DesignSystemPage() {
   return (
-    <div className="min-h-screen w-full pt-20 pb-20">
+    <div className="min-h-screen w-full pt-10 pb-20">
       <div className="container mx-auto space-y-24 px-4 md:px-8">
         {/* Header */}
         <header className="border-b border-steel pb-8">

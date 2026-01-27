@@ -1,11 +1,17 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono } from 'next/font/google';
+import { IBM_Plex_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 
-const jetbrainsMono = JetBrains_Mono({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '700'],
-  variable: '--font-jetbrains-mono'
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-space-grotesk'
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-ibm-plex-mono'
 });
 
 export const metadata: Metadata = {
@@ -20,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={jetbrainsMono.variable}>{children}</body>
+      <body className={`${spaceGrotesk.variable} ${ibmPlexMono.variable}`}>{children}</body>
     </html>
   );
 }
