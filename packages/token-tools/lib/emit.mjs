@@ -188,18 +188,137 @@ export function emitThemeScopedCss(declarations, system) {
 const DTCG_GROUP = {
   color: ['color', 'color'],
   text: ['fontSize', 'dimension'],
-  tracking: ['letterSpacing', 'dimension'],
+  tracking: ['letterSpacing', 'number'],
   spacing: ['spacing', 'dimension'],
   font: ['fontFamily', 'fontFamily'],
-  shadow: ['shadow', null],
-  animate: ['animation', null],
-  other: ['other', null]
+  shadow: ['shadow', 'shadow'],
+  animate: ['animation', 'duration'],
+  other: ['other', 'string']
 };
 
-/** W3C Design Tokens (DTCG) — the interchange format Figma and friends read. */
+const NS = 'com.imprintlab';
+
+/**
+ * DTCG dimensions are `{value, unit}` with unit `px` or `rem` — not the CSS
+ * string this codebase stores. Anything else (`em`, unitless) is not a
+ * dimension and must not claim to be one.
+ */
+function dtcgDimension(css) {
+  const m = String(css)
+    .trim()
+    .match(/^(-?[\d.]+)(px|rem)$/);
+  return m ? { value: Number(m[1]), unit: m[2] } : null;
+}
+
+/** `0` and `1` are unitless in CSS; DTCG calls that a number, not a dimension. */
+function dtcgNumber(css) {
+  const s = String(css).trim();
+  return /^-?[\d.]+$/.test(s) ? Number(s) : null;
+}
+
+/**
+ * `0 0 15px rgba(...)` -> the DTCG shadow composite. Comma-separated layers
+ * become an array, which DTCG permits. Returns null if the shape is not one
+ * this understands, so an unparseable value degrades to a documented string
+ * rather than to a plausible lie.
+ */
+function dtcgShadow(css) {
+  const layers = [];
+  for (const raw of splitTopLevel(String(css), ',')) {
+    const layer = raw.trim();
+    if (!layer) continue;
+    const color = layer.match(/(rgba?\([^)]*\)|hsla?\([^)]*\)|#[0-9a-fA-F]{3,8})/)?.[1];
+    const lengths = layer
+      .replace(/\w+\([^)]*\)|#[0-9a-fA-F]{3,8}/g, '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (!color || lengths.length < 3) return null;
+    const [offsetX, offsetY, blur, spread = '0px'] = lengths;
+    const dims = [offsetX, offsetY, blur, spread].map((v) => dtcgDimension(v === '0' ? '0px' : v));
+    if (dims.some((d) => d === null)) return null;
+    layers.push({
+      color,
+      offsetX: dims[0],
+      offsetY: dims[1],
+      blur: dims[2],
+      spread: dims[3]
+    });
+  }
+  return layers.length === 0 ? null : layers.length === 1 ? layers[0] : layers;
+}
+
+/** Split on `sep` at paren depth zero. */
+function splitTopLevel(s, sep) {
+  const out = [];
+  let depth = 0;
+  let buf = '';
+  for (const ch of s) {
+    if (ch === '(') depth++;
+    else if (ch === ')') depth--;
+    if (ch === sep && depth === 0) {
+      out.push(buf);
+      buf = '';
+      continue;
+    }
+    buf += ch;
+  }
+  out.push(buf);
+  return out;
+}
+
+const EASING = {
+  linear: [0, 0, 1, 1],
+  ease: [0.25, 0.1, 0.25, 1],
+  'ease-in': [0.42, 0, 1, 1],
+  'ease-out': [0, 0, 0.58, 1],
+  'ease-in-out': [0.42, 0, 0.58, 1]
+};
+
+/** `scan 4s linear infinite` -> duration + timingFunction, keeping the CSS. */
+function dtcgAnimation(css) {
+  const s = String(css).trim();
+  const dur = s.match(/(?:^|\s)(-?[\d.]+)(ms|s)(?:\s|$)/);
+  if (!dur) return null;
+  const easing =
+    s
+      .match(/cubic-bezier\(([^)]*)\)/)?.[1]
+      ?.split(',')
+      .map((n) => Number(n.trim())) ??
+    EASING[Object.keys(EASING).find((k) => new RegExp(`(^|\\s)${k}(\\s|$)`).test(s))];
+  return {
+    duration: { value: Number(dur[1]), unit: dur[2] },
+    timingFunction: easing ?? null
+  };
+}
+
+/**
+ * `var(--font-sans-face, sans-serif)` is not a font name. The families a tool
+ * can actually use are the fallbacks; the var() indirection is this system's
+ * wiring contract and belongs in $extensions, not in $value — a Figma import
+ * of the raw string produces a font literally called `var(...)`.
+ */
+function dtcgFontFamily(css) {
+  const s = String(css).trim();
+  const inner = s.match(/^var\(\s*--[\w-]+\s*,\s*(.+)\)$/)?.[1] ?? s;
+  const families = splitTopLevel(inner, ',')
+    .map((f) => f.trim().replace(/^["']|["']$/g, ''))
+    .filter(Boolean);
+  return families.length ? families : null;
+}
+
+/**
+ * W3C Design Tokens (DTCG) — the interchange format Figma and friends read.
+ *
+ * Every token resolves a `$type`, either from its group or from itself, because
+ * a token whose type cannot be resolved is invalid and an importer is entitled
+ * to reject the file. Where a CSS value has no DTCG equivalent the CSS is
+ * carried in `$extensions["${NS}"].css` and the `$value` states the part DTCG
+ * can represent — never the raw CSS string dressed up as a typed value.
+ */
 export function emitTokensJson(tokens, system) {
   const out = {
-    $description: `Design tokens for ${system}. Generated from theme.css. Groups without a $type hold raw CSS declarations that DTCG has no primitive for.`
+    $description: `Design tokens for ${system}. Generated from theme.css. Values are W3C DTCG; where CSS has no DTCG equivalent the original declaration is kept under $extensions["${NS}"].css.`
   };
 
   for (const t of tokens) {
@@ -207,25 +326,79 @@ export function emitTokensJson(tokens, system) {
     const prefix = t.category === 'spacing' ? '--spacing' : `--${t.category}-`;
     const leaf = t.name === '--spacing' ? 'base' : t.name.slice(prefix.length);
 
-    out[group] ??= type ? { $type: type } : {};
-    const entry = {
+    out[group] ??= { $type: type };
+    const entry = {};
+
+    if (t.aliasOf) {
       // DTCG expresses an alias as a reference to another token's path.
-      $value: t.aliasOf
-        ? `{${DTCG_GROUP[categorize(t.aliasOf)][0]}.${t.aliasOf.slice(`--${categorize(t.aliasOf)}-`.length)}}`
-        : t.base
-    };
+      const ref = categorize(t.aliasOf);
+      entry.$value = `{${DTCG_GROUP[ref][0]}.${t.aliasOf.slice(`--${ref}-`.length)}}`;
+    } else {
+      Object.assign(entry, dtcgValue(t, type));
+    }
+
     if (t.note) entry.$description = t.note;
     out[group][leaf] = entry;
 
-    // Line heights travel as their own dimension tokens rather than being
-    // folded into the size, which would make the value invalid DTCG.
+    // Line heights travel as their own tokens rather than being folded into the
+    // size — DTCG has no "size / line-height" shorthand. Unitless line heights
+    // are numbers, not dimensions, so the group carries no $type and each token
+    // declares its own.
     if (t.lineHeight) {
-      out.lineHeight ??= { $type: 'dimension' };
-      out.lineHeight[leaf] = { $value: t.lineHeight };
+      out.lineHeight ??= {};
+      const dim = dtcgDimension(t.lineHeight);
+      out.lineHeight[leaf] = dim
+        ? { $type: 'dimension', $value: dim }
+        : { $type: 'number', $value: dtcgNumber(t.lineHeight) ?? 1 };
     }
   }
 
   return `${JSON.stringify(out, null, 2)}\n`;
+}
+
+/** The `$value` (and any `$type` override / `$extensions`) for one token. */
+function dtcgValue(t, groupType) {
+  const css = t.base;
+  const ext = { $extensions: { [NS]: { css } } };
+
+  switch (groupType) {
+    case 'dimension': {
+      const dim = dtcgDimension(css);
+      if (dim) return { $value: dim };
+      // `0.2em` and unitless values are not DTCG dimensions. Emit the number
+      // and keep the CSS — em IS a multiple of the font size, so the number is
+      // the honest representation rather than a fabricated rem.
+      const n = dtcgNumber(css.replace(/em$/, ''));
+      return n === null ? { $type: 'string', $value: css } : { $type: 'number', $value: n, ...ext };
+    }
+    case 'number': {
+      const n = dtcgNumber(css.replace(/em$/, ''));
+      return n === null ? { $type: 'string', $value: css } : { $value: n, ...ext };
+    }
+    case 'shadow': {
+      const shadow = dtcgShadow(css);
+      return shadow ? { $value: shadow, ...ext } : { $type: 'string', $value: css };
+    }
+    case 'duration': {
+      const anim = dtcgAnimation(css);
+      if (!anim) return { $type: 'string', $value: css };
+      return {
+        $value: anim.duration,
+        $extensions: {
+          [NS]: {
+            css,
+            ...(anim.timingFunction ? { timingFunction: anim.timingFunction } : {})
+          }
+        }
+      };
+    }
+    case 'fontFamily': {
+      const families = dtcgFontFamily(css);
+      return families ? { $value: families, ...ext } : { $type: 'string', $value: css };
+    }
+    default:
+      return { $value: css };
+  }
 }
 
 /**
