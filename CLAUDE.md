@@ -257,15 +257,24 @@ that adopts the system receives the instructions alongside the stylesheets.
 `.claude/skills/thl-report/SKILL.md` is a **stub that routes to it**, so the kit
 is discoverable without the vocabulary existing twice.
 
-> A symlink was tried first and **fails silently**: the loader does not follow
-> one, so the file resolved on disk while the skill stayed unregistered. If you
-> tidy that stub into a symlink, you will quietly un-register the skill.
-
 The stub duplicates exactly one line — the `description`, which the loader reads
-from the stub itself. **Change it in both places or neither.** The real fix is to
-move the canonical file into `.claude/skills/thl-report/` and point
-`registry.json` at that path, which removes the duplication; it was not done
-because `static/SKILL.md` had uncommitted edits in a parallel session.
+from the stub itself. **Change it in both places or neither.**
+
+> **A note retracted.** An earlier version of this section said symlinking the
+> stub "fails silently". That was wrong: the file-symlink probe and the plain
+> file that replaced it *both* reported unregistered for several turns, so the
+> test measured index-refresh latency rather than symlink resolution. Directory
+> symlinks are known to work — `~/.claude/skills/find-skills` and
+> `using-git-worktrees` are both symlinks into `~/.agents/skills/`.
+>
+> A directory symlink (`.claude/skills/thl-report` → `systems/human-laboratory/static`)
+> would remove the duplication entirely and is probably the better shape. Confirm
+> it registers in a **fresh session** before adopting it; in-session probes are
+> not a reliable signal.
+
+Moving the canonical file here and pointing `registry.json` at it also works; it
+was not done because `static/SKILL.md` had uncommitted edits in a parallel
+session.
 
 > ⚠ **The report kit's instructions are not auto-discoverable in a consuming
 > project.** The registry lands `SKILL.md` at `~/thl/SKILL.md`, which is not a

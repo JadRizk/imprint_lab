@@ -22,19 +22,41 @@ a skill is only auto-discoverable from a skills directory, so without this stub
 nothing would load it, and the kit would be found only by someone who happened to
 read `CLAUDE.md`.
 
-A symlink was tried first and **silently does not work** — the loader does not
-follow it, so `.claude/skills/thl-report/SKILL.md` pointing at the canonical file
-resolved on disk while the skill stayed unregistered.
-
 **This stub routes; it never copies.** The only duplicated thing is the
 `description`, because the loader reads it from this file. If you change the
 description in the canonical `SKILL.md`, change it here too — that one line is
 the entire drift surface, and it is the price of the kit being both shippable and
 discoverable.
 
-The better fix is to move the canonical file here and have `registry.json`
-reference this path, which removes the duplication outright. That was not done
-because `static/SKILL.md` had uncommitted edits from another session at the time.
+### On symlinks — corrected
+
+An earlier version of this file claimed a symlink here "silently does not work".
+**That claim was wrong and is withdrawn.** A file-level symlink was tried, probed
+once, and reported unregistered — but the plain file that replaced it *also*
+reported unregistered on three consecutive probes before appearing. The variable
+was index-refresh latency, not symlink resolution, and the test could not
+distinguish them.
+
+Directory symlinks demonstrably work: `~/.claude/skills/find-skills` and
+`~/.claude/skills/using-git-worktrees` are both symlinks into `~/.agents/skills/`
+and both load normally.
+
+So the zero-duplication option is open and is probably better than this stub:
+
+```bash
+rm -rf .claude/skills/thl-report
+ln -s ../../systems/human-laboratory/static .claude/skills/thl-report
+```
+
+That makes the skill directory *be* `static/`, so `SKILL.md` has one copy and the
+description cannot drift. Verify it registers in a **fresh session** before
+trusting it — in-session probes are not a reliable signal, which is the whole
+lesson above. The trade is that the skill directory then also contains the
+bundles, which is cosmetically odd and functionally harmless.
+
+The other fix is to move the canonical file here and point `registry.json` at
+this path. That was not done because `static/SKILL.md` had uncommitted edits from
+another session at the time.
 
 ## The three rules most often broken
 
