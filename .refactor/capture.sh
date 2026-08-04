@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
 # Baseline capture / comparison for the imprint_lab refactor.
 #
-#   ./.refactor/capture.sh              # write baseline (first run)
+#   ./.refactor/capture.sh              # write baseline (or promote after an accepted phase)
 #   ./.refactor/capture.sh --compare    # capture to current/ and diff vs baseline/
 #
-# Env: PORT (default 3117)
+# Env: PORT (apps/web, default 3117) · DOCS_PORT (apps/docs, default 3118)
 #
-# Why CSS and not screenshots: a lost token or dropped utility shows up here exactly,
-# where a screenshot only catches it if the loss happens to be visible. Do both.
+# Why CSS and not screenshots: a lost token or dropped utility shows up here
+# exactly, where a screenshot only catches it if the loss happens to be visible.
+# Do both.
+#
+# Capture against a COLD server. Turbopack's HMR does not always recompile CSS
+# before the next request, so a capture taken moments after an edit can report
+# the previous build. If a diff looks implausible, restart, delete .next/dev,
+# and re-capture before believing it.
 
 set -uo pipefail
 
 PORT="${PORT:-3117}"
-BASE="http://localhost:${PORT}"
+DOCS_PORT="${DOCS_PORT:-3118}"
+WEB="http://localhost:${PORT}"
+DOCS="http://localhost:${DOCS_PORT}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODE="${1:-}"
 
@@ -22,34 +30,45 @@ else
   OUT="$ROOT/.refactor/baseline"
 fi
 
-ROUTES=("/" "/design-system" "/demo")
+# The showcase moved to apps/docs in phase 05, so the baseline spans two apps.
+WEB_ROUTES=("/" "/demo")
+DOCS_ROUTES=("/" "/systems/human-laboratory")
 
-if ! curl -sf -m 10 -o /dev/null "$BASE/"; then
-  echo "error: no dev server on $BASE" >&2
-  echo "  start one:  cd apps/web && bunx next dev --port $PORT" >&2
-  exit 1
-fi
+require_server() {
+  if ! curl -sf -m 10 -o /dev/null "$1/"; then
+    echo "error: no dev server on $1" >&2
+    echo "  start one:  cd $2 && bunx next dev --port $3" >&2
+    exit 1
+  fi
+}
+require_server "$WEB" apps/web "$PORT"
+require_server "$DOCS" apps/docs "$DOCS_PORT"
 
 rm -rf "$OUT"; mkdir -p "$OUT"
 
-for route in "${ROUTES[@]}"; do
-  name="$(echo "$route" | sed 's#^/##; s#/#_#g')"; name="${name:-home}"
+capture() {   # capture <base-url> <prefix> <route>
+  local base="$1" prefix="$2" route="$3" name html
+  name="$(echo "$route" | sed 's#^/##; s#/#_#g')"
+  name="${prefix}${name:-home}"
   html="$OUT/$name.html"
 
-  if ! curl -sf -m 60 -o "$html" "$BASE$route"; then
-    echo "error: failed to fetch $route" >&2
+  if ! curl -sf -m 60 -o "$html" "$base$route"; then
+    echo "error: failed to fetch $base$route" >&2
     exit 1
   fi
 
   # Collect every stylesheet the route pulls in.
   # Turbopack percent-encodes bracketed chunk names, so % must be in the class.
   grep -ohE '/_next/static/[a-zA-Z0-9._/%-]+\.css' "$html" | sort -u | while read -r href; do
-    curl -sf -m 60 "$BASE$href"
+    curl -sf -m 60 "$base$href"
     echo
   done > "$OUT/$name.css"
 
   echo "  $name — $(wc -c < "$html" | tr -d ' ') bytes html, $(wc -c < "$OUT/$name.css" | tr -d ' ') bytes css"
-done
+}
+
+for route in "${WEB_ROUTES[@]}";  do capture "$WEB"  "web_"  "$route"; done
+for route in "${DOCS_ROUTES[@]}"; do capture "$DOCS" "docs_" "$route"; done
 
 # ── Normalised, order-independent signals ──
 # Custom properties: the token surface. Any disappearance here is a lost token.

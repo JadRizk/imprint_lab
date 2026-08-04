@@ -100,8 +100,13 @@ export function buildTokens({ declarations, resolve, aliasOf }) {
   return tokens;
 }
 
+// The regenerate command names the system's own package, not system 01's.
+let PKG = '@thl/tokens';
+export function setPackageName(name) {
+  PKG = name;
+}
 const BANNER = (what) =>
-  `AUTO-GENERATED FROM theme.css — do not edit by hand.\nRun: bun run --filter=@thl/tokens generate:tokens${what ? `\n${what}` : ''}`;
+  `AUTO-GENERATED FROM theme.css — do not edit by hand.\nRun: bun run --filter=${PKG} generate:tokens${what ? `\n${what}` : ''}`;
 
 export function emitTokensTs(tokens) {
   return `// ${BANNER('').split('\n').join('\n// ')}

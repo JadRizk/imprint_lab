@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/* One system's @theme supplies the utility surface — Tailwind generates
+ * `bg-accent`, `text-ink` and friends once, from these names. */
+@import "@thl/tokens";
+@import "@thl/tokens/base.css";
+
+/* …and every system contributes a [data-system] block that overrides the VALUES
+ * behind those names. Because roles carry the same names in every system, one
+ * utility set serves all of them and the data attribute does the switching.
+ *
+ * Adding a system: one more @import here plus an entry in lib/systems.ts.
+ *
+ * Note the asymmetry — primitives (bg-obsidian) exist only for the system whose
+ * @theme is imported above. That is intentional: docs chrome uses roles, and a
+ * system's private vocabulary is not meant to be reachable from another's page. */
+@import "@thl/tokens/theme.scoped.css";
+
+@source "../../../systems/human-laboratory/ui";
+
+@theme inline {
+  --font-sans-face: var(--font-space-grotesk, "Space Grotesk", sans-serif);
+  --font-mono-face: var(--font-ibm-plex-mono, "IBM Plex Mono", monospace);
+}

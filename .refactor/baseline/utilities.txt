@@ -111,6 +111,7 @@
 .group
 .group-hover\:border-accent:is
 .group-hover\:shadow-lime-glow:is
+.group-hover\:text-accent:is
 .h-\
 .h-100
 .h-12
@@ -197,7 +198,10 @@
 .ml-4
 .module
 .mt-1
+.mt-16
 .mt-2
+.mt-3
+.mt-4
 .mx-auto
 .outline
 .overflow-hidden
@@ -250,6 +254,7 @@
 .text-accent-ink
 .text-base
 .text-center
+.text-ink
 .text-ink-muted
 .text-ink-subtle
 .text-left

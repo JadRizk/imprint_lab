@@ -16,7 +16,8 @@ import {
   emitTokensCss,
   emitTokensJson,
   emitTokensTs,
-  emitTwMerge
+  emitTwMerge,
+  setPackageName
 } from './lib/emit.mjs';
 import { parseTheme } from './lib/parse.mjs';
 
@@ -25,6 +26,8 @@ const outDir = join(tokenDir, 'generated');
 
 // systems/<name>/tokens -> <name>
 const system = basename(dirname(tokenDir));
+
+setPackageName(JSON.parse(readFileSync(join(tokenDir, 'package.json'), 'utf8')).name);
 
 const css = readFileSync(join(tokenDir, 'theme.css'), 'utf8');
 const parsed = parseTheme(css);
@@ -54,13 +57,12 @@ const partsDir = join(staticDir, 'parts');
 // Bundle filename comes from the package scope — @thl/tokens -> thl.css — so it
 // matches the registry namespace consumers actually type, rather than initials
 // derived from the directory name.
-const short =
-  JSON.parse(readFileSync(join(tokenDir, 'package.json'), 'utf8')).name.match(/^@([^/]+)\//)?.[1] ??
-  system;
+const pkgName = JSON.parse(readFileSync(join(tokenDir, 'package.json'), 'utf8')).name;
+const short = pkgName.match(/^@([^/]+)\//)?.[1] ?? system;
 
 const part = (name) => readFileSync(join(partsDir, name), 'utf8').trimEnd();
 const bundleHeader = (what) =>
-  `/* ${system} — ${what}\n * AUTO-GENERATED. Edit static/parts/ and re-run:\n *   bun run --filter=@thl/tokens generate:tokens\n */\n\n`;
+  `/* ${system} — ${what}\n * AUTO-GENERATED. Edit static/parts/ and re-run:\n *   bun run --filter=${pkgName} generate:tokens\n */\n\n`;
 
 let staticCount = 0;
 if (existsSync(partsDir)) {
@@ -68,11 +70,15 @@ if (existsSync(partsDir)) {
     join(staticDir, `${short}.css`),
     `${bundleHeader('report kit: tokens + reset + primitives')}${emitTokensCss(parsed.declarations)}\n${part('reset.css')}\n\n${part('components.css')}\n`
   );
-  writeFileSync(
-    join(staticDir, `${short}.chart.css`),
-    `${bundleHeader('report kit: chart layer (opt-in, load after the base bundle)')}${part('chart.css')}\n`
-  );
-  staticCount = 2;
+  staticCount = 1;
+  // The chart layer is optional — a system earns one when it has data to show.
+  if (existsSync(join(partsDir, 'chart.css'))) {
+    writeFileSync(
+      join(staticDir, `${short}.chart.css`),
+      `${bundleHeader('report kit: chart layer (opt-in, load after the base bundle)')}${part('chart.css')}\n`
+    );
+    staticCount = 2;
+  }
 }
 
 const aliases = tokens.filter((t) => t.aliasOf).length;

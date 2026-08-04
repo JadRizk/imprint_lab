@@ -3,6 +3,8 @@ import { PageShell } from '@thl/ui/components/page-shell';
 import { SectionHeader } from '@thl/ui/components/section-header';
 import Link from 'next/link';
 
+const DOCS_URL = process.env.NEXT_PUBLIC_DOCS_URL ?? 'http://localhost:3001';
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col justify-center py-10">
@@ -41,7 +43,11 @@ export default function Home() {
 
         <div className="flex flex-wrap gap-6">
           <Button asChild variant="outline">
-            <Link href="/design-system">Design_System</Link>
+            {/* The design system documents itself in imprint_lab now; this app is
+                one consumer of it, not its host. */}
+            <a href={DOCS_URL} target="_blank" rel="noreferrer">
+              Design_System
+            </a>
           </Button>
           <Button asChild variant="outline">
             <Link href="/demo">Demo</Link>

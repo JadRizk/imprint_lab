@@ -376,7 +376,57 @@ them reading as "the accent," is the hard part.
 > for a report. If the output isn't recognisably The Human Laboratory, **the SKILL.md is wrong,
 > not the agent.** This is the only test that matters here, and it is a judgment call by design.
 
-### Phase 05 — Docs + registry
+### Phase 05 — Docs + registry ✅ DONE (one contract unmet)
+
+`apps/docs` (port 3001) is the showcase and the registry host. It imports
+`systems/*/ui/` **directly**, not through the registry, so docs never lag the source — the
+evicted portfolio in Phase 06 is what proves the install path instead.
+
+`apps/web` keeps `/` and `/demo`; its `/design-system` route moved to
+`apps/docs/app/systems/human-laboratory/`. **The `HeroSection` import went with it — deleted.**
+That was FINDING_07's coupling: a portfolio composition being documented as though it were a
+design system component. The showcase documents the system; the portfolio is a consumer.
+
+**Registries are per namespace, not per repo.** `shadcn build` takes a single registry file, so
+`systems/*/registry.json` looked fine with one system and failed with "too many arguments" the
+moment a second existed. `apps/docs/scripts/build-registries.mjs` loops instead, emitting
+`public/r/<namespace>/{name}.json` — which is also the right shape, since a namespace is the unit
+a consumer subscribes to:
+
+```json
+{ "registries": { "@thl": "https://imprint-lab.vercel.app/r/thl/{name}.json" } }
+```
+
+**The scaffold exists because cost-per-new-system decides whether this is a collection or a
+folder with one thing in it.** `bun run new-system <slug> <ns> ["Name"]` emits a system already
+wired to the pipeline, the role contract, the report kit and the registry — with the eleven roles
+stubbed and a deliberately awful magenta accent, so the first act is a real decision.
+
+> **Claim:** distribution works and skins don't leak.
+> **Verified — by scaffolding a throwaway system and deleting it afterwards:**
+> - The shared pipeline ran on an untouched scaffold: 31 tokens, 5 artifacts, correct
+>   `[data-system="proving-ground"]` scope. `check-roles` ran on it clean.
+> - **Token isolation holds**: neither system's scoped block writes to `:root`, scopes are
+>   distinct, and the same role resolves differently per scope
+>   (`--color-accent` → `var(--color-lime)` vs `var(--color-brand)`).
+> - Registry serves over HTTP: `/r/thl/report-kit.json`, 5 files, 144KB of embedded content.
+> - Baseline: 0 utilities lost, 5 added (the new index page). Tokens identical at 121.
+>
+> **Two bugs the throwaway caught**, both invisible with one system: `token-tools` assumed every
+> system ships a `parts/chart.css`, and the generated banners hardcoded `@thl/tokens` as the
+> regenerate command.
+
+> **⚠ Contract 3.4 is NOT met — base layers are still unscopable.**
+> `base.css` styles `body` (background, colour, mono font, crosshair cursor). A `body` rule
+> cannot be scoped to a `[data-system]` subtree, so when system 02 gets a page in `apps/docs`,
+> **THL's crosshair and mono body will bleed into it.** Tokens isolate; opinions do not.
+>
+> The fix is a real change, not a patch: `base.css` must target a *container* rather than `body`,
+> with standalone consumers mapping `body` onto that container. Doing it now would be guessing at
+> what system 02 needs, so it is recorded here rather than half-solved — but it must land before
+> a second system gets a docs page, which is exactly what the contract said.
+
+### Phase 05 — original plan
 
 - `apps/docs` — the showcase. Components, every variant, token tables, swatches, spacing,
   effects, per system, with `[data-system]` skinning.

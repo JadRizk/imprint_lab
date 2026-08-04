@@ -1,0 +1,353 @@
+#!/usr/bin/env node
+// Scaffolds a new design system.
+//
+//   bun run new-system <slug> <namespace> ["Display Name"]
+//   bun run new-system atelier atl "Atelier"
+//
+// Cost-per-new-system is the metric that decides whether imprint_lab is a
+// collection or a folder with one thing in it. If standing up system 02 means
+// hand-building six phases of scaffolding, it will not happen — so this emits a
+// system that is already wired to the pipeline, the role contract, the report
+// kit and the registry.
+//
+// What it deliberately does NOT do: invent an aesthetic. Every token below is a
+// placeholder that fails the contrast floor on purpose, so the first thing you
+// must do is make real decisions.
+
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const [slug, ns, displayName] = process.argv.slice(2);
+
+if (!slug || !ns) {
+  console.error('usage: bun run new-system <slug> <namespace> ["Display Name"]');
+  console.error('   eg: bun run new-system atelier atl "Atelier"');
+  process.exit(1);
+}
+if (!/^[a-z][a-z0-9-]*$/.test(slug)) {
+  console.error(`error: slug must be kebab-case — got "${slug}"`);
+  process.exit(1);
+}
+if (!/^[a-z][a-z0-9]*$/.test(ns)) {
+  console.error(`error: namespace must be lowercase alphanumeric — got "${ns}"`);
+  process.exit(1);
+}
+
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const root = join(repoRoot, 'systems', slug);
+const title = displayName ?? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+if (existsSync(root)) {
+  console.error(`error: systems/${slug} already exists`);
+  process.exit(1);
+}
+
+const write = (rel, contents) => {
+  const p = join(root, rel);
+  mkdirSync(dirname(p), { recursive: true });
+  writeFileSync(p, contents);
+};
+
+// ── tokens ──
+// The eleven roles are mandatory: they are the contract every system shares and
+// what check-roles enforces. Primitives are yours to name.
+write(
+  'tokens/theme.css',
+  `@theme static {
+  /* Reset. Keeps the system's vocabulary closed — nothing arrives by default. */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+
+  --spacing: 0.25rem;
+
+  /* ── Palette ── TODO: replace. Named by appearance; private to this system. */
+  --color-ink-000: #ffffff;
+  --color-ink-900: #000000;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-500: #767676;
+  --color-neutral-900: #141414;
+  --color-brand: #ff00ff; /* deliberately awful — make a real decision */
+
+  /* ── Roles ── The shared contract. These eleven names must exist in every
+   * system; components reference only these. Point them wherever you like.
+   *
+   * Any role used for text must clear 4.5:1 against --color-canvas. Measure it
+   * and record the ratio in a trailing comment, as system 01 does. */
+  --color-canvas: var(--color-neutral-900);
+  --color-surface: var(--color-ink-900);
+  --color-line: var(--color-neutral-500);
+  --color-ambient: var(--color-neutral-500); /* decoration only — never text */
+  --color-ink: var(--color-ink-000);
+  --color-ink-muted: var(--color-neutral-100);
+  --color-ink-subtle: var(--color-neutral-500);
+  --color-accent: var(--color-brand);
+  --color-accent-ink: var(--color-ink-900);
+  --color-critical: #ff4a4a;
+  --color-warning: #ff8a00;
+
+  /* ── Typography ── Consumer defines the -face variables (typically next/font). */
+  --font-sans: var(--font-sans-face, sans-serif);
+  --font-mono: var(--font-mono-face, monospace);
+
+  /* Closed scale: --text-* is reset above, so these are the only sizes that exist. */
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+
+  --tracking-label: 0.1em;
+
+  /* The one shadow role. Point it at a primitive, or set it to none. */
+  --shadow-glow: none;
+}
+`
+);
+
+write(
+  'tokens/base.css',
+  `/* Base layer — this system's opinions.
+ *
+ * Every rule must stay bindable to either :root or a [data-system="${slug}"]
+ * scope: apps/docs renders several systems on one page, and an unscoped body
+ * rule would leak across them.
+ */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink-muted);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+}
+`
+);
+
+write(
+  'tokens/package.json',
+  `${JSON.stringify(
+    {
+      name: `@${ns}/tokens`,
+      version: '0.1.0',
+      private: true,
+      exports: {
+        '.': './theme.css',
+        './base.css': './base.css',
+        './tokens': './generated/tokens.ts',
+        './tw-merge': './generated/tw-merge.ts',
+        './tokens.css': './generated/tokens.css',
+        './theme.scoped.css': './generated/theme.scoped.css',
+        './tokens.json': './generated/tokens.json'
+      },
+      scripts: { 'generate:tokens': 'token-tools', build: 'token-tools' },
+      devDependencies: { '@imprint/token-tools': '*' }
+    },
+    null,
+    2
+  )}\n`
+);
+
+// ── ui ──
+write(
+  'ui/package.json',
+  `${JSON.stringify(
+    {
+      name: `@${ns}/ui`,
+      version: '0.1.0',
+      private: true,
+      exports: { './lib/utils': './lib/utils.ts' },
+      scripts: { lint: 'check-roles .. && biome check .', 'check-types': 'tsc --noEmit' },
+      dependencies: { clsx: '^2.1.1', react: '^19.2.0', 'tailwind-merge': '^3.3.0' },
+      devDependencies: {
+        '@imprint/token-tools': '*',
+        '@repo/typescript-config': '*',
+        [`@${ns}/tokens`]: '*',
+        '@types/react': '19.2.2',
+        typescript: '5.9.2'
+      }
+    },
+    null,
+    2
+  )}\n`
+);
+
+write(
+  'ui/tsconfig.json',
+  `${JSON.stringify(
+    {
+      extends: '@repo/typescript-config/react-library.json',
+      compilerOptions: { outDir: 'dist' },
+      include: ['components', 'lib'],
+      exclude: ['node_modules', 'dist']
+    },
+    null,
+    2
+  )}\n`
+);
+
+write(
+  'ui/lib/utils.ts',
+  `import { twMergeConfig } from '@${ns}/tokens/tw-merge';
+import { type ClassValue, clsx } from 'clsx';
+import { extendTailwindMerge } from 'tailwind-merge';
+
+/**
+ * The scale names are generated from theme.css, so adding a value there
+ * registers it here automatically. Without this, tailwind-merge cannot tell a
+ * custom font size from a color and silently drops the color.
+ */
+const twMerge = extendTailwindMerge(twMergeConfig);
+
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
+}
+`
+);
+
+// ── static tier ──
+write(
+  'static/parts/reset.css',
+  `/* Reset + base for the report kit. Roles only — never a primitive. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+`
+);
+
+write(
+  'static/parts/components.css',
+  `/* Report primitives for ${title}. Roles only.
+ *
+ * Start by copying what system 01 ships in systems/human-laboratory/static/parts
+ * and re-deciding each rule — the class NAMES are worth keeping identical so a
+ * report can move between systems, but the styling is yours.
+ */
+
+.wrap {
+  max-width: var(--measure, 1440px);
+  margin-inline: auto;
+  padding-inline: 28px;
+}
+`
+);
+
+write(
+  'registry.json',
+  `${JSON.stringify(
+    {
+      $schema: 'https://ui.shadcn.com/schema/registry.json',
+      name: ns,
+      homepage: 'https://imprint-lab.vercel.app',
+      items: [
+        {
+          name: 'report-kit',
+          type: 'registry:file',
+          title: `${title} report kit`,
+          description: `Pure HTML/CSS tier for standalone reports in ${title}.`,
+          files: [
+            {
+              path: `systems/${slug}/static/${ns}.css`,
+              type: 'registry:file',
+              target: `~/${ns}/${ns}.css`
+            }
+          ]
+        }
+      ]
+    },
+    null,
+    2
+  )}\n`
+);
+
+write(
+  'BRAND.md',
+  `# ${title}
+
+## Thesis
+
+TODO — one paragraph. What does this system believe that others do not? System 01's
+answer is on its landing page: constraint produces coherence, and the most honest
+interface is one that does not pretend to be anything other than code on a screen.
+
+## Voice
+
+TODO — the verbal system. System 01 uses SCREAMING_SNAKE labels, \`//\` separators,
+instrument status words (NOMINAL, SIGNAL_LOST) and hex-style identifiers. Whatever
+you choose, write it down: it is the part that makes output recognisable, and it is
+the part most easily lost.
+
+## Typography
+
+TODO — the sans/mono pairing, and which does the body text.
+
+## Non-negotiables
+
+TODO — the constraints that define the system. For system 01: zero radius, dark
+only, borders are structural, a single accent.
+`
+);
+
+console.log(`
+Scaffolded systems/${slug} (@${ns})
+
+  tokens/theme.css      the eleven roles are stubbed — replace the palette
+  ui/lib/utils.ts       cn(), wired to the generated tw-merge config
+  static/parts/         report kit source
+  registry.json         @${ns} namespace
+  BRAND.md              thesis and voice, unwritten
+
+Next:
+  1. bun install
+  2. Make real palette decisions in tokens/theme.css. The placeholder brand
+     colour is magenta on purpose.
+  3. Every role used for text must clear 4.5:1 against --color-canvas. Measure
+     it and record the ratio beside the token.
+  4. bun run --filter=@${ns}/tokens generate:tokens
+  5. Add to apps/docs: an entry in lib/systems.ts, an @import of
+     @${ns}/tokens/theme.scoped.css in globals.css, and a page under
+     app/systems/${slug}/.
+`);

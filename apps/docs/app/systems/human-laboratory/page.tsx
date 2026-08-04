@@ -21,8 +21,6 @@ import {
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { HeroSection } from '../sections/hero/hero-section';
-
 const SPACING_STEPS = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24] as const;
 
 function displayName(tokenName: string) {
@@ -81,9 +79,11 @@ function Swatch({ name, value, utility }: { name: string; value: string; utility
   );
 }
 
-export default function DesignSystemPage() {
+export default function HumanLaboratoryPage() {
   return (
-    <div className="min-h-screen w-full pt-10 pb-20">
+    // data-system binds this subtree to the system's scoped token block, so the
+    // page renders in its own skin. Every system's page carries its own slug.
+    <div data-system="human-laboratory" className="min-h-screen w-full pt-10 pb-20">
       <div className="space-y-24">
         {/* Header */}
         <PageShell>
@@ -91,17 +91,18 @@ export default function DesignSystemPage() {
             <div className="mb-4 flex items-center gap-4">
               <Link
                 href="/"
-                className="text-xs text-text-tertiary transition-colors hover:text-lime"
+                className="text-xs text-ink-subtle transition-colors hover:text-accent"
               >
-                &lt;- HOME
+                &lt;- SYSTEMS
               </Link>
             </div>
             <h1 className="mb-4 text-4xl font-bold text-white">
               {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
-              DESIGN_SYSTEM // <span className="text-lime">v0.1</span>
+              THE_HUMAN_LABORATORY // <span className="text-accent">@thl</span>
             </h1>
             <p className="max-w-2xl text-lg">
-              The core building blocks of The Human Laboratory. Functional, brutalist, and atomic.
+              System 01. Functional, brutalist, atomic. Components below reference roles only — the
+              contract that lets them move to another system unchanged.
             </p>
           </header>
         </PageShell>
@@ -454,16 +455,6 @@ export default function DesignSystemPage() {
               </Button>
             </div>
           </div>
-        </Spec>
-
-        {/* 08 HERO_SECTION — bleeds, because it brings its own PageShell */}
-        <Spec
-          number="08"
-          label="HERO_SECTION"
-          description="Full hero composition — text column with badge, heading, accent, and description on the left; ImageFrame on the right. Shown at true page width."
-          bleed
-        >
-          <HeroSection />
         </Spec>
 
         {/* 09 BENTO_CARD */}
