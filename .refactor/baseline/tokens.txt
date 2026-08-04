@@ -1,0 +1,110 @@
+--animate-scan: scan 4s linear infinite
+--blur-sm: 8px
+--color-ambient: #3a3a3a
+--color-black: #000
+--color-lime: #dfff00
+--color-obsidian: #0f0f0f
+--color-steel: #333
+--color-surface: #0a0a0a
+--color-text-secondary: #a3a3a3
+--color-text-tertiary: #7c7c7c
+--color-white: #fff
+--container-2xl: 42rem
+--container-3xl: 48rem
+--container-lg: 32rem
+--container-md: 28rem
+--container-sm: 24rem
+--default-font-family: var(--font-sans)
+--default-mono-font-family: var(--font-mono)
+--default-transition-duration: .15s
+--default-transition-timing-function: cubic-bezier(.4, 0, .2, 1)
+--font-ibm-plex-mono: "IBM Plex Mono", "IBM Plex Mono Fallback"
+--font-mono-face: var(--font-ibm-plex-mono, "IBM Plex Mono", monospace)
+--font-mono: var(--font-mono-face, monospace)
+--font-sans-face: var(--font-space-grotesk, "Space Grotesk", sans-serif)
+--font-sans: var(--font-sans-face, sans-serif)
+--font-space-grotesk: "Space Grotesk", "Space Grotesk Fallback"
+--font-weight-bold: 700
+--leading-relaxed: 1.625
+--leading-tight: 1.25
+--lightningcss-dark: initial
+--lightningcss-light:
+--shadow-lime-glow: 0 0 15px #dfff004d
+--spacing: .25rem
+--text-2xl--line-height: 2rem
+--text-2xl: 1.5rem
+--text-3xl--line-height: 2.25rem
+--text-3xl: 1.875rem
+--text-4xl--line-height: 2.5rem
+--text-4xl: 2.25rem
+--text-5xl--line-height: 1
+--text-5xl: 3rem
+--text-6xl--line-height: 1
+--text-6xl: 3.75rem
+--text-base--line-height: 1.5rem
+--text-base: 1rem
+--text-lg--line-height: 1.75rem
+--text-lg: 1.125rem
+--text-micro--line-height: 1rem
+--text-micro: .625rem
+--text-sm--line-height: 1.25rem
+--text-sm: .875rem
+--text-xl--line-height: 1.75rem
+--text-xl: 1.25rem
+--text-xs--line-height: 1rem
+--text-xs: .75rem
+--tracking-label: .2em
+--tracking-tighter: -.05em
+--tw-backdrop-blur: blur(var(--blur-sm))
+--tw-backdrop-blur: initial
+--tw-backdrop-brightness: initial
+--tw-backdrop-contrast: initial
+--tw-backdrop-grayscale: initial
+--tw-backdrop-hue-rotate: initial
+--tw-backdrop-invert: initial
+--tw-backdrop-opacity: initial
+--tw-backdrop-saturate: initial
+--tw-backdrop-sepia: initial
+--tw-blur: initial
+--tw-border-style: solid
+--tw-brightness: initial
+--tw-contrast: initial
+--tw-divide-y-reverse: 0
+--tw-drop-shadow-alpha: 100%
+--tw-drop-shadow-color: initial
+--tw-drop-shadow-size: initial
+--tw-drop-shadow: initial
+--tw-duration: .3s
+--tw-duration: initial
+--tw-font-weight: initial
+--tw-font-weight: var(--font-weight-bold)
+--tw-grayscale: grayscale(100%)
+--tw-grayscale: initial
+--tw-hue-rotate: initial
+--tw-inset-ring-color: initial
+--tw-inset-ring-shadow: 0 0 #0000
+--tw-inset-shadow-alpha: 100%
+--tw-inset-shadow-color: initial
+--tw-inset-shadow: 0 0 #0000
+--tw-invert: initial
+--tw-leading: initial
+--tw-leading: var(--leading-relaxed)
+--tw-leading: var(--leading-tight)
+--tw-opacity: initial
+--tw-outline-style: solid
+--tw-ring-color: initial
+--tw-ring-inset: initial
+--tw-ring-offset-color: #fff
+--tw-ring-offset-shadow: 0 0 #0000
+--tw-ring-offset-width: 0px
+--tw-ring-shadow: 0 0 #0000
+--tw-saturate: initial
+--tw-sepia: initial
+--tw-shadow-alpha: 100%
+--tw-shadow-color: initial
+--tw-shadow: 0 0 #0000
+--tw-shadow: 0 0 15px var(--tw-shadow-color, #dfff004d)
+--tw-space-y-reverse: 0
+--tw-tracking: initial
+--tw-tracking: var(--tracking-label)
+--tw-tracking: var(--tracking-tighter)

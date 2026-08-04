@@ -1,0 +1,8 @@
+# Comparison runs are transient; only the baseline is committed.
+current/
+
+# Captured markup and compiled CSS are regenerable from the dev server and
+# large/noisy in diffs. tokens.txt and utilities.txt are the actual contract —
+# those are committed, so a later phase can be checked against this commit.
+*.html
+*.css

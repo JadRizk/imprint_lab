@@ -51,6 +51,7 @@
       "!out",
       "!build",
       "!.worktrees",
+      "!.refactor",
       "!packages/tailwind-config"
     ]
   }
