@@ -40,22 +40,30 @@ Already landed in `47588b3`, so **not** to-do items:
 Components in scope for the port: `Button`, `BentoCard`, `BentoGrid`, `ImageFrame`,
 `PageShell`, `SectionHeader`.
 
-### Known issue — token CSS is unlinted
+### Resolved — why token CSS is excluded from Biome
 
-`biome.json` excludes `packages/tailwind-config` wholesale, so **`theme.css` — the single most
-important file in the system — is neither linted nor formatted.** `image-frame.module.css` *is*
-checked, so CSS coverage is currently inconsistent.
+The old config excluded `packages/tailwind-config` wholesale, which read like a preference.
+It isn't: **Biome 2.2's CSS parser cannot parse Tailwind v4's namespace-reset syntax.**
 
-Phase 01 moves that directory, which makes the exclusion path stale. Decide deliberately rather
-than by accident:
+```
+--color-*: initial;
+          ^ expected `,` but instead found `*`
+```
 
-- **Lint it** (preferred) — `noUnknownAtRules` is already `off`, so `@theme` / `@utility` won't
-  error. Expect a one-time formatting diff on `theme.css`; land that as its own commit so it
-  doesn't contaminate the move.
-- **Keep excluding it** — then update the ignore path to the new location in the same commit, or
-  the exclusion silently stops applying.
+One such line cascades into 399 parse errors across the file. `noUnknownAtRules: off` does not
+help — that silences a *lint* rule, while this fails in the *parser*. `@theme`, `@utility` and
+`--text-x--line-height` all parse fine on their own; the asterisk is the sole blocker.
 
-`.refactor/` is excluded from Biome: it holds captured build output, not source.
+So the exclusion is now narrow and reasoned, rather than a whole dark directory:
+
+| Excluded | Why |
+|---|---|
+| `systems/*/tokens/theme.css` | Parser limitation above. Revisit when Biome supports it. |
+| `systems/*/tokens/tokens.generated.ts`, `systems/*/tokens/generated` | Generated. Formatting them churns — verified: the formatter's output is reverted by the next `generate:tokens` run. |
+| `.refactor` | Captured build output, not source. |
+
+Everything else in `tokens/` is now linted, including `base.css` — which the old blanket
+exclusion had been hiding.
 
 ---
 

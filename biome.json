@@ -52,7 +52,9 @@
       "!build",
       "!.worktrees",
       "!.refactor",
-      "!systems/human-laboratory/tokens"
+      "!systems/*/tokens/theme.css",
+      "!systems/*/tokens/tokens.generated.ts",
+      "!systems/*/tokens/generated"
     ]
   }
 }
