@@ -24,20 +24,66 @@ function collectTrailingNotes(body) {
   return notes;
 }
 
-function stripComments(css) {
-  return css.replace(/\/\*[\s\S]*?\*\//g, '');
+/**
+ * Replace every comment with same-length whitespace, preserving newlines.
+ *
+ * Length-preserving on purpose: structure (brace counting, `@theme` location,
+ * declaration splitting) is read off the blanked text, while trailing notes are
+ * sliced out of the RAW text at the same offsets. Deleting comments instead
+ * would desynchronise the two.
+ *
+ * This is also what makes a comment containing a brace safe. Counting braces on
+ * raw CSS meant `/* a } here *␘/` closed the block early and every token after
+ * it was dropped silently — and an `@theme { … }` written inside a comment was
+ * parsed in preference to the real one.
+ */
+function blankComments(css) {
+  return css.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '));
 }
 
 /**
- * Split a declaration block on `;` that sit at brace/paren depth zero, so
- * multi-line and function-valued declarations survive intact.
+ * Walk `css` from `i`, returning the index just past the matching close of the
+ * block opened at `i`. String-aware: a brace or paren inside a quoted value is
+ * data, not structure.
+ */
+function scan(css, i, open, close) {
+  let depth = 0;
+  let quote = null;
+  for (; i < css.length; i++) {
+    const ch = css[i];
+    if (quote) {
+      if (ch === '\\') i++;
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'") quote = ch;
+    else if (ch === open) depth++;
+    else if (ch === close && --depth === 0) return i;
+  }
+  return -1;
+}
+
+/**
+ * Split a declaration block on `;` that sit at brace/paren depth zero and
+ * outside any string, so multi-line and function-valued declarations survive
+ * intact and `--font-sans: "Foo;Bar", sans-serif` is not truncated at the
+ * quoted semicolon.
  */
 function splitDeclarations(body) {
   const out = [];
   let depth = 0;
+  let quote = null;
   let buf = '';
-  for (const ch of body) {
-    if (ch === '(' || ch === '{' || ch === '[') depth++;
+  for (let i = 0; i < body.length; i++) {
+    const ch = body[i];
+    if (quote) {
+      buf += ch;
+      if (ch === '\\' && i + 1 < body.length) buf += body[++i];
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'") quote = ch;
+    else if (ch === '(' || ch === '{' || ch === '[') depth++;
     else if (ch === ')' || ch === '}' || ch === ']') depth--;
     if (ch === ';' && depth === 0) {
       out.push(buf);
@@ -50,21 +96,24 @@ function splitDeclarations(body) {
   return out;
 }
 
+/**
+ * Offsets of the `@theme` body, which may carry options (`static`).
+ * Located on comment-blanked CSS so a commented-out block cannot win.
+ */
+function themeBodyRange(css) {
+  const blanked = blankComments(css);
+  const open = blanked.match(/@theme(?:\s+[a-z]+)*\s*\{/);
+  if (!open) throw new Error('token-tools: no @theme { ... } block found');
+  const brace = open.index + open[0].length - 1;
+  const end = scan(blanked, brace, '{', '}');
+  if (end === -1) throw new Error('token-tools: unterminated @theme block');
+  return { start: brace + 1, end, blanked };
+}
+
 /** Extract the body of the `@theme` block, which may carry options (`static`). */
 export function extractThemeBody(css) {
-  const open = css.match(/@theme(?:\s+[a-z]+)*\s*\{/);
-  if (!open) throw new Error('token-tools: no @theme { ... } block found');
-  let depth = 0;
-  let i = open.index + open[0].length - 1;
-  const start = i + 1;
-  for (; i < css.length; i++) {
-    if (css[i] === '{') depth++;
-    else if (css[i] === '}') {
-      depth--;
-      if (depth === 0) return css.slice(start, i);
-    }
-  }
-  throw new Error('token-tools: unterminated @theme block');
+  const { start, end } = themeBodyRange(css);
+  return css.slice(start, end);
 }
 
 /**
@@ -75,9 +124,11 @@ export function extractThemeBody(css) {
  * they configure Tailwind, they are not tokens.
  */
 export function parseTheme(css) {
-  const rawBody = extractThemeBody(css);
-  const notes = collectTrailingNotes(rawBody);
-  const body = stripComments(rawBody);
+  const { start, end, blanked } = themeBodyRange(css);
+  // Notes come from the raw text (they ARE comments); structure from the
+  // blanked text. Same offsets, so the two always describe the same block.
+  const notes = collectTrailingNotes(css.slice(start, end));
+  const body = blanked.slice(start, end);
 
   const declarations = [];
   for (const chunk of splitDeclarations(body)) {
@@ -103,13 +154,32 @@ export function parseTheme(css) {
    * here, and flattening it to the fallback would break font wiring.
    */
   function resolve(value, seen = new Set()) {
-    return value.replace(/var\(\s*(--[\w-]+)\s*(?:,([^)]*))?\)/g, (whole, ref) => {
-      if (!byName.has(ref)) return whole;
-      if (seen.has(ref)) {
-        throw new Error(`token-tools: circular var() reference at ${ref}`);
+    let out = '';
+    let i = 0;
+    while (i < value.length) {
+      const at = value.indexOf('var(', i);
+      if (at === -1) return out + value.slice(i);
+
+      // Paren-balanced, not `[^)]*`: a fallback may itself contain parens, as in
+      // var(--a, rgba(0,0,0,.5)). Stopping at the first `)` left the remainder
+      // dangling and emitted values like `#123456)` into tokens.ts and tokens.json.
+      const close = scan(value, at + 3, '(', ')');
+      if (close === -1) return out + value.slice(i);
+
+      const inner = value.slice(at + 4, close);
+      const ref = inner.match(/^\s*(--[\w-]+)\s*(?:,|$)/)?.[1];
+      out += value.slice(i, at);
+      if (ref && byName.has(ref)) {
+        if (seen.has(ref)) {
+          throw new Error(`token-tools: circular var() reference at ${ref}`);
+        }
+        out += resolve(byName.get(ref), new Set([...seen, ref]));
+      } else {
+        out += value.slice(at, close + 1);
       }
-      return resolve(byName.get(ref), new Set([...seen, ref]));
-    });
+      i = close + 1;
+    }
+    return out;
   }
 
   /** The single token this value aliases, or null if it is not a pure alias. */

@@ -47,8 +47,12 @@ const varRe = new RegExp(`var\\(\\s*(${primitives.join('|')})\\s*[,)]`, 'g');
 // stricter and simpler to reason about than enumerating primitive values.
 // This is what closes `className="bg-[#DFFF00]"` and `.a { background: #DFFF00 }`,
 // which produce the primitive exactly while naming nothing the other rules see.
+//
+// Not `\b` before the function name: Tailwind spells spaces as `_` inside an
+// arbitrary value, so `shadow-[0_0_15px_rgba(…)]` puts a word character right
+// before `rgba(` and a word boundary never matches there.
 const literalRe =
-  /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lab|lch|color-mix)\s*\(/g;
+  /#[0-9a-fA-F]{3,8}\b|(?<![a-zA-Z-])(?:rgba?|hsla?|oklch|oklab|lab|lch|color-mix)\s*\(/g;
 
 // Values legitimately not a colour: opacity/duration/z-index in an arbitrary
 // value, and the `#` of a URL fragment or a hex escape in content.
@@ -99,6 +103,10 @@ a component move systems unchanged.
   text-text-secondary -> text-ink-muted
   text-text-tertiary  -> text-ink-subtle
   shadow-lime-glow    -> shadow-glow
+
+A raw colour — #DFFF00, rgb(), oklch() — is banned outright inside ui/, in class
+names and CSS modules alike. If the value you need has no role, add one to
+theme.css and regenerate; do not inline it.
 
 App code and one-off compositions may use primitives freely — this rule covers
 systems/*/ui/ only.`);

@@ -8,6 +8,7 @@
     "format": "biome format --write .",
     "check": "biome check .",
     "check-types": "turbo run check-types",
+    "test": "bun test packages/token-tools && ./.refactor/self-test.sh",
     "new-system": "bun run --cwd packages/system-template new-system.mjs",
     "smoke": "bun run --filter=docs registry:build && node packages/token-tools/smoke-install.mjs"
   },
