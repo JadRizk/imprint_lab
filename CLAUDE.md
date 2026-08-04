@@ -98,11 +98,20 @@ looks too loud, change the hierarchy or the size, not the contrast.
 ### 4. Base layers must be scopable
 
 `base.css` rules must bind to either `:root` or a `[data-system]` scope, or one
-system's opinions leak into another's page in the docs app.
+system's opinions leak into another's page in the docs app — **and they must
+bind to roles, not primitives**, or they resolve to nothing under a second
+system. Both halves are met: the look is scoped to
+`[data-system="human-laboratory"]` and reads `canvas` / `ink-muted` / `accent` /
+`line`.
 
-> ⚠ **This contract is currently unmet.** `base.css` styles `body`, which cannot
-> be scoped to a subtree, and it binds to primitives rather than roles. It must
-> be fixed before a second system gets a docs page. See `REMEDIATION.md` R5.
+Because `base.css` no longer styles `body`, the app names its host system —
+`apps/docs` sets `data-system` on `<body>`, and standalone consumers of the
+registry `style` item do the same.
+
+> **The document-level boundary.** `color-scheme`, the `*` reset and the page
+> scrollbar have no container to move to and stay global. Two systems with
+> different colour schemes cannot share a document; the second needs its own
+> page. That is a constraint to design around, not a bug to fix.
 
 ---
 
@@ -116,7 +125,8 @@ everything else:
 | `generated/tokens.ts` | docs tables, introspection |
 | `generated/tokens.css` | plain `:root` — what a standalone document inlines |
 | `generated/theme.scoped.css` | `[data-system]` — per-system skinning in the docs app |
-| `generated/tokens.json` | interchange (see the caveat below) |
+| `generated/tokens.json` | W3C DTCG interchange — Figma, Style Dictionary |
+| `generated/safelist.css` | `@source inline()` — see below |
 | `ui/lib/tw-merge.generated.ts` | the `extendTailwindMerge` config `cn()` consumes |
 | `static/thl.*` | the report-kit bundles |
 
@@ -124,8 +134,17 @@ Regenerate with `bun run --filter=@thl/tokens generate:tokens`; `turbo build`
 does it automatically. **Never hand-edit anything under `generated/`, any
 `thl.*` bundle, or `tw-merge.generated.ts`.**
 
-> `tokens.json` is described as DTCG but does not conform — see `REMEDIATION.md`
-> R7. Do not rely on it importing into Figma until that is settled.
+### Utilities rendered through a variable
+
+Tailwind v4 scans for **literal** class names. A page that builds one from a
+runtime value — `` className={`${token.utility} …`} `` — generates nothing, and
+fails silently: `text-6xl` was missing from the served CSS for the whole
+refactor while the type-scale table rendered its largest step at inherited size.
+
+`generated/safelist.css` forces every utility the token model declares, and
+`apps/docs/app/globals.css` imports it alongside the other `@import`s (CSS
+requires imports to precede all other rules). It is generated from `theme.css`,
+so it cannot drift — **never hand-keep a safelist.**
 
 ### Type scale
 
@@ -138,7 +157,8 @@ from the tokens, so registration is automatic. Without it, `tailwind-merge`
 cannot tell a custom font size from a colour and silently drops the colour.
 
 > Class names built at runtime are **not** scanned by Tailwind. A generated
-> `text-${token}` produces no CSS. See `REMEDIATION.md` R3.2.
+> `text-${token}` produces no CSS on its own — `generated/safelist.css` is what
+> makes it work. See "Utilities rendered through a variable" above.
 
 ### Layout primitives
 
@@ -242,6 +262,37 @@ review cannot:
 ## Open work
 
 `REFACTOR.md` records how the repo reached this shape, including deviations and
-gaps. `REMEDIATION.md` is an independent audit of what actually landed; treat it
-as the backlog. Two items block a second system: the scaffold does not pass its
-own gates (R4), and contract 4 above is unmet (R5).
+gaps. `REMEDIATION.md` and `.refactor/AUDIT-FINDINGS.md` are independent audits
+of what actually landed; treat them as the backlog.
+
+Nothing currently blocks a second system — the scaffold passes build,
+check-types, lint, check and test cold, and the base-layer contract is met.
+
+**Still open:** the repo name is unsettled (`imprint_lab` in `package.json`,
+`the_human_laboratory` on disk and on the remote, and a `registry.json` homepage
+that does not resolve). Settle it **before anything installs from the registry**.
+The component coverage gap (input, card, badge, dialog, table) and light mode
+remain deliberately out of scope.
+
+## Verification
+
+`.refactor/capture.sh` diffs the CSS a dev server serves against a committed
+baseline. It carries **three** signals: `tokens.txt` (custom properties),
+`utilities.txt` (class-selector names) and `rules.txt` (selector **plus
+normalised declaration body**).
+
+`rules.txt` is the one that matters. The other two carry only *names*, so
+anything changing what a rule *does* passes them silently — `cursor: crosshair`
+was deleted from the served CSS and both reported "identical". **Do not trust a
+"verified" claim citing only the first two**, and run
+`./.refactor/self-test.sh`, which asserts each mutation class is still caught.
+
+**CSS diffs are not a substitute for looking.** Headless Chrome needs no
+extension:
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless \
+  --disable-gpu --hide-scrollbars --window-size=1440,2400 \
+  --virtual-time-budget=9000 --screenshot=out.png \
+  http://localhost:3001/systems/human-laboratory/components
+```
