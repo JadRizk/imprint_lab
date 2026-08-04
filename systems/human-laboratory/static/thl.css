@@ -1,0 +1,620 @@
+/* human-laboratory — report kit: tokens + reset + primitives
+ * AUTO-GENERATED. Edit static/parts/ and re-run:
+ *   bun run --filter=@thl/tokens generate:tokens
+ */
+
+/* AUTO-GENERATED FROM theme.css — do not edit by hand.
+   Run: bun run --filter=@thl/tokens generate:tokens */
+
+:root {
+  --spacing:                 0.25rem;
+  --color-obsidian:          #0F0F0F;
+  --color-lime:              #DFFF00;
+  --color-steel:             #333333;
+  --color-white:             #FFFFFF;
+  --color-black:             #000000;
+  --color-surface:           #0A0A0A;
+  --color-text-secondary:    #A3A3A3; /* 7.62:1 — body copy (the body default) */
+  --color-text-tertiary:     #7C7C7C; /* 4.59:1 — labels, metadata, tags */
+  --color-ambient:           #3A3A3A;
+  --color-canvas:            var(--color-obsidian);
+  --color-line:              var(--color-steel);
+  --color-ink:               var(--color-white);
+  --color-ink-muted:         var(--color-text-secondary);
+  --color-ink-subtle:        var(--color-text-tertiary);
+  --color-accent:            var(--color-lime);
+  --color-accent-ink:        var(--color-black);
+  --color-critical:          #FF4A4A; /* 5.78:1 — errors, destructive actions */
+  --color-warning:           #FF8A00; /* 8.11:1 — warnings, degraded states */
+  --font-sans:               var(--font-sans-face, sans-serif);
+  --font-mono:               var(--font-mono-face, monospace);
+  --text-micro:              0.625rem;
+  --text-micro--line-height: 1rem;
+  --text-xs:                 0.75rem;
+  --text-xs--line-height:    1rem;
+  --text-sm:                 0.875rem;
+  --text-sm--line-height:    1.25rem;
+  --text-base:               1rem;
+  --text-base--line-height:  1.5rem;
+  --text-lg:                 1.125rem;
+  --text-lg--line-height:    1.75rem;
+  --text-xl:                 1.25rem;
+  --text-xl--line-height:    1.75rem;
+  --text-2xl:                1.5rem;
+  --text-2xl--line-height:   2rem;
+  --text-3xl:                1.875rem;
+  --text-3xl--line-height:   2.25rem;
+  --text-4xl:                2.25rem;
+  --text-4xl--line-height:   2.5rem;
+  --text-5xl:                3rem;
+  --text-5xl--line-height:   1;
+  --text-6xl:                3.75rem;
+  --text-6xl--line-height:   1;
+  --tracking-label:          0.2em;
+  --shadow-lime-glow:        0 0 15px rgba(223, 255, 0, 0.3);
+  --shadow-lime-glow-lg:     0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1);
+  --shadow-glow:             var(--shadow-lime-glow);
+  --animate-scan:            scan 4s linear infinite;
+}
+
+/* ── Reset + base ──────────────────────────────────────────────────────────
+ *
+ * Roles only. Every declaration below reads a role token, never a primitive, so
+ * pointing the tokens at a different system reskins every report that uses this
+ * file. Same contract as systems/<system>/ui/, enforced there by check-roles.
+ *
+ * Fonts are declared as stacks that degrade to system faces. A strict CSP —
+ * which is the normal case for a standalone report — blocks font CDNs outright,
+ * so the design system has to ship the file or accept the fallback. Load
+ * thl.fonts.css alongside this when brand fidelity matters more than bytes.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.65;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-4xl);
+}
+h2 {
+  font-size: var(--text-2xl);
+}
+h3 {
+  font-size: var(--text-lg);
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-line);
+}
+
+a:hover {
+  border-bottom-color: var(--color-accent);
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+strong,
+b {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* A reduced-motion override has to beat any animation a report author writes,
+ * including inline styles — which is the one case !important is correct for. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat author animation */
+    animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must beat author animation */
+    animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must beat author animation */
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Report primitives ─────────────────────────────────────────────────────
+ *
+ * The set a document actually needs — derived from real reports, not invented.
+ * This is deliberately NOT a mirror of systems/<system>/ui/: reports need section
+ * heads, stat tiles, tables and callouts; apps need buttons, inputs and
+ * dialogs. The overlap is about a third, and most of what is here has no React
+ * twin to drift from.
+ *
+ * Roles only, so swapping the token block reskins every report.
+ */
+
+/* ── Page frame ── */
+
+.wrap {
+  max-width: var(--measure, 1440px);
+  margin-inline: auto;
+  padding-inline: 28px;
+}
+
+/* A narrower measure for prose-led documents. Running text wants ~65ch. */
+.wrap--prose {
+  --measure: 80ch;
+}
+
+/* ── Masthead ── */
+
+.masthead {
+  border-bottom: 1px solid var(--color-line);
+  padding-block: 56px 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.eyebrow {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* The lime square. Same eyebrow mark the app-side SectionHeader draws. */
+.eyebrow::before {
+  content: "";
+  inline-size: 8px;
+  block-size: 8px;
+  background: var(--color-accent);
+  flex: none;
+}
+
+.standfirst {
+  max-width: 76ch;
+  font-size: var(--text-base);
+}
+
+/* ── Sections ── */
+
+.section {
+  padding-block-start: 64px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid var(--color-line);
+  padding-block-end: 10px;
+  margin-block-end: 24px;
+}
+
+.section-head > h2 {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/* Right-aligned gloss on a section head. Drops out on narrow viewports. */
+.section-head > .note {
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+.lede {
+  max-width: 90ch;
+  margin-block-end: 24px;
+}
+
+/* ── Stat tiles ──
+ * A row of headline numbers. Encode state in the label or a chip, never in the
+ * number alone — a figure that is only red is invisible to a third of readers.
+ */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  border: 1px solid var(--color-line);
+}
+
+.stat {
+  padding: 18px 20px;
+  border-inline-end: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat:last-child {
+  border-inline-end: 0;
+}
+
+.stat > .label {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+.stat > .value {
+  font-family: var(--font-sans);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+}
+
+.stat > .value.is-accent {
+  color: var(--color-accent);
+}
+.stat > .value.is-critical {
+  color: var(--color-critical);
+}
+.stat > .value.is-warning {
+  color: var(--color-warning);
+}
+
+.stat > .foot {
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+/* ── Tables ──
+ * Wide content scrolls inside its own container so the page body never scrolls
+ * sideways.
+ */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+}
+
+.table-wrap > table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-xs);
+  min-inline-size: 640px;
+}
+
+.table-wrap thead th {
+  text-align: start;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  font-weight: 700;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+  white-space: nowrap;
+}
+
+.table-wrap tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--color-ambient);
+  vertical-align: top;
+}
+
+.table-wrap tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-wrap tbody tr:hover td {
+  background: var(--color-surface);
+}
+
+/* Emphasise the identifying column. */
+.table-wrap td.key {
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+/* ── Chips ──
+ * State reads at a glance from form as well as colour, so a chip always carries
+ * its own word.
+ */
+
+.chip {
+  display: inline-block;
+  font-size: var(--text-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-subtle);
+  white-space: nowrap;
+  line-height: 1.7;
+}
+
+.chip.is-accent {
+  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-line));
+}
+.chip.is-critical {
+  color: var(--color-critical);
+  border-color: color-mix(in srgb, var(--color-critical) 45%, var(--color-line));
+}
+.chip.is-warning {
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-line));
+}
+
+/* ── Panels ── */
+
+.panel {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Corner brackets. The motif the app-side BentoCard draws with four elements —
+ * here it costs two pseudo-elements and no markup. */
+.panel.has-brackets {
+  position: relative;
+}
+
+.panel.has-brackets::before,
+.panel.has-brackets::after {
+  content: "";
+  position: absolute;
+  inline-size: 9px;
+  block-size: 9px;
+  border-color: var(--color-ambient);
+  pointer-events: none;
+}
+
+.panel.has-brackets::before {
+  inset-block-start: -1px;
+  inset-inline-start: -1px;
+  border-block-start: 2px solid;
+  border-inline-start: 2px solid;
+}
+
+.panel.has-brackets::after {
+  inset-block-end: -1px;
+  inset-inline-end: -1px;
+  border-block-end: 2px solid;
+  border-inline-end: 2px solid;
+}
+
+/* ── Callout ──
+ * A claim that needs weight. The rule carries the severity; the word carries
+ * the meaning.
+ */
+
+.callout {
+  border-inline-start: 2px solid var(--color-accent);
+  padding: 4px 0 4px 16px;
+  color: var(--color-ink-muted);
+}
+
+.callout.is-critical {
+  border-inline-start-color: var(--color-critical);
+}
+.callout.is-warning {
+  border-inline-start-color: var(--color-warning);
+}
+
+/* ── Spec list ── */
+
+.spec-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+  font-size: var(--text-xs);
+  margin: 0;
+}
+
+.spec-list dt {
+  color: var(--color-ink-subtle);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-size: var(--text-micro);
+  padding-block-start: 2px;
+}
+
+.spec-list dd {
+  color: var(--color-ink);
+  margin: 0;
+}
+
+/* ── Swatch grid ── */
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.swatch > .chip-color {
+  block-size: 60px;
+  border: 1px solid var(--color-line);
+}
+
+.swatch > .meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--text-xs);
+  padding-block-start: 7px;
+}
+
+.swatch > .meta > .v {
+  color: var(--color-ink);
+}
+
+/* Absent / proposed value. */
+.swatch.is-absent > .chip-color {
+  border-style: dashed;
+  border-color: var(--color-ink-subtle);
+  opacity: 0.55;
+}
+
+/* ── Code and trees ── */
+
+code,
+.code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-ambient);
+  padding: 0.05em 0.35em;
+  white-space: nowrap;
+}
+
+pre {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  padding: 20px 22px;
+  font-size: var(--text-xs);
+  line-height: 1.8;
+  color: var(--color-ink-muted);
+}
+
+pre code,
+pre.tree {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  white-space: pre;
+}
+
+.tree b {
+  color: var(--color-ink);
+  font-weight: 400;
+}
+.tree i {
+  color: var(--color-accent);
+  font-style: normal;
+}
+.tree u {
+  color: var(--color-ink-subtle);
+  text-decoration: none;
+}
+
+/* ── Layout helpers ── */
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 14px;
+}
+
+.rule {
+  border: 0;
+  border-block-start: 1px solid var(--color-line);
+  margin-block: 32px;
+}
+
+.report-footer {
+  margin-block-start: 72px;
+  border-block-start: 1px solid var(--color-line);
+  padding-block-start: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+/* ── Scan line ──
+ * The CRT motif. Decorative, so it is hidden from assistive technology by being
+ * an empty element, and it stops moving under reduced-motion.
+ */
+
+.scan-line {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 2px;
+  background-color: var(--color-accent);
+  box-shadow: var(--shadow-glow);
+  animation: thl-scan 4s linear infinite;
+  pointer-events: none;
+  z-index: 50;
+}
+
+@keyframes thl-scan {
+  from {
+    inset-block-start: -2px;
+  }
+  to {
+    inset-block-start: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .section-head > .note {
+    display: none;
+  }
+  .stat {
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--color-line);
+  }
+}

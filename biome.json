@@ -54,7 +54,10 @@
       "!.refactor",
       "!systems/*/tokens/theme.css",
       "!systems/*/tokens/tokens.generated.ts",
-      "!systems/*/tokens/generated"
+      "!systems/*/tokens/generated",
+      "!systems/*/static/thl.css",
+      "!systems/*/static/thl.chart.css",
+      "!systems/*/static/thl.fonts.css"
     ]
   }
 }

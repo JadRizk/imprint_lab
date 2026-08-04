@@ -1,0 +1,40 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "thl",
+  "homepage": "https://imprint-lab.vercel.app",
+  "items": [
+    {
+      "name": "report-kit",
+      "type": "registry:file",
+      "title": "THL report kit",
+      "description": "Pure HTML/CSS tier for standalone reports, audits and documents. Tokens, reset and ~15 report primitives in one inline-able stylesheet, plus the agent instructions for using them.",
+      "files": [
+        {
+          "path": "systems/human-laboratory/static/thl.css",
+          "type": "registry:file",
+          "target": "~/thl/thl.css"
+        },
+        {
+          "path": "systems/human-laboratory/static/thl.chart.css",
+          "type": "registry:file",
+          "target": "~/thl/thl.chart.css"
+        },
+        {
+          "path": "systems/human-laboratory/static/thl.fonts.css",
+          "type": "registry:file",
+          "target": "~/thl/thl.fonts.css"
+        },
+        {
+          "path": "systems/human-laboratory/static/report.html",
+          "type": "registry:file",
+          "target": "~/thl/report.html"
+        },
+        {
+          "path": "systems/human-laboratory/static/SKILL.md",
+          "type": "registry:file",
+          "target": "~/thl/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>THE_HUMAN_LABORATORY // Report kit catalog</title>
+    <link rel="stylesheet" href="./thl.fonts.css" />
+    <link rel="stylesheet" href="./thl.css" />
+    <link rel="stylesheet" href="./thl.chart.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="masthead">
+        <div class="eyebrow">THE_HUMAN_LABORATORY &nbsp;//&nbsp; REPORT_KIT &nbsp;//&nbsp; CATALOG</div>
+        <h1>Every class in the static tier, rendered</h1>
+        <p class="standfirst">
+          Copy the markup, not the styling. Everything here is roles-only, so pointing the tokens
+          at another system reskins the whole document. If a value you need is missing, add a token
+          to <code>theme.css</code> and regenerate — never write a hex inline.
+        </p>
+      </header>
+
+      <!-- STATS -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Stat grid</h2>
+          <span class="note">.stat-grid &gt; .stat</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="label">Tokens</span>
+            <span class="value is-accent">37</span>
+            <span class="foot">11 roles · 8 aliased</span>
+          </div>
+          <div class="stat">
+            <span class="label">Components</span>
+            <span class="value">6</span>
+            <span class="foot">all on roles</span>
+          </div>
+          <div class="stat">
+            <span class="label">Violations</span>
+            <span class="value">0</span>
+            <span class="foot">enforced by check-roles</span>
+          </div>
+          <div class="stat">
+            <span class="label">Blockers</span>
+            <span class="value is-critical">2</span>
+            <span class="foot">naming · namespace</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHIPS -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Chips</h2>
+          <span class="note">.chip · .is-accent · .is-critical · .is-warning</span>
+        </div>
+        <p class="lede">
+          A chip always carries its own word, so state reads without relying on colour.
+        </p>
+        <p>
+          <span class="chip">DEFAULT</span> <span class="chip is-accent">NOMINAL</span>
+          <span class="chip is-warning">DEGRADED</span>
+          <span class="chip is-critical">SIGNAL_LOST</span>
+        </p>
+      </section>
+
+      <!-- TABLE -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Table</h2>
+          <span class="note">.table-wrap wraps — it is what scrolls</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Artifact</th>
+                <th>Consumes it</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="key">tokens.css</td>
+                <td>HTML reports, slides, email</td>
+                <td><span class="chip is-accent">SHIPPED</span></td>
+              </tr>
+              <tr>
+                <td class="key">tokens.json</td>
+                <td>Figma, Style Dictionary</td>
+                <td><span class="chip is-accent">SHIPPED</span></td>
+              </tr>
+              <tr>
+                <td class="key">Wordmark</td>
+                <td>Anything public-facing</td>
+                <td><span class="chip is-critical">ABSENT</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PANELS + CALLOUT -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Panels and callouts</h2>
+          <span class="note">.panel · .has-brackets · .callout</span>
+        </div>
+        <div class="cols">
+          <div class="panel has-brackets">
+            <h3>With corner brackets</h3>
+            <p>
+              The motif the app-side BentoCard draws with four elements. Here it costs two
+              pseudo-elements and no markup.
+            </p>
+          </div>
+          <div class="panel">
+            <h3>Plain panel</h3>
+            <p>A bounded block on the surface colour. Use for grouped prose or a sub-finding.</p>
+          </div>
+        </div>
+        <p class="rule"></p>
+        <p class="callout">
+          A claim that needs weight. The rule carries severity; the words carry meaning.
+        </p>
+        <p class="callout is-warning" style="margin-block-start: 12px">
+          Amber sits too close to lime on this ground, which is why warning is orange.
+        </p>
+        <p class="callout is-critical" style="margin-block-start: 12px">
+          Never re-derive the palette inline — that is the drift this kit exists to prevent.
+        </p>
+      </section>
+
+      <!-- SPEC LIST + SWATCHES -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Spec list and swatches</h2>
+          <span class="note">.spec-list · .swatch-grid</span>
+        </div>
+        <dl class="spec-list">
+          <dt>System</dt>
+          <dd>human-laboratory</dd>
+          <dt>Namespace</dt>
+          <dd>@thl</dd>
+          <dt>Theming</dt>
+          <dd>Dark only, by policy</dd>
+          <dt>Radius</dt>
+          <dd>0 everywhere — a constraint, not an omission</dd>
+        </dl>
+
+        <div class="swatch-grid" style="margin-block-start: 24px">
+          <div class="swatch">
+            <div class="chip-color" style="background: var(--color-canvas)"></div>
+            <div class="meta"><span>CANVAS</span><span class="v">#0F0F0F</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip-color" style="background: var(--color-accent)"></div>
+            <div class="meta"><span>ACCENT</span><span class="v">#DFFF00</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip-color" style="background: var(--color-critical)"></div>
+            <div class="meta"><span>CRITICAL</span><span class="v">#FF4A4A</span></div>
+          </div>
+          <div class="swatch is-absent">
+            <div class="chip-color"></div>
+            <div class="meta"><span>SUCCESS</span><span class="v">= accent</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CODE + TREE -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Code and trees</h2>
+          <span class="note">pre · code · .tree</span>
+        </div>
+        <p class="lede">Inline <code>--color-accent</code> reads as code. Blocks scroll.</p>
+        <pre class="tree"><b>systems/human-laboratory/</b>
+├── tokens/          <u>theme.css is the source of truth</u>
+├── ui/              <u>React · roles only</u>
+└── <i>static/</i>          <u>this kit</u></pre>
+      </section>
+
+      <!-- CHART -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Chart layer</h2>
+          <span class="note">thl.chart.css · opt-in</span>
+        </div>
+        <p class="lede">
+          The accent is <strong>not</strong> a series colour — at OKLCH L 0.944 it sits far outside
+          the band a categorical palette needs on a dark ground, and it would dominate every chart.
+          It stays reserved for emphasis. The five series below were generated in OKLCH and
+          validated: worst adjacent CVD separation ΔE 8.2, all steps in band, all clearing 3:1.
+        </p>
+
+        <figure class="chart">
+          <div class="chart-legend">
+            <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-1)"></span>Tokens</span>
+            <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-2)"></span>Components</span>
+            <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-3)"></span>Emitters</span>
+            <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-4)"></span>Docs</span>
+            <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-5)"></span>Other</span>
+          </div>
+          <svg viewBox="0 0 520 160" role="img" aria-label="Example bar chart across five series">
+            <g class="grid">
+              <line x1="0" y1="40" x2="520" y2="40" />
+              <line x1="0" y1="80" x2="520" y2="80" />
+              <line x1="0" y1="120" x2="520" y2="120" />
+            </g>
+            <rect class="bar series-1" x="20" y="30" width="72" height="110" />
+            <rect class="bar series-2" x="120" y="66" width="72" height="74" />
+            <rect class="bar series-3" x="220" y="50" width="72" height="90" />
+            <rect class="bar series-4" x="320" y="94" width="72" height="46" />
+            <rect class="bar series-5" x="420" y="110" width="72" height="30" />
+            <g class="axis"><line x1="0" y1="140" x2="520" y2="140" /></g>
+            <line class="target-line" x1="0" y1="56" x2="520" y2="56" />
+          </svg>
+          <figcaption>Dashed line is the accent, used as a target — its one job in a chart.</figcaption>
+        </figure>
+      </section>
+
+      <footer class="report-footer">
+        <span>THE_HUMAN_LABORATORY // REPORT_KIT // CATALOG</span>
+        <span>STATUS: <span style="color: var(--color-accent)">NOMINAL</span></span>
+      </footer>
+    </div>
+  </body>
+</html>

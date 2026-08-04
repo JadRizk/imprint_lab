@@ -1,0 +1,446 @@
+/* ── Report primitives ─────────────────────────────────────────────────────
+ *
+ * The set a document actually needs — derived from real reports, not invented.
+ * This is deliberately NOT a mirror of systems/<system>/ui/: reports need section
+ * heads, stat tiles, tables and callouts; apps need buttons, inputs and
+ * dialogs. The overlap is about a third, and most of what is here has no React
+ * twin to drift from.
+ *
+ * Roles only, so swapping the token block reskins every report.
+ */
+
+/* ── Page frame ── */
+
+.wrap {
+  max-width: var(--measure, 1440px);
+  margin-inline: auto;
+  padding-inline: 28px;
+}
+
+/* A narrower measure for prose-led documents. Running text wants ~65ch. */
+.wrap--prose {
+  --measure: 80ch;
+}
+
+/* ── Masthead ── */
+
+.masthead {
+  border-bottom: 1px solid var(--color-line);
+  padding-block: 56px 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.eyebrow {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* The lime square. Same eyebrow mark the app-side SectionHeader draws. */
+.eyebrow::before {
+  content: "";
+  inline-size: 8px;
+  block-size: 8px;
+  background: var(--color-accent);
+  flex: none;
+}
+
+.standfirst {
+  max-width: 76ch;
+  font-size: var(--text-base);
+}
+
+/* ── Sections ── */
+
+.section {
+  padding-block-start: 64px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid var(--color-line);
+  padding-block-end: 10px;
+  margin-block-end: 24px;
+}
+
+.section-head > h2 {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/* Right-aligned gloss on a section head. Drops out on narrow viewports. */
+.section-head > .note {
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+.lede {
+  max-width: 90ch;
+  margin-block-end: 24px;
+}
+
+/* ── Stat tiles ──
+ * A row of headline numbers. Encode state in the label or a chip, never in the
+ * number alone — a figure that is only red is invisible to a third of readers.
+ */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  border: 1px solid var(--color-line);
+}
+
+.stat {
+  padding: 18px 20px;
+  border-inline-end: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat:last-child {
+  border-inline-end: 0;
+}
+
+.stat > .label {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+.stat > .value {
+  font-family: var(--font-sans);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+}
+
+.stat > .value.is-accent {
+  color: var(--color-accent);
+}
+.stat > .value.is-critical {
+  color: var(--color-critical);
+}
+.stat > .value.is-warning {
+  color: var(--color-warning);
+}
+
+.stat > .foot {
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+/* ── Tables ──
+ * Wide content scrolls inside its own container so the page body never scrolls
+ * sideways.
+ */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+}
+
+.table-wrap > table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-xs);
+  min-inline-size: 640px;
+}
+
+.table-wrap thead th {
+  text-align: start;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  font-weight: 700;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+  white-space: nowrap;
+}
+
+.table-wrap tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--color-ambient);
+  vertical-align: top;
+}
+
+.table-wrap tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-wrap tbody tr:hover td {
+  background: var(--color-surface);
+}
+
+/* Emphasise the identifying column. */
+.table-wrap td.key {
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+/* ── Chips ──
+ * State reads at a glance from form as well as colour, so a chip always carries
+ * its own word.
+ */
+
+.chip {
+  display: inline-block;
+  font-size: var(--text-micro);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-subtle);
+  white-space: nowrap;
+  line-height: 1.7;
+}
+
+.chip.is-accent {
+  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-line));
+}
+.chip.is-critical {
+  color: var(--color-critical);
+  border-color: color-mix(in srgb, var(--color-critical) 45%, var(--color-line));
+}
+.chip.is-warning {
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-line));
+}
+
+/* ── Panels ── */
+
+.panel {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Corner brackets. The motif the app-side BentoCard draws with four elements —
+ * here it costs two pseudo-elements and no markup. */
+.panel.has-brackets {
+  position: relative;
+}
+
+.panel.has-brackets::before,
+.panel.has-brackets::after {
+  content: "";
+  position: absolute;
+  inline-size: 9px;
+  block-size: 9px;
+  border-color: var(--color-ambient);
+  pointer-events: none;
+}
+
+.panel.has-brackets::before {
+  inset-block-start: -1px;
+  inset-inline-start: -1px;
+  border-block-start: 2px solid;
+  border-inline-start: 2px solid;
+}
+
+.panel.has-brackets::after {
+  inset-block-end: -1px;
+  inset-inline-end: -1px;
+  border-block-end: 2px solid;
+  border-inline-end: 2px solid;
+}
+
+/* ── Callout ──
+ * A claim that needs weight. The rule carries the severity; the word carries
+ * the meaning.
+ */
+
+.callout {
+  border-inline-start: 2px solid var(--color-accent);
+  padding: 4px 0 4px 16px;
+  color: var(--color-ink-muted);
+}
+
+.callout.is-critical {
+  border-inline-start-color: var(--color-critical);
+}
+.callout.is-warning {
+  border-inline-start-color: var(--color-warning);
+}
+
+/* ── Spec list ── */
+
+.spec-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+  font-size: var(--text-xs);
+  margin: 0;
+}
+
+.spec-list dt {
+  color: var(--color-ink-subtle);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-size: var(--text-micro);
+  padding-block-start: 2px;
+}
+
+.spec-list dd {
+  color: var(--color-ink);
+  margin: 0;
+}
+
+/* ── Swatch grid ── */
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.swatch > .chip-color {
+  block-size: 60px;
+  border: 1px solid var(--color-line);
+}
+
+.swatch > .meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--text-xs);
+  padding-block-start: 7px;
+}
+
+.swatch > .meta > .v {
+  color: var(--color-ink);
+}
+
+/* Absent / proposed value. */
+.swatch.is-absent > .chip-color {
+  border-style: dashed;
+  border-color: var(--color-ink-subtle);
+  opacity: 0.55;
+}
+
+/* ── Code and trees ── */
+
+code,
+.code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-ambient);
+  padding: 0.05em 0.35em;
+  white-space: nowrap;
+}
+
+pre {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  padding: 20px 22px;
+  font-size: var(--text-xs);
+  line-height: 1.8;
+  color: var(--color-ink-muted);
+}
+
+pre code,
+pre.tree {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  white-space: pre;
+}
+
+.tree b {
+  color: var(--color-ink);
+  font-weight: 400;
+}
+.tree i {
+  color: var(--color-accent);
+  font-style: normal;
+}
+.tree u {
+  color: var(--color-ink-subtle);
+  text-decoration: none;
+}
+
+/* ── Layout helpers ── */
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 14px;
+}
+
+.rule {
+  border: 0;
+  border-block-start: 1px solid var(--color-line);
+  margin-block: 32px;
+}
+
+.report-footer {
+  margin-block-start: 72px;
+  border-block-start: 1px solid var(--color-line);
+  padding-block-start: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+/* ── Scan line ──
+ * The CRT motif. Decorative, so it is hidden from assistive technology by being
+ * an empty element, and it stops moving under reduced-motion.
+ */
+
+.scan-line {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 2px;
+  background-color: var(--color-accent);
+  box-shadow: var(--shadow-glow);
+  animation: thl-scan 4s linear infinite;
+  pointer-events: none;
+  z-index: 50;
+}
+
+@keyframes thl-scan {
+  from {
+    inset-block-start: -2px;
+  }
+  to {
+    inset-block-start: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .section-head > .note {
+    display: none;
+  }
+  .stat {
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--color-line);
+  }
+}
