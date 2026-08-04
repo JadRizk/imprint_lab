@@ -1,3 +1,4 @@
+import { twMergeConfig } from '@thl/tokens/tw-merge';
 import { type ClassValue, clsx } from 'clsx';
 import { extendTailwindMerge } from 'tailwind-merge';
 
@@ -7,17 +8,12 @@ import { extendTailwindMerge } from 'tailwind-merge';
  * (a color), lumps both into the text-color group, and silently drops the
  * real color — so `<Button variant="tag" size="sm">` renders uncolored.
  *
- * Keys mirror Tailwind v4's CSS variable namespaces: `--text-*` → `text`,
- * `--tracking-*` → `tracking`.
+ * The scale names are generated from theme.css rather than kept by hand, so
+ * adding a value there registers it here automatically — see
+ * packages/token-tools. Keys mirror Tailwind v4's CSS variable namespaces:
+ * `--text-*` → `text`, `--tracking-*` → `tracking`.
  */
-const twMerge = extendTailwindMerge({
-  extend: {
-    theme: {
-      text: ['micro'],
-      tracking: ['label']
-    }
-  }
-});
+const twMerge = extendTailwindMerge(twMergeConfig);
 
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));

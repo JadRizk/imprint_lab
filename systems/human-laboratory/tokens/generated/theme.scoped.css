@@ -1,0 +1,52 @@
+/* AUTO-GENERATED FROM theme.css — do not edit by hand.
+   Run: bun run --filter=@thl/tokens generate:tokens */
+
+[data-system="human-laboratory"] {
+  --spacing:                 0.25rem;
+  --color-obsidian:          #0F0F0F;
+  --color-lime:              #DFFF00;
+  --color-steel:             #333333;
+  --color-white:             #FFFFFF;
+  --color-black:             #000000;
+  --color-surface:           #0A0A0A;
+  --color-text-secondary:    #A3A3A3; /* 7.62:1 — body copy (the body default) */
+  --color-text-tertiary:     #7C7C7C; /* 4.59:1 — labels, metadata, tags */
+  --color-ambient:           #3A3A3A;
+  --color-canvas:            var(--color-obsidian);
+  --color-line:              var(--color-steel);
+  --color-ink:               var(--color-white);
+  --color-ink-muted:         var(--color-text-secondary);
+  --color-ink-subtle:        var(--color-text-tertiary);
+  --color-accent:            var(--color-lime);
+  --color-accent-ink:        var(--color-black);
+  --color-critical:          #FF4A4A; /* 5.78:1 — errors, destructive actions */
+  --color-warning:           #FF8A00; /* 8.11:1 — warnings, degraded states */
+  --font-sans:               var(--font-sans-face, sans-serif);
+  --font-mono:               var(--font-mono-face, monospace);
+  --text-micro:              0.625rem;
+  --text-micro--line-height: 1rem;
+  --text-xs:                 0.75rem;
+  --text-xs--line-height:    1rem;
+  --text-sm:                 0.875rem;
+  --text-sm--line-height:    1.25rem;
+  --text-base:               1rem;
+  --text-base--line-height:  1.5rem;
+  --text-lg:                 1.125rem;
+  --text-lg--line-height:    1.75rem;
+  --text-xl:                 1.25rem;
+  --text-xl--line-height:    1.75rem;
+  --text-2xl:                1.5rem;
+  --text-2xl--line-height:   2rem;
+  --text-3xl:                1.875rem;
+  --text-3xl--line-height:   2.25rem;
+  --text-4xl:                2.25rem;
+  --text-4xl--line-height:   2.5rem;
+  --text-5xl:                3rem;
+  --text-5xl--line-height:   1;
+  --text-6xl:                3.75rem;
+  --text-6xl--line-height:   1;
+  --tracking-label:          0.2em;
+  --shadow-lime-glow:        0 0 15px rgba(223, 255, 0, 0.3);
+  --shadow-lime-glow-lg:     0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1);
+  --animate-scan:            scan 4s linear infinite;
+}

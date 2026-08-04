@@ -232,16 +232,47 @@ confirming itself.
 > `tokens.txt` +10, **zero removals or changes**. Additions-only is the correct shape for this
 > phase; a modification would mean a role had overwritten a primitive.
 
-### Phase 03 — Pipeline
+### Phase 03 — Pipeline ✅ DONE
 
-- Replace the regex parser in `token-tools` with lightningcss, resolving `var()` chains.
-- Build the five emitters.
-- Wire as the `build` task so `turbo build` regenerates everything.
+`packages/token-tools` now parses `theme.css` into a token model and emits five artifacts into
+`systems/<system>/tokens/generated/`:
 
-> **Claim:** five emitters agree with the source.
-> **Falsify it:** values in `tokens.css` must equal what the browser computes from `theme.css`.
-> Diff new `tokens.ts` against the old `tokens.generated.ts` — additions only, never a changed
-> value.
+| Artifact | For |
+|---|---|
+| `tokens.ts` | docs tables, introspection |
+| `tokens.css` | plain `:root` — what an HTML report inlines |
+| `theme.scoped.css` | `[data-system="…"]` — per-system skinning in `apps/docs` |
+| `tokens.json` | W3C DTCG — Figma, Style Dictionary |
+| `tw-merge.ts` | `extendTailwindMerge` config, consumed by `cn()` |
+
+**Deviation: lightningcss is not used.** It parses `theme.css` without complaint, but treats
+`@theme` as an unknown at-rule — a `Declaration` visitor sees **zero** custom properties inside
+it, and `--color-*` is re-emitted as `--color- * `. A real CSS parser buys nothing here. What it
+would have bought is robustness against comments and multi-line values, and `lib/parse.mjs`
+handles both directly: comments stripped, declarations split on `;` at brace depth zero.
+
+`var()` chains resolve only for tokens this file defines. `--font-sans: var(--font-sans-face,
+sans-serif)` survives intact, because `--font-sans-face` is the consumer's contract and
+flattening it to the fallback would break font wiring.
+
+`cn()` no longer hand-keeps its scale list — it imports the generated config, so adding a scale
+value to `theme.css` registers it automatically. Emitting the whole scale rather than a diff
+against Tailwind's defaults: redundancy is harmless, omission is the bug.
+
+> **Claim:** the five emitters agree with the source.
+> **Verified:**
+> - Old `tokens.generated.ts` vs new `tokens.ts`: 36 tokens both sides, **zero changed, zero
+>   added** — every name→value pair preserved across the rewrite.
+> - `tokens.css` vs browser-computed values: **45 exact, 2 equivalent** (`rgba(223,255,0,0.3)`
+>   against `#dfff004d` — Lightning CSS's minifier, same colour).
+> - `cn()` behaviour tested directly, since a class-merge regression would never show up in a
+>   CSS diff: `text-micro text-lime` keeps both, competing sizes and colours resolve last-wins.
+> - `capture.sh --compare` unchanged at 120 / 279.
+>
+> **Bug the cross-check caught:** `tokens.css` was emitting `--text-micro: 0.625rem / 1rem`. That
+> folding is a docs-table convenience, and as CSS it is an invalid font size — every report
+> inlining the file would have had a broken type scale. The CSS emitters now take raw
+> declarations rather than the token model.
 
 ### ⏸ CHECKPOINT — review the role vocabulary before components move
 
