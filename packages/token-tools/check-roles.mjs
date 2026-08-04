@@ -51,12 +51,23 @@ const varRe = new RegExp(`var\\(\\s*(${primitives.join('|')})\\s*[,)]`, 'g');
 // Not `\b` before the function name: Tailwind spells spaces as `_` inside an
 // arbitrary value, so `shadow-[0_0_15px_rgba(…)]` puts a word character right
 // before `rgba(` and a word boundary never matches there.
+// A hex colour is 3, 4, 6 or 8 digits. Not `{3,8}`: that also matches the 5- and
+// 7-digit strings that only occur inside identifiers and URL fragments.
 const literalRe =
-  /#[0-9a-fA-F]{3,8}\b|(?<![a-zA-Z-])(?:rgba?|hsla?|oklch|oklab|lab|lch|color-mix)\s*\(/g;
+  /#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})(?![0-9a-zA-Z_-])|(?<![a-zA-Z-])(?:rgba?|hsla?|oklch|oklab|lab|lch|color-mix)\s*\(/g;
 
-// Values legitimately not a colour: opacity/duration/z-index in an arbitrary
-// value, and the `#` of a URL fragment or a hex escape in content.
-const LITERAL_EXEMPT = /^#(?:[0-9a-fA-F]{1,2})$/;
+/**
+ * `url(#fade)` is an SVG fragment reference, not a colour, and short ids are
+ * indistinguishable from hex — `url(#abc)` matches the colour pattern exactly.
+ * Blank URLs before scanning so the reference cannot be mistaken for a value.
+ *
+ * (The previous guard here compared matches against a 1-2 digit pattern, which
+ * the 3+ digit colour pattern can never produce. It was unreachable, and
+ * `url(#abc)` was a false positive — caught only because the test happened to
+ * use `url(#grad)`, whose letters are not hex. A test that passes for the wrong
+ * reason is worth less than no test.)
+ */
+const stripNonColour = (line) => line.replace(/url\([^)]*\)/g, 'url()');
 
 function walk(dir) {
   const out = [];
@@ -78,8 +89,8 @@ for (const file of walk(uiDir)) {
     for (const re of [classRe, varRe]) {
       for (const m of line.matchAll(re)) at((m[2] ?? m[1]).trim(), 'primitive');
     }
-    for (const m of line.matchAll(literalRe)) {
-      if (!LITERAL_EXEMPT.test(m[0])) at(m[0].replace(/\s*\($/, '()'), 'literal');
+    for (const m of stripNonColour(line).matchAll(literalRe)) {
+      at(m[0].replace(/\s*\($/, '()'), 'literal');
     }
   });
 }

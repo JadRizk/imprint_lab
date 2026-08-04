@@ -36,11 +36,17 @@ const tokens = buildTokens(parsed);
 
 mkdirSync(outDir, { recursive: true });
 
+// DTCG's type set is closed, so a value it cannot represent (`--shadow-glow:
+// none` in a fresh scaffold) is omitted rather than emitted under an invented
+// type. Report what was left out — silently dropping it is how the file ended up
+// claiming a conformance it did not have.
+const dtcg = emitTokensJson(tokens, system);
+
 const artifacts = {
   'tokens.ts': emitTokensTs(tokens),
   'tokens.css': emitTokensCss(parsed.declarations),
   'theme.scoped.css': emitThemeScopedCss(parsed.declarations, system),
-  'tokens.json': emitTokensJson(tokens, system),
+  'tokens.json': dtcg.json,
   'tw-merge.ts': emitTwMerge(tokens),
   'safelist.css': emitSafelist(tokens)
 };
@@ -102,3 +108,8 @@ const aliases = tokens.filter((t) => t.aliasOf).length;
 console.log(
   `token-tools: ${system} — ${tokens.length} tokens (${aliases} aliased) → ${Object.keys(artifacts).length} artifacts in generated/, ${staticCount} bundles in static/`
 );
+
+if (dtcg.skipped.length > 0) {
+  console.log(`  tokens.json omits ${dtcg.skipped.length} token(s) with no DTCG representation:`);
+  for (const s of dtcg.skipped) console.log(`    ${s}`);
+}

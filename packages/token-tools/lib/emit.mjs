@@ -4,13 +4,18 @@
 const SEMANTIC_COLOR_NAMES = new Set(['--color-text-secondary', '--color-text-tertiary']);
 
 // Roles are the cross-system contract: named by job, not appearance.
-// --color-surface and --color-ambient are here rather than aliased through a
-// second name — they already carry role names and role semantics.
+// --color-ambient is here rather than aliased through a second name — it
+// already carries a role name and role semantics.
+//
+// --color-ambient / --color-line / --color-line-strong are one ladder, not
+// three unrelated greys: subdivision inside a panel, the edge of a thing, and
+// a boundary that outranks its neighbours. A system that draws structure with
+// line instead of elevation needs all three.
 export const ROLE_COLOR_NAMES = new Set([
   '--color-canvas',
-  '--color-surface',
-  '--color-line',
   '--color-ambient',
+  '--color-line',
+  '--color-line-strong',
   '--color-ink',
   '--color-ink-muted',
   '--color-ink-subtle',
@@ -24,7 +29,7 @@ export const ROLE_COLOR_NAMES = new Set([
 // names an appearance, so it stays a primitive — but the *job* it does (an
 // emphasis glow on an active edge) is one another system would want to express
 // differently, or not at all. Hence one role pointing at it.
-export const ROLE_OTHER_NAMES = new Set(['--shadow-glow']);
+export const ROLE_OTHER_NAMES = new Set(['--shadow-glow', '--shadow-glow-strong']);
 
 // Decoration-only colors: too low-contrast for text, so the reference table
 // must not advertise a text-* utility for them.
@@ -192,8 +197,10 @@ const DTCG_GROUP = {
   spacing: ['spacing', 'dimension'],
   font: ['fontFamily', 'fontFamily'],
   shadow: ['shadow', 'shadow'],
-  animate: ['animation', 'duration'],
-  other: ['other', 'string']
+  animate: ['animation', 'duration']
+  // No `other`. DTCG's type set is closed; a category with no type in it has no
+  // conformant representation, and such tokens are omitted with a warning
+  // rather than emitted under an invented type.
 };
 
 const NS = 'com.imprintlab';
@@ -320,23 +327,39 @@ export function emitTokensJson(tokens, system) {
   const out = {
     $description: `Design tokens for ${system}. Generated from theme.css. Values are W3C DTCG; where CSS has no DTCG equivalent the original declaration is kept under $extensions["${NS}"].css.`
   };
+  const skipped = [];
 
   for (const t of tokens) {
-    const [group, type] = DTCG_GROUP[t.category] ?? DTCG_GROUP.other;
+    const mapping = DTCG_GROUP[t.category];
     const prefix = t.category === 'spacing' ? '--spacing' : `--${t.category}-`;
     const leaf = t.name === '--spacing' ? 'base' : t.name.slice(prefix.length);
 
-    out[group] ??= { $type: type };
-    const entry = {};
+    // A category with no DTCG type has no valid representation at all. Emitting
+    // it with an invented $type is what made the previous version non-conformant.
+    if (!mapping) {
+      skipped.push(`${t.name} (no DTCG type for category '${t.category}')`);
+      continue;
+    }
+    const [group, type] = mapping;
 
+    const entry = {};
     if (t.aliasOf) {
       // DTCG expresses an alias as a reference to another token's path.
       const ref = categorize(t.aliasOf);
       entry.$value = `{${DTCG_GROUP[ref][0]}.${t.aliasOf.slice(`--${ref}-`.length)}}`;
     } else {
-      Object.assign(entry, dtcgValue(t, type));
+      const value = dtcgValue(t, type);
+      // Unrepresentable in DTCG — `--shadow-glow: none` is the common case.
+      // Omit it rather than fake a type: a file that silently claims
+      // conformance is the defect this emitter was rewritten to fix.
+      if (value === null) {
+        skipped.push(`${t.name} (${JSON.stringify(t.base)} is not a valid ${type})`);
+        continue;
+      }
+      Object.assign(entry, value);
     }
 
+    out[group] ??= { $type: type };
     if (t.note) entry.$description = t.note;
     out[group][leaf] = entry;
 
@@ -353,10 +376,18 @@ export function emitTokensJson(tokens, system) {
     }
   }
 
-  return `${JSON.stringify(out, null, 2)}\n`;
+  return { json: `${JSON.stringify(out, null, 2)}\n`, skipped };
 }
 
-/** The `$value` (and any `$type` override / `$extensions`) for one token. */
+/**
+ * The `$value` (and any `$type` override / `$extensions`) for one token, or
+ * `null` when the CSS has no valid DTCG representation.
+ *
+ * Returning null matters. DTCG defines a CLOSED set of types and `string` is
+ * not among them, so an unrepresentable value must be omitted rather than given
+ * an invented type — inventing one is exactly how this file previously shipped
+ * untyped tokens while claiming conformance.
+ */
 function dtcgValue(t, groupType) {
   const css = t.base;
   const ext = { $extensions: { [NS]: { css } } };
@@ -369,19 +400,24 @@ function dtcgValue(t, groupType) {
       // and keep the CSS — em IS a multiple of the font size, so the number is
       // the honest representation rather than a fabricated rem.
       const n = dtcgNumber(css.replace(/em$/, ''));
-      return n === null ? { $type: 'string', $value: css } : { $type: 'number', $value: n, ...ext };
+      return n === null ? null : { $type: 'number', $value: n, ...ext };
     }
     case 'number': {
       const n = dtcgNumber(css.replace(/em$/, ''));
-      return n === null ? { $type: 'string', $value: css } : { $value: n, ...ext };
+      return n === null ? null : { $value: n, ...ext };
     }
+    case 'color':
+      // A bare keyword — none, transparent, currentColor — is not a DTCG color.
+      return /^(#|rgba?\(|hsla?\(|oklch\(|oklab\(|lab\(|lch\(|color\()/i.test(css.trim())
+        ? { $value: css }
+        : null;
     case 'shadow': {
       const shadow = dtcgShadow(css);
-      return shadow ? { $value: shadow, ...ext } : { $type: 'string', $value: css };
+      return shadow ? { $value: shadow, ...ext } : null;
     }
     case 'duration': {
       const anim = dtcgAnimation(css);
-      if (!anim) return { $type: 'string', $value: css };
+      if (!anim) return null;
       return {
         $value: anim.duration,
         $extensions: {
@@ -394,10 +430,10 @@ function dtcgValue(t, groupType) {
     }
     case 'fontFamily': {
       const families = dtcgFontFamily(css);
-      return families ? { $value: families, ...ext } : { $type: 'string', $value: css };
+      return families ? { $value: families, ...ext } : null;
     }
     default:
-      return { $value: css };
+      return null;
   }
 }
 
