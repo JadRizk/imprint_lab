@@ -1,132 +1,89 @@
-# Turborepo starter
+# imprint_lab
 
-This Turborepo starter is maintained by the Turborepo core team.
+A house of design systems.
 
-## Using this example
+Each system owns its tokens, components, report kit, brand and version history,
+and evolves on its own timeline. Projects live in their own repositories and
+adopt a system at a version. **This repository produces design systems; it does
+not contain products.**
 
-Run the following command:
+Currently one inhabitant: **The Human Laboratory** (`@thl`) — neo-brutalist,
+obsidian ground, a single lime signal, hard borders, monospaced body.
 
-```sh
-npx create-turbo@latest
-```
+---
 
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `web`: a [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a shared React component library used by the `web` application
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [Biome](https://biomejs.dev/) for code linting and formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## Layout
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+systems/                   each self-contained · no cross-imports between systems
+  human-laboratory/
+    tokens/                theme.css is the source of truth; five artifacts generated
+    ui/                    React components · roles only, lint-enforced
+    static/                the report kit — pure HTML/CSS, no build step
+    registry.json          the @thl namespace
+    BRAND.md               thesis and voice
+packages/
+  token-tools/             the token pipeline, shared by every system
+  system-template/         `bun run new-system`
+  typescript-config/
+apps/
+  docs/                    the site: thesis · components · example · report kit
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+There is deliberately no `packages/core`. A shared component layer designed today
+would be The Human Laboratory wearing a generic name — it waits for a second
+system to say what is actually common.
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=web
+## Commands
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=web
-yarn exec turbo build --filter=web
-pnpm exec turbo build --filter=web
-```
+| | |
+|---|---|
+| `bun install` | |
+| `bun run dev` | the docs site on :3001 |
+| `bun run build` | regenerates every token artifact, then builds |
+| `bun run lint` | Biome, plus the role contract and the chart palette |
+| `bun run check` | Biome across the repo |
+| `bun run check-types` | |
+| `bun run smoke` | proves the registry is installable |
+| `bun run new-system <slug> <ns> ["Name"]` | scaffold a new design system |
 
-### Develop
+## How a system is built
 
-To develop all apps and packages, run the following command:
+**Tokens come in two tiers.** *Primitives* (`--color-lime`) are named by
+appearance and are private to a system. *Roles* (`--color-accent`) are named by
+job and carry the same eleven names in every system. Components reference roles
+only — that is what lets a component move to another system unchanged, and
+`check-roles` fails the build if one reaches for a primitive.
 
-```
-cd my-turborepo
+**One file generates the rest.** `theme.css` is hand-authored; `token-tools`
+emits typed tokens, a plain `:root` stylesheet, DTCG JSON, a scoped stylesheet
+for the docs site, a tailwind-merge config, and the report-kit bundles. Nothing
+under `generated/` or the `thl.*` bundles is edited by hand.
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+**Every system ships a report kit.** A pure HTML/CSS tier that produces
+standalone documents — no React, no build step, no network request. See
+[`systems/human-laboratory/static/SKILL.md`](systems/human-laboratory/static/SKILL.md).
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+## Consuming a system
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Systems distribute through a shadcn-compatible registry, one namespace each:
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```json
+{ "registries": { "@thl": "https://imprint-lab.vercel.app/r/thl/{name}.json" } }
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Then `npx shadcn add @thl/button`, or `@thl/report-kit` for the document tier.
+Components are copied into your project, so per-project divergence is a feature
+rather than a fork. The system version is the atomic unit: tokens and components
+ship together, and a consumer adopts a version deliberately.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## Working in this repo
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+- [`CLAUDE.md`](CLAUDE.md) — conventions and contracts, loaded into every session
+- [`REFACTOR.md`](REFACTOR.md) — how the repo reached this shape, with the
+  deviations and the gaps recorded rather than tidied away
+- [`systems/human-laboratory/BRAND.md`](systems/human-laboratory/BRAND.md) — the
+  system's thesis, voice and non-negotiables
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+**Dark mode only, by policy.** Zero border radius, everywhere. Both are
+constraints, not omissions.

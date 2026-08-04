@@ -44,9 +44,6 @@ require_server() {
     exit 1
   fi
 }
-require_server "$DOCS" apps/docs "$PORT"
-
-rm -rf "$OUT"; mkdir -p "$OUT"
 
 capture() {   # capture <base-url> <prefix> <route>
   local base="$1" prefix="$2" route="$3" name html
@@ -69,9 +66,13 @@ capture() {   # capture <base-url> <prefix> <route>
   echo "  $name — $(wc -c < "$html" | tr -d ' ') bytes html, $(wc -c < "$OUT/$name.css" | tr -d ' ') bytes css"
 }
 
-for route in "${DOCS_ROUTES[@]}"; do capture "$DOCS" "" "$route"; done
-
 # ── Normalised, order-independent signals ──
+#
+# Derived from every .css in $1. Factored into a function so self-test.sh can
+# exercise the exact pipeline this script ships, on fixtures, with no dev server.
+derive_signals() {
+  local OUT="$1"
+
 # Custom properties: the token surface. Any disappearance here is a lost token.
 cat "$OUT"/*.css \
   | grep -ohE '\-\-[a-zA-Z0-9_-]+[[:space:]]*:[^;{}]*' \
@@ -82,17 +83,51 @@ cat "$OUT"/*.css \
 # CSS Module class names embed a hash of the source file's PATH, so they change
 # whenever a file moves — which is most of what this refactor does. Normalise the
 # hash away: the class names and their count are the signal, the hash is not.
+#
+# Anchored to selector position: a bare `\.[a-z0-9...]+` also matches CSS decimals
+# (`.5em`) and font-file content hashes (`.4564287c`), which put 37 non-selectors
+# into a 290-line signal and made a font rehash read as utility drift.
 cat "$OUT"/*.css \
-  | grep -ohE '\.[a-zA-Z0-9\\:_-]+' \
+  | grep -ohE '(^|[},;[:space:]])\.[a-zA-Z_\\-][a-zA-Z0-9\\:_-]*' \
+  | grep -ohE '\.[a-zA-Z_\\-][a-zA-Z0-9\\:_-]*' \
   | sed -E 's/(module)__[A-Za-z0-9_-]+__/\1__HASH__/g' \
   | sort -u > "$OUT/utilities.txt"
 
-echo "  tokens: $(wc -l < "$OUT/tokens.txt" | tr -d ' ')  utilities: $(wc -l < "$OUT/utilities.txt" | tr -d ' ')"
+# Full rule surface: selector AND normalised declaration body, order-independent.
+#
+# This is the signal that matters. The two above carry only NAMES — the set of
+# custom properties and the set of class names — so anything that changes what a
+# rule DOES passes them silently. All of base.css lives here and nowhere else:
+# `cursor: crosshair` could be deleted from the served CSS and both name-signals
+# still reported "identical". Subsumes both; they are kept for readable diffs.
+#
+# Nested at-rules (@media, @supports, & inside @utility) land as one chunk rather
+# than being flattened. Coarser than ideal, still strictly more than nothing.
+cat "$OUT"/*.css \
+  | tr '\n' ' ' \
+  | sed -E 's/\}/}\n/g' \
+  | sed -E 's/(module)__[A-Za-z0-9_-]+__/\1__HASH__/g' \
+  | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//' \
+  | grep -v '^$' \
+  | sort -u > "$OUT/rules.txt"
+}
+
+# Sourcing for the signal pipeline only (self-test.sh) stops here — before any
+# network call, so the self-test needs no dev server.
+[[ -n "${CAPTURE_LIB_ONLY:-}" ]] && return 0
+
+require_server "$DOCS" apps/docs "$PORT"
+rm -rf "$OUT"; mkdir -p "$OUT"
+for route in "${DOCS_ROUTES[@]}"; do capture "$DOCS" "" "$route"; done
+
+derive_signals "$OUT"
+
+echo "  tokens: $(wc -l < "$OUT/tokens.txt" | tr -d ' ')  utilities: $(wc -l < "$OUT/utilities.txt" | tr -d ' ')  rules: $(wc -l < "$OUT/rules.txt" | tr -d ' ')"
 
 if [[ "$MODE" == "--compare" ]]; then
   echo
   status=0
-  for f in tokens utilities; do
+  for f in tokens utilities rules; do
     if diff -q "$ROOT/.refactor/baseline/$f.txt" "$OUT/$f.txt" >/dev/null 2>&1; then
       echo "OK    $f.txt identical to baseline"
     else

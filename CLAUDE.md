@@ -1,229 +1,247 @@
 # CLAUDE.md — Project Intelligence
 
-## Project Overview
+## What this repository is
 
-Personal portfolio website built as a Turborepo monorepo. The main application lives in `apps/web` (Next.js 16, React 19). The shared design system lives in `packages/ui` (shadcn/ui + custom components, Tailwind CSS). Portfolio content is static TypeScript data co-located with its section.
+`imprint_lab` is **a house of design systems**. It produces them; it does not
+contain products. Each system under `systems/<name>/` owns its tokens,
+components, report kit, brand and version, and evolves on its own timeline.
+Projects live in their own repositories and adopt a system at a version.
+
+One inhabitant so far: **The Human Laboratory** (`@thl`).
+
+If you are looking for a portfolio or a product app, it is not here and should
+not be added here.
 
 ## Tech Stack
 
-- **Runtime**: Bun 1.2.17 (package manager + runtime)
-- **Framework**: Next.js 16 (App Router)
-- **UI**: React 19, shadcn/ui, Tailwind CSS v4
-- **Language**: TypeScript 5.9 (strict mode)
-- **Monorepo**: Turborepo 2.7
-- **Linting/Formatting**: Biome 2.2
-- **Fonts**: Space Grotesk (sans) + IBM Plex Mono (mono)
+- **Runtime**: Bun (package manager + runtime)
+- **Framework**: Next.js 16 (App Router) — one app, the docs site
+- **UI**: React 19, Tailwind CSS v4
+- **Language**: TypeScript 5.9 (strict)
+- **Monorepo**: Turborepo
+- **Linting/Formatting**: Biome
 
-## Monorepo Structure
+## Structure
 
 ```
-wtf/
-├── apps/
-│   └── web/                          # Portfolio website
-│       └── app/
-│           ├── sections/             # Feature modules (hero, projects, about, contact, etc.)
-│           │   └── <section>/
-│           │       ├── components/   # Section-scoped components
-│           │       ├── hooks/        # Section-scoped hooks (if needed)
-│           │       └── data.ts       # Static content for this section
-│           ├── components/           # App-wide shared components (nav, footer, layout shells)
-│           ├── lib/                  # App-level utilities
-│           ├── layout.tsx
-│           └── page.tsx              # Composes sections
-├── packages/
-│   ├── ui/                           # Design system
-│   │   ├── src/
-│   │   │   ├── components/           # shadcn/ui components + custom primitives
-│   │   │   └── lib/                  # cn() utility, shared helpers
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   ├── tailwind-config/              # Shared Tailwind preset (design tokens)
-│   └── typescript-config/            # Shared TypeScript configs
+systems/
+  human-laboratory/
+    tokens/          theme.css (source of truth) · base.css · generated/
+    ui/              React components + lib/utils.ts
+    static/          the report kit: parts/ (authored) + thl.* bundles (generated)
+    brand/           wordmark, favicon, OG card
+    registry.json    the @thl namespace
+    BRAND.md         thesis, voice, non-negotiables
+packages/
+  token-tools/       parser, emitters, check-roles, validate-palette, smoke-install
+  system-template/   bun run new-system
+  typescript-config/
+apps/
+  docs/              the only app — thesis · components · example · report kit
 ```
 
-## Architecture Principles
+**Systems never import each other.** Only `system → packages/*`. That keeps any
+individual system extractable.
 
-### Modular-First
+There is deliberately **no `packages/core`**. A shared component layer designed
+before a second system exists would be The Human Laboratory wearing a generic
+name. Rule of two.
 
-Every portfolio section (hero, projects, about, contact) is a self-contained module:
+---
 
-- Components, hooks, and data **co-locate** with their section under `app/sections/<name>/`
-- Each section exports a single root component (e.g., `HeroSection`)
-- `app/page.tsx` composes sections — it should read as a table of contents
-- Only components used across 2+ sections get promoted to `app/components/` or `packages/ui/`
+## The contracts
 
-### Component Hierarchy
+These are what make this a collection rather than several forks. Breaking one is
+not a style disagreement.
 
-1. **`packages/ui`** — Design system primitives (Button, Card, Input, etc.). These are framework-agnostic, style-agnostic building blocks. shadcn/ui components live here.
-2. **`app/components/`** — App-specific shared components (Navbar, Footer, ThemeToggle). These use `@repo/ui` primitives and know about the app's layout/routing.
-3. **`app/sections/<name>/components/`** — Section-scoped components. These are private to their section and should not be imported elsewhere.
+### 1. Components speak roles, never primitives
 
-### Server-First Rendering
+Tokens come in two tiers. **Primitives** (`--color-lime`, `--color-obsidian`) are
+named by appearance and are a system's private vocabulary. **Roles**
+(`--color-accent`, `--color-canvas`) are named by job and carry the same eleven
+names in every system.
 
-- Default to React Server Components (RSC). No `"use client"` unless the component needs browser APIs, event handlers, or React state/effects.
-- Keep client boundaries as small and as deep in the tree as possible.
-- Data fetching happens in Server Components; pass data down as props.
+Anything in `systems/*/ui/` may reference **roles only**. App code and one-off
+compositions may use primitives freely.
 
-### Static Data Pattern
+> **The test:** if you cannot name what a token *does* without naming how it
+> *looks*, it is a primitive. `--color-accent` names a job; `--shadow-lime-glow`
+> does not.
 
-Portfolio content is defined as typed TypeScript constants:
+`check-roles` fails the build on violation. It derives its banned list from
+`theme.css`, so adding a primitive guards it automatically.
 
-```ts
-// app/sections/projects/data.ts
-import type { Project } from "./types";
+The eleven roles: `canvas` · `surface` · `line` · `ambient` · `ink` ·
+`ink-muted` · `ink-subtle` · `accent` · `accent-ink` · `critical` · `warning`.
+Plus one non-colour role, `--shadow-glow`.
 
-export const projects: Project[] = [
-  { title: "...", description: "...", href: "...", tags: ["..."] },
-];
-```
+### 2. The system version is the atomic unit
 
-Each section owns its types and data. No global data layer needed.
+Tokens and components ship together at one version. A consumer adopts a version
+deliberately rather than receiving token updates live — otherwise a role rename
+breaks every project silently.
 
-## Design System (`packages/ui`)
+### 3. Decoration and text are different roles
 
-### shadcn/ui Integration
+`--color-ambient` is for grid overlays, idle brackets and rules. **Never text.**
 
-- shadcn/ui components are installed into `packages/ui/src/components/`
-- All apps consume components from `@repo/ui` — never install shadcn directly in an app
-- Customize shadcn components by editing them in-place (they are copy-pasted, not node_modules)
-- Use the `cn()` utility from `packages/ui/src/lib/utils.ts` for conditional class merging
-
-### Tailwind CSS
-
-- `packages/tailwind-config/` exports a shared preset defining design tokens (colors, typography scale, spacing scale, border radii, shadows)
-- Each workspace (`apps/web`, `packages/ui`) has its own `tailwind.config` that extends the shared preset
-- CSS custom properties bridge Tailwind tokens to runtime theming (dark/light mode)
-- Use Tailwind utility classes as the primary styling method
-- CSS Modules only when Tailwind utilities are genuinely insufficient (complex animations, etc.)
-
-### Import Convention
-
-```tsx
-// Importing from the design system
-import { Button } from "@repo/ui/components/button";
-import { cn } from "@repo/ui/lib/utils";
-import { tokens } from "@repo/tailwind-config/tokens";
-```
-
-The `@repo/ui` package uses an explicit `exports` map — every public component is listed by path. Adding a new component means editing `packages/ui/package.json`.
-
-### Consumer Wiring Contract
-
-The design system is portable — any Next.js app can adopt it with two imports and two font variables. See `packages/tailwind-config/README.md` for the full bootstrap.
-
-**globals.css** (single import for tokens + base layer):
-
-```css
-@import "tailwindcss";
-@import "@repo/tailwind-config";
-
-@theme inline {
-  --font-sans-face: var(--font-space-grotesk, "Space Grotesk", sans-serif);
-  --font-mono-face: var(--font-ibm-plex-mono, "IBM Plex Mono", monospace);
-}
-```
-
-**layout.tsx** must expose `--font-space-grotesk` and `--font-ibm-plex-mono` via `next/font` (both fonts loaded at weights 300–700).
-
-The tokens `--font-sans` / `--font-mono` resolve through the `-face` indirection. Substitute a different sans/mono by pointing those two variables somewhere else — the design system itself never names a font.
-
-### Token Generation
-
-`packages/tailwind-config/tokens.generated.ts` is auto-generated from `theme.css`. It is the single source of truth for anything that needs to enumerate tokens (like the `/design-system` reference table). Regenerate after editing `theme.css`:
-
-```bash
-bun run --filter=@repo/tailwind-config generate:tokens
-```
-
-Turbo runs this as the package's `build` step, so any `turbo build` picks up changes automatically.
-
-### Theming Policy
-
-Dark mode only, for now. `html { color-scheme: dark }` is hard-coded in the base layer and every token is a single value. Light-mode support is deferred — when added, it will layer under `[data-theme]` selectors without changing the current default values.
-
-### Contrast Policy
-
-**Any token used for text must clear 4.5:1 against `--color-obsidian`.** Measured ratios live as comments beside each token in `theme.css`. This is not negotiable per-component — if a label looks too loud, change the hierarchy or the size, not the contrast.
-
-Decoration and text are separate concerns and use separate tokens:
+**Any token used for text must clear 4.5:1 against the canvas.** Measured ratios
+live beside each token in `theme.css`. Not negotiable per-component — if a label
+looks too loud, change the hierarchy or the size, not the contrast.
 
 | Token | Ratio | Use for |
-|-------|-------|---------|
-| `--color-text-secondary` `#A3A3A3` | 7.62:1 | Body copy — this is the `body` default, so it rarely needs stating |
-| `--color-text-tertiary` `#7C7C7C` | 4.59:1 | Labels, metadata, tags, eyebrows |
-| `--color-ambient` `#3A3A3A` | — | **Decoration only.** Grid overlays, idle brackets, rules. Never text. |
+|---|---|---|
+| `--color-ink-muted` `#A3A3A3` | 7.62:1 | Body copy — the `body` default |
+| `--color-ink-subtle` `#7C7C7C` | 4.59:1 | Labels, metadata, eyebrows |
+| `--color-ambient` `#3A3A3A` | — | **Decoration only. Never text.** |
 
-The generator deliberately omits a `text-*` utility from `--color-ambient`'s row in the reference table, and `/design-system` prints `DECORATION ONLY — NEVER TEXT` under its swatch.
+### 4. Base layers must be scopable
 
-### Type Scale
+`base.css` rules must bind to either `:root` or a `[data-system]` scope, or one
+system's opinions leak into another's page in the docs app.
 
-`theme.css` resets `--text-*`, so the scale is **closed** — `micro` through `6xl` are the only sizes that exist. `text-micro` (10px) is the instrument-label step the interface leans on for metadata and eyebrows; reach for it instead of an arbitrary `text-[10px]`.
+> ⚠ **This contract is currently unmet.** `base.css` styles `body`, which cannot
+> be scoped to a subtree, and it binds to primitives rather than roles. It must
+> be fixed before a second system gets a docs page. See `REMEDIATION.md` R5.
 
-Letter-spacing for eyebrows and labels is `tracking-label` (0.2em). Don't hand-pick `tracking-widest` for that role.
+---
 
-> **Adding a scale value means updating `cn()`.** `tailwind-merge` cannot tell a custom font size from a color, so `text-micro` and `text-text-tertiary` land in the same conflict group and the color gets silently dropped. Custom scale names must be registered in `extendTailwindMerge` in `packages/ui/src/lib/utils.ts`.
+## The token pipeline
 
-### Layout Primitives
+`theme.css` is hand-authored and is the single source. `token-tools` emits
+everything else:
 
-- **`PageShell`** owns the horizontal gutter and page measure (`default` 1280px · `prose` 3xl · `full`). Use it instead of Tailwind's `container`, whose width varies by breakpoint. **Never nest it** — a section that already sits inside a shell should lay out at full width and let the parent own the gutter.
-- **`SectionHeader`** is the lime-square eyebrow. Use it rather than rebuilding the square-plus-label pattern.
+| Artifact | For |
+|---|---|
+| `generated/tokens.ts` | docs tables, introspection |
+| `generated/tokens.css` | plain `:root` — what a standalone document inlines |
+| `generated/theme.scoped.css` | `[data-system]` — per-system skinning in the docs app |
+| `generated/tokens.json` | interchange (see the caveat below) |
+| `ui/lib/tw-merge.generated.ts` | the `extendTailwindMerge` config `cn()` consumes |
+| `static/thl.*` | the report-kit bundles |
 
-Sections that bring their own `PageShell` (like `HeroSection`) must be rendered *outside* a parent shell — see the `bleed` prop on `/design-system`'s `Spec` wrapper.
+Regenerate with `bun run --filter=@thl/tokens generate:tokens`; `turbo build`
+does it automatically. **Never hand-edit anything under `generated/`, any
+`thl.*` bundle, or `tw-merge.generated.ts`.**
 
-## Coding Conventions
+> `tokens.json` is described as DTCG but does not conform — see `REMEDIATION.md`
+> R7. Do not rely on it importing into Figma until that is settled.
+
+### Type scale
+
+`--text-*` is reset, so the scale is **closed**: `micro` through `6xl` are the
+only sizes that exist. `text-micro` (10px) is the instrument-label step — reach
+for it instead of `text-[10px]`. Label tracking is `tracking-label` (0.2em).
+
+Adding a scale value needs no manual step: `tw-merge.generated.ts` is emitted
+from the tokens, so registration is automatic. Without it, `tailwind-merge`
+cannot tell a custom font size from a colour and silently drops the colour.
+
+> Class names built at runtime are **not** scanned by Tailwind. A generated
+> `text-${token}` produces no CSS. See `REMEDIATION.md` R3.2.
+
+### Layout primitives
+
+- **`PageShell`** owns the horizontal gutter and page measure (`default` ·
+  `prose` · `full`). Use it instead of Tailwind's `container`, whose width varies
+  by breakpoint. **Never nest it.**
+- **`SectionHeader`** is the lime-square eyebrow. Use it rather than rebuilding
+  the square-plus-label pattern.
+
+---
+
+## The report kit
+
+Every system ships a pure HTML/CSS tier for standalone documents — no React, no
+build step, no network request. It is how any report, audit or spec in a project
+that has adopted the system stays on-brand.
+
+**Read [`systems/human-laboratory/static/SKILL.md`](systems/human-laboratory/static/SKILL.md)
+before writing an HTML document.** It carries the class vocabulary, the four
+diagram forms, the chart rules and the editorial voice.
+
+- **Never re-derive the palette inline.** Copying hex values into a `<style>`
+  block is the exact drift the kit exists to prevent.
+- **Never link a font, script or stylesheet from a CDN.** Inline or omit — a
+  standalone document is usually served under a strict CSP.
+- Charts: **four series is the ceiling**, the accent is never a series colour,
+  and `validate-palette` runs in lint. Do not relax its thresholds.
+
+---
+
+## Conventions
 
 ### TypeScript
 
 - Strict mode always. No `any` — use `unknown` and narrow.
-- Prefer `interface` for object shapes, `type` for unions/intersections/mapped types.
-- Export types alongside their implementations. Use `import type` for type-only imports.
-- Name files in kebab-case: `project-card.tsx`, `use-scroll-position.ts`
+- `interface` for object shapes, `type` for unions/intersections/mapped types.
+- Export types alongside implementations; `import type` for type-only imports.
+- Files in kebab-case.
 
 ### React
 
-- Functional components only. Use `function` declarations for named exports.
-- Props interfaces named `<Component>Props` (e.g., `ProjectCardProps`).
-- Colocate component + its types in the same file unless the type is shared.
-- Prefer composition over configuration — small components composed together beat large components with many props.
-
-### File Naming
-
-- Components: `kebab-case.tsx` (e.g., `project-card.tsx`)
-- Hooks: `use-<name>.ts` (e.g., `use-scroll-position.ts`)
-- Types: `types.ts` within a module directory
-- Data: `data.ts` within a section directory
-- Utilities: `kebab-case.ts`
+- Functional components, `function` declarations for named exports.
+- Props interfaces named `<Component>Props`.
+- Default to Server Components; `"use client"` only for browser APIs, handlers
+  or state, and kept as deep in the tree as possible.
+- Composition over configuration.
 
 ### Imports
 
-- Use path aliases: `@/` maps to `apps/web/app/`
-- Use package imports: `@repo/ui`, `@repo/tailwind-config`
-- Order: (1) React/Next.js, (2) external packages, (3) `@repo/*`, (4) `@/` local imports — separated by blank lines
+- Package imports: `@thl/ui`, `@thl/tokens`, `@repo/typescript-config`.
+- Within a system's `ui/`, relative imports — a registry consumer receives these
+  as plain files with no workspace to resolve a scoped package against.
+- Order: React/Next, external packages, `@thl/*` and `@repo/*`, then local.
+
+---
 
 ## Commands
 
 ```bash
-bun install              # Install dependencies
-bun run dev              # Start all dev servers (turbo)
-bun run build            # Build all packages + apps
-bun run lint             # Lint all workspaces (biome check)
-bun run check-types      # Type-check all workspaces
-bun run format           # Format with Biome
-bun run check            # Run Biome check (lint + format) from root
+bun install
+bun run dev                 # docs site on :3001
+bun run build               # regenerates token artifacts, then builds
+bun run lint                # Biome + check-roles + validate-palette
+bun run check               # Biome across the repo
+bun run check-types
+bun run smoke               # proves the registry is installable
+bun run new-system <slug> <ns> ["Name"]
 ```
 
-## Key Decisions Log
+**Verify visually.** Headless Chrome needs no extension and catches what source
+review cannot:
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --headless --disable-gpu --hide-scrollbars --window-size=1440,2600 \
+  --virtual-time-budget=8000 --screenshot=out.png http://localhost:3001/
+```
+
+---
+
+## Key decisions
 
 | Decision | Choice | Rationale |
-|----------|--------|-----------|
-| App structure | Feature/section-based modules | Modular-first: each section is self-contained with its own components, hooks, data |
-| Design system location | shadcn/ui in `packages/ui` | Single source of truth; all apps consume from `@repo/ui` |
-| Tailwind config | Shared preset in `packages/tailwind-config` | Consistent design tokens across all workspaces |
-| Content strategy | Static TypeScript constants | Simple, type-safe, no external dependencies; co-located with sections |
-| Rendering default | React Server Components | Performance-first; client boundaries only when needed |
-| Package manager | Bun | Already configured; fast installs and script execution |
-| Linting/Formatting | Biome | Single tool replacing ESLint + Prettier; faster, simpler config |
-| Text contrast | 4.5:1 floor, enforced by token | Dimness was making labels unreadable (2.6:1); splitting decoration into `--color-ambient` keeps the mood without sacrificing legibility |
-| Type scale | Closed, tokenized, incl. `micro` | `--text-*` is reset so the scale can't silently fall back to Tailwind's defaults; kills 40 `text-[10px]` magic numbers |
-| Button sizing | Explicit heights on the 4px grid | Icon and text buttons of the same size are now identical heights (24 / 36 / 48); previously `icon` was 48 while `default` was 34 |
-| Page measure | `PageShell`, not `container` | Tailwind's `container` is breakpoint-dependent, which is how `/` ended up 768px while other routes were 1280px |
+|---|---|---|
+| Repo purpose | Produces systems, contains no products | A portfolio living in the systems repo is the conflation that started this refactor |
+| Token tiers | Primitives + roles, roles-only in components | The contract that lets a component move to another system unchanged |
+| Shared core | None, until a second system exists | Rule of two — designed now it would be one system wearing a generic name |
+| Distribution | shadcn registry, one namespace per system | Copy-in matches the copy-paste-not-node_modules philosophy; divergence is a feature |
+| Token source | `theme.css`, hand-authored, everything generated | Native to Tailwind v4; one source, many targets |
+| CSS parser | Hand-rolled, not lightningcss | lightningcss sees zero custom properties inside `@theme` and throws on the namespace-reset syntax |
+| Unused tokens | `@theme static` | Hand-authored CSS must be able to rely on a variable existing; measured cost 328 bytes |
+| Chart series | Four, validated on all pairs | No fifth colour clears the floors while staying clear of the accent and status hues |
+| Text contrast | 4.5:1 floor, enforced by token | Splitting decoration into `--color-ambient` keeps the mood without sacrificing legibility |
+| Type scale | Closed and tokenized, incl. `micro` | `--text-*` is reset so it cannot silently fall back to Tailwind's defaults |
+| Page measure | `PageShell`, not `container` | Tailwind's `container` is breakpoint-dependent |
+| Theming | Dark only | Deferred, not forgotten; the role layer makes adding light mode small |
+| Radius | Zero, everywhere | A constraint, not an omission |
+
+---
+
+## Open work
+
+`REFACTOR.md` records how the repo reached this shape, including deviations and
+gaps. `REMEDIATION.md` is an independent audit of what actually landed; treat it
+as the backlog. Two items block a second system: the scaffold does not pass its
+own gates (R4), and contract 4 above is unmet (R5).

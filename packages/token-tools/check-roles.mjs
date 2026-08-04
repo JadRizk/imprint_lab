@@ -37,7 +37,22 @@ const PREFIXES =
 
 // Preceded by start, whitespace, quote, or a variant colon (hover:, group-hover:).
 const classRe = new RegExp(`(^|[\\s"'\`:])((?:${PREFIXES})-(?:${bare.join('|')}))\\b`, 'g');
-const varRe = new RegExp(`var\\(\\s*(${primitives.join('|')})\\s*\\)`, 'g');
+
+// `[,)]` not `\)`: var(--color-lime, red) resolves to exactly the primitive and
+// used to escape a rule that required the paren to follow the name immediately.
+const varRe = new RegExp(`var\\(\\s*(${primitives.join('|')})\\s*[,)]`, 'g');
+
+// Raw colour literals. A component has no business naming a colour at all — the
+// value is always somebody's token — so this needs no allow-list, and it is both
+// stricter and simpler to reason about than enumerating primitive values.
+// This is what closes `className="bg-[#DFFF00]"` and `.a { background: #DFFF00 }`,
+// which produce the primitive exactly while naming nothing the other rules see.
+const literalRe =
+  /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab|lab|lch|color-mix)\s*\(/g;
+
+// Values legitimately not a colour: opacity/duration/z-index in an arbitrary
+// value, and the `#` of a URL fragment or a hex escape in content.
+const LITERAL_EXEMPT = /^#(?:[0-9a-fA-F]{1,2})$/;
 
 function walk(dir) {
   const out = [];
@@ -53,14 +68,14 @@ const violations = [];
 for (const file of walk(uiDir)) {
   const src = readFileSync(file, 'utf8');
   src.split('\n').forEach((line, i) => {
+    const at = (token, why) =>
+      violations.push({ file: relative(process.cwd(), file), line: i + 1, token, why });
+
     for (const re of [classRe, varRe]) {
-      for (const m of line.matchAll(re)) {
-        violations.push({
-          file: relative(process.cwd(), file),
-          line: i + 1,
-          token: (m[2] ?? m[1]).trim()
-        });
-      }
+      for (const m of line.matchAll(re)) at((m[2] ?? m[1]).trim(), 'primitive');
+    }
+    for (const m of line.matchAll(literalRe)) {
+      if (!LITERAL_EXEMPT.test(m[0])) at(m[0].replace(/\s*\($/, '()'), 'literal');
     }
   });
 }
@@ -70,9 +85,9 @@ if (violations.length === 0) {
   process.exit(0);
 }
 
-console.error(`check-roles: ${system} — ${violations.length} primitive(s) used inside ui/\n`);
+console.error(`check-roles: ${system} — ${violations.length} violation(s) inside ui/\n`);
 for (const v of violations) {
-  console.error(`  ${v.file}:${v.line}  ${v.token}`);
+  console.error(`  ${v.file}:${v.line}  ${v.token}${v.why === 'literal' ? '  (raw colour)' : ''}`);
 }
 console.error(`
 Components must reference roles, not primitives. A primitive is this system's
