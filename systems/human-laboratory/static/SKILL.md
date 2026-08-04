@@ -143,8 +143,17 @@ Load `thl.chart.css`. Then:
 - Marks are square-ended. This system resets radius and every surface is
   hard-edged.
 
+**Anatomy the example gets right, and you should copy.** A chart without a value
+axis is a picture of a trend, not a measurement — label the gridlines. Stacked
+segments go in one `<g class="stack">` **per column**, which is what applies the
+2px surface gap between fills; wrapping every segment in a single group looks
+identical in the markup and silently loses the separation. Put a target or
+threshold line where the data is *not* — a label parked next to the final point
+collides with it.
+
 Add `has-tooltip` to an SVG and `data-tip` to its marks for hover and keyboard
-tooltips, when the script layer is loaded.
+tooltips, when the script layer is loaded. Enhancers are idempotent, so calling
+`thlInteract()` explicitly on a page that also auto-inits is safe.
 
 **Before choosing a chart, ask whether it should be one.** A single number is a
 `.stat`. Three numbers are usually a `.spec-list`. A chart earns its space when

@@ -26,7 +26,17 @@
     return m ? Number.parseFloat(m[0]) : null;
   };
 
+  const done = (el, key) => {
+    // Enhancing twice would double-bind every listener — one click would sort
+    // twice and land back where it started. The docs invite both an explicit
+    // thlInteract() call and the auto-init, so this has to be safe.
+    if (el.dataset[key]) return true;
+    el.dataset[key] = '1';
+    return false;
+  };
+
   function sortable(table) {
+    if (done(table, 'thlSortable')) return;
     const heads = table.querySelectorAll('thead th');
     heads.forEach((th, col) => {
       if (th.dataset.nosort !== undefined) return;
@@ -75,6 +85,7 @@
   }
 
   function filterable(input) {
+    if (done(input, 'thlFilter')) return;
     const target = document.querySelector(input.dataset.filterTarget);
     if (!target) return;
     const count = document.querySelector(input.dataset.filterCount || '');
@@ -99,6 +110,7 @@
   }
 
   function expandable(table) {
+    if (done(table, 'thlExpand')) return;
     for (const row of table.querySelectorAll('tr.has-detail')) {
       const detail = row.nextElementSibling;
       if (!detail?.classList.contains('detail')) continue;
@@ -127,6 +139,7 @@
   }
 
   function tooltips(svg) {
+    if (done(svg, 'thlTooltip')) return;
     const host = svg.closest('.chart') || svg.parentElement;
     if (!host) return;
     if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
