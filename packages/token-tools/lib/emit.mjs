@@ -410,6 +410,40 @@ function dtcgValue(t, groupType) {
  * defaults: redundancy is harmless, omission is the bug — and this way adding a
  * scale value to theme.css registers it automatically.
  */
+/**
+ * Utilities forced into the build regardless of whether a literal class name
+ * appears in source.
+ *
+ * Tailwind v4 scans for literal strings. A showcase that builds its class from
+ * a runtime value — `className={`${token.utility} …`}` — generates nothing, and
+ * the failure is invisible: `text-6xl` was absent from the served CSS for the
+ * whole refactor while the type-scale table rendered its largest step at
+ * inherited size, smaller than text-5xl. Every other step happened to appear
+ * literally somewhere else in the repo.
+ *
+ * Generated from the token model rather than hand-kept: a safelist that has to
+ * be maintained by hand is the drift this pipeline exists to prevent. The token
+ * set is closed, so this is exactly the utilities theme.css declares.
+ */
+export function emitSafelist(tokens) {
+  const names = [
+    ...new Set(
+      tokens
+        .flatMap((t) => t.utility.split('·'))
+        .map((u) => u.trim())
+        .filter(Boolean)
+    )
+  ].sort();
+
+  return `/* ${BANNER('').split('\n').join('\n   ')}
+
+   Import from the app's globals.css so tokens rendered through a variable still
+   generate. See emitSafelist in token-tools for why this cannot be inferred. */
+
+@source inline("${names.join(' ')}");
+`;
+}
+
 export function emitTwMerge(tokens) {
   const namesFor = (category, prefix) =>
     tokens

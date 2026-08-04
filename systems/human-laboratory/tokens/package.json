@@ -8,7 +8,8 @@
     "./tokens": "./generated/tokens.ts",
     "./tokens.css": "./generated/tokens.css",
     "./theme.scoped.css": "./generated/theme.scoped.css",
-    "./tokens.json": "./generated/tokens.json"
+    "./tokens.json": "./generated/tokens.json",
+    "./safelist.css": "./generated/safelist.css"
   },
   "scripts": {
     "generate:tokens": "token-tools",

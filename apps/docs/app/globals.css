@@ -20,6 +20,13 @@
  * system's private vocabulary is not meant to be reachable from another's page. */
 @import "@thl/tokens/theme.scoped.css";
 
+/* Generated safelist — must stay with the other @imports, which CSS requires to
+ * precede every other rule. The showcase renders each token through a variable
+ * (`className={token.utility}`), which Tailwind cannot see: text-6xl was missing
+ * from the build for the whole refactor because of it. Generated from theme.css,
+ * so it cannot drift from the token set. */
+@import "@thl/tokens/safelist.css";
+
 /* One @source per system. Tailwind scans these for class names; a system absent
  * here compiles and renders unstyled, with nothing reported. */
 @source "../../../systems/human-laboratory/ui";

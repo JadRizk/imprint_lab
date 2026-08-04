@@ -12,6 +12,7 @@ import { basename, dirname, join, resolve as resolvePath } from 'node:path';
 
 import {
   buildTokens,
+  emitSafelist,
   emitThemeScopedCss,
   emitTokensCss,
   emitTokensJson,
@@ -40,7 +41,8 @@ const artifacts = {
   'tokens.css': emitTokensCss(parsed.declarations),
   'theme.scoped.css': emitThemeScopedCss(parsed.declarations, system),
   'tokens.json': emitTokensJson(tokens, system),
-  'tw-merge.ts': emitTwMerge(tokens)
+  'tw-merge.ts': emitTwMerge(tokens),
+  'safelist.css': emitSafelist(tokens)
 };
 
 for (const [file, contents] of Object.entries(artifacts)) {

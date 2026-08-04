@@ -1,4 +1,4 @@
-import { coreColors, semanticColors, textTokens, tokens } from '@thl/tokens/tokens';
+import { coreColors, roleColors, semanticColors, textTokens, tokens } from '@thl/tokens/tokens';
 import { BentoCard } from '@thl/ui/components/bento-card';
 import { BentoGrid } from '@thl/ui/components/bento-grid';
 import { Button } from '@thl/ui/components/button';
@@ -76,6 +76,40 @@ function Swatch({ name, value, utility }: { name: string; value: string; utility
       {isDecorationOnly(utility) ? (
         <span className="block text-micro text-text-tertiary">DECORATION ONLY — NEVER TEXT</span>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * Roles carry an extra column primitives do not: what they currently point at.
+ * That indirection IS the contract — the same eleven names exist in every
+ * system and resolve to different values — so the table has to show both sides.
+ */
+function RoleSwatch({
+  name,
+  aliasOf,
+  resolved,
+  note
+}: {
+  name: string;
+  aliasOf?: string;
+  resolved: string;
+  note?: string;
+}) {
+  return (
+    <div className="group space-y-2">
+      <div
+        className="h-24 w-full border border-line transition-all group-hover:shadow-glow"
+        style={{ backgroundColor: resolved }}
+      />
+      <div className="flex justify-between gap-2 text-xs">
+        <span className="text-accent">{displayName(name)}</span>
+        <span className="text-ink">{resolved}</span>
+      </div>
+      <span className="block text-micro text-ink-subtle">
+        {aliasOf ? `-> ${displayName(aliasOf)}` : 'primitive of its own'}
+      </span>
+      {note ? <span className="block text-micro text-ink-subtle">{note}</span> : null}
     </div>
   );
 }
@@ -180,9 +214,37 @@ export default function HumanLaboratoryPage() {
           label="COLOR_PALETTE"
           description="Every color used for text clears 4.5:1 against obsidian. Ambient is the one exception — it exists for grid lines and idle brackets, and must never carry text."
         >
+          {/* Roles first: they are the contract components compile against.
+              Primitives below are this system's private implementation of it. */}
           <div>
-            <p className="mb-4 text-micro font-bold uppercase tracking-label text-text-tertiary">
-              CORE
+            <p className="mb-2 text-micro font-bold uppercase tracking-label text-accent">
+              ROLE — THE CONTRACT
+            </p>
+            <p className="mb-4 max-w-2xl text-xs text-ink-muted">
+              The eleven names every component is allowed to reference. Another system defines the
+              same eleven and points them somewhere else, which is what lets a component move
+              unchanged. `check-roles` fails the build on a primitive used inside `ui/`.
+            </p>
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+              {roleColors.map((color) => (
+                <RoleSwatch
+                  key={color.name}
+                  name={color.name}
+                  aliasOf={color.aliasOf}
+                  resolved={color.resolved}
+                  note={color.note}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-micro font-bold uppercase tracking-label text-text-tertiary">
+              CORE — THE IMPLEMENTATION
+            </p>
+            <p className="mb-4 max-w-2xl text-xs text-ink-muted">
+              This system's private vocabulary. Reachable from app code and one-off compositions,
+              never from a component.
             </p>
             <div className="grid grid-cols-2 gap-6 md:grid-cols-5">
               {coreColors.map((color) => (
@@ -260,8 +322,8 @@ export default function HumanLaboratoryPage() {
           description={
             <>
               Generated at build time from{' '}
-              <code className="text-lime">packages/tailwind-config/theme.css</code>. If you add a
-              token there, run{' '}
+              <code className="text-lime">systems/human-laboratory/tokens/theme.css</code>. If you
+              add a token there, run{' '}
               <code className="text-lime">bun run --filter=@thl/tokens generate:tokens</code>.
             </>
           }
