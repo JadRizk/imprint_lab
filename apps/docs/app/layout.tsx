@@ -16,7 +16,26 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: 'imprint_lab',
-  description: 'A house of design systems. Documentation and registry.'
+  description: 'A house of design systems. Documentation and registry.',
+  /*
+    Required for the OG card. Without it Next emits a RELATIVE og:image URL,
+    which every crawler rejects — the card renders correctly, is served
+    correctly, and still never appears. It matches the registry homepage
+    because that is the origin the registry already advertises.
+
+    It must include the basePath, not just the origin. Next does NOT apply
+    basePath to metadata URLs — with `https://jadrizk.github.io` alone the card
+    resolves to /systems/… instead of /imprint_lab/systems/… and 404s. Same
+    silent class as a raw <a href> into public/ (see lib/base-path.ts), and
+    worse to catch: nothing renders wrong, the card is simply never shown.
+
+    There is deliberately no `icons` entry here. The house has no mark: a
+    neutral mark for a collection with one inhabitant would be system 01
+    wearing a generic name. `@thl`'s icon is scoped to its own route segment
+    via app/systems/human-laboratory/icon.svg, so `/` stays unbranded until
+    imprint_lab has more than one system to be neutral between.
+  */
+  metadataBase: new URL('https://jadrizk.github.io/imprint_lab')
 };
 
 export default function RootLayout({

@@ -1,0 +1,69 @@
+# Builds apps/docs as a static export and publishes it to GitHub Pages.
+#
+# The site is a project site, so it is served from a subpath. NEXT_PUBLIC_BASE_PATH
+# is the single place that subpath is declared — next.config.js reads it into
+# `basePath`, and lib/base-path.ts reads it in app code for the raw anchors and
+# iframes Next does not rewrite. Moving to a custom domain means setting it to
+# '' here and adding a CNAME; nothing else changes.
+name: Deploy docs to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # So a broken build is caught on the PR rather than after merge. The deploy
+  # job is gated on `push` below, so this builds without publishing.
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege: only the deploy job widens these.
+permissions:
+  contents: read
+
+# Let an in-flight deploy finish rather than cancelling it half-published, but
+# collapse queued runs so main always converges on its newest commit.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_BASE_PATH: /imprint_lab
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.17
+
+      - run: bun install --frozen-lockfile
+
+      # turbo build, not `next build` — it regenerates every token artifact
+      # first. Building the app alone would publish whatever generated/ happened
+      # to be committed, which is the drift the pipeline exists to prevent.
+      - run: bun run build
+
+      # The Pages artifact is served as-is with no Jekyll step, but an empty
+      # .nojekyll costs nothing and removes any question about `_next/`.
+      - run: touch apps/docs/out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: apps/docs/out
+
+  deploy:
+    # Pull requests build but do not publish.
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

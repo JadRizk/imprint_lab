@@ -1,12 +1,12 @@
 # Audit findings — `refactor/imprint-lab` @ `38bb719`
 
-Third-party audit run against the brief in `.refactor/AUDIT-PROMPT.md`.
+Third-party audit of the branch at `38bb719`.
 
-**Scope note — the brief is stale.** It describes 8 commits ending at Phase 05. The branch has
-since landed **Phase 06 (`38bb719`)**, and a prior audit (`REMEDIATION.md`, findings `R1`–`R9`)
-already covered `47588b3..f863a14`. This audit therefore does two things: **independently
-re-derives** every prior finding against `HEAD` (not taking `REMEDIATION.md` at its word either),
-and **audits Phase 06**, which no one has reviewed.
+**Scope note — the brief it ran against was stale.** That brief described 8 commits ending at
+Phase 05. The branch has since landed **Phase 06 (`38bb719`)**, and a prior audit
+(`REMEDIATION.md`, findings `R1`–`R9`) already covered `47588b3..f863a14`. This audit therefore
+does two things: **independently re-derives** every prior finding against `HEAD` (not taking
+`REMEDIATION.md` at its word either), and **audits Phase 06**, which no one has reviewed.
 
 **Method.** Pinned to a detached worktree at `38bb719` so a concurrently-running session could not
 move the tree mid-audit. Ran the apps, rendered all five routes headless at 1440×2400, executed

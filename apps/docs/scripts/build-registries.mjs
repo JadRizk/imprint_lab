@@ -6,7 +6,7 @@
 //
 // One registry per namespace, because that is the unit a consumer subscribes to:
 //
-//   { "registries": { "@thl": "https://imprint-lab.vercel.app/r/thl/{name}.json" } }
+//   { "registries": { "@thl": "https://jadrizk.github.io/imprint_lab/r/thl/{name}.json" } }
 //
 // `shadcn build` takes a single registry file, so this loops rather than globs —
 // passing a glob silently becomes "too many arguments" the moment a second

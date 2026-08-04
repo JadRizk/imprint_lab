@@ -1,9 +1,23 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { Mark } from '@thl/ui/components/mark';
 import { PageShell } from '@thl/ui/components/page-shell';
 import { marked } from 'marked';
+import type { Metadata } from 'next';
 
 import { SystemPage } from './system-page';
+
+/*
+  Without this the route inherits the root's title and description, so the OG
+  card reads "The Human Laboratory" while og:title reads "imprint_lab" — the
+  house name on the system's own card. The card is generated from the system;
+  its metadata should be too.
+*/
+export const metadata: Metadata = {
+  title: 'The Human Laboratory — @thl',
+  description:
+    'System 01 of imprint_lab. Neo-brutalist: obsidian ground, a single lime signal, hard borders, monospaced body.'
+};
 
 /**
  * The thesis, rendered from BRAND.md at build time.
@@ -39,7 +53,12 @@ export default function ThesisPage() {
           wraps, which is the correct outcome on a phone.
         */}
         <div className="mx-auto max-w-[64ch] space-y-10 text-sm leading-relaxed md:text-base">
-          <header>
+          <header className="space-y-5">
+            {/* The mark sits ABOVE the title rather than beside it. Inline would
+                make the header a flex row and eat horizontal space the h1 has
+                none of — see the measurement below. Stacked costs nothing and
+                the lockup reads the same. */}
+            <Mark label="The Human Laboratory" className="size-9" />
             {/* THE_HUMAN_LABORATORY is one unbreakable word — the underscores
                 offer no wrap opportunity — and at 4xl it measures ~420px. On a
                 384px viewport the box stays clamped but the glyphs spill out of
@@ -50,7 +69,7 @@ export default function ThesisPage() {
                 Both sizes are steps on the closed scale. */}
             <h1 className="text-2xl font-bold text-ink md:text-4xl">
               {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
-              THE_HUMAN_LABORATORY // <span className="text-accent">@thl</span>
+              THE_HUMAN_LABORATORY // <span className="text-ink-subtle">@thl</span>
             </h1>
           </header>
 

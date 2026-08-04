@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" role="img" aria-label="The Human Laboratory">
+  <!-- Monochrome. For print, single-colour reproduction, and any context where
+       the accent is unavailable.
+
+       The corner still has to outrank the frame, so rank moves from hue to
+       luminance: the frame drops to role color-line-strong and the corner takes
+       role color-ink. Same geometry, same 1:2 ratio.
+
+       Role names omit their leading double hyphen: XML forbids it in a comment.
+       See mark.svg. -->
+  <rect x="5" y="5" width="22" height="22" stroke="#585858" stroke-width="2"/>
+  <path d="M6 14 L6 6 L14 6" stroke="#FFFFFF" stroke-width="4" stroke-linecap="butt" stroke-linejoin="miter"/>
+</svg>

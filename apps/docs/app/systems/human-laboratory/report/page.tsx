@@ -1,5 +1,6 @@
 import { PageShell } from '@thl/ui/components/page-shell';
 
+import { asset } from '../../../../lib/base-path';
 import { SystemPage } from '../system-page';
 
 /**
@@ -31,8 +32,10 @@ export default function ReportPage() {
             past the budget a real document keeps to. The worked specimen is the honest ratio.
           </p>
           <p className="flex flex-wrap gap-x-6 gap-y-2 text-micro tracking-label text-ink-subtle">
+            {/* asset(), not a bare path: these are files in public/, and Next
+                rewrites <Link> but never a raw anchor. See lib/base-path.ts. */}
             <a
-              href="/thl-catalog.html"
+              href={asset('/thl-catalog.html')}
               target="_blank"
               rel="noreferrer"
               className="hover:text-accent"
@@ -40,14 +43,19 @@ export default function ReportPage() {
               OPEN_CATALOG -&gt;
             </a>
             <a
-              href="/example-report.html"
+              href={asset('/example-report.html')}
               target="_blank"
               rel="noreferrer"
               className="hover:text-accent"
             >
               WORKED_SPECIMEN -&gt;
             </a>
-            <a href="/report.html" target="_blank" rel="noreferrer" className="hover:text-accent">
+            <a
+              href={asset('/report.html')}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-accent"
+            >
               STARTER_SKELETON -&gt;
             </a>
           </p>
@@ -55,7 +63,7 @@ export default function ReportPage() {
 
         <div className="border border-line">
           <iframe
-            src="/thl-catalog.html"
+            src={asset('/thl-catalog.html')}
             title="The Human Laboratory report kit catalogue"
             className="block h-[80vh] w-full"
           />

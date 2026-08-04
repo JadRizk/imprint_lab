@@ -12,21 +12,29 @@ than restating it.
 | | |
 |---|---|
 | [`tokens/`](tokens) | `theme.css` is the source of truth; five artifacts generated from it |
-| `ui/` | Six React components, roles only, enforced by `check-roles` |
+| `ui/` | Eight React components, roles only, enforced by `check-roles` |
 | [`static/`](static) | The report kit — pure HTML/CSS, no build step |
-| `brand/` | Wordmark, favicon, OG card |
-| `registry.json` | The `@thl` namespace: a style item, six components, the report kit |
+| [`brand/`](brand) | The mark, its monochrome and favicon variants, and the rules |
+| `registry.json` | The `@thl` namespace: a style item, eight components, the report kit, the brand |
 
 ## Components
 
 `Button` · `PageShell` · `SectionHeader` · `BentoGrid` · `BentoCard` ·
-`ImageFrame`
+`ImageFrame` · `Mark` · `Wordmark`
 
 Each references role tokens only, which is what lets it move to another system
 unchanged. `PageShell` owns the page gutter and measure — use it instead of
 Tailwind's `container`, and never nest it.
 
 The coverage gap is real and known: no input, card, badge, dialog or table yet.
+
+## The mark
+
+A bounded frame with one corner promoted a tier — the 1:2 line-to-accent ratio
+is the line ladder itself. It belongs to **this system, not to imprint_lab**,
+which has no mark and should not get one until it has more than one inhabitant
+to be neutral between. Read [`brand/README.md`](brand/README.md) before changing
+any of it; the geometry is pixel-honest and the stroke widths are load-bearing.
 
 ## The report kit
 
@@ -42,7 +50,7 @@ four diagram forms, the chart rules and the editorial voice.
 ## Installing it elsewhere
 
 ```json
-{ "registries": { "@thl": "https://imprint-lab.vercel.app/r/thl/{name}.json" } }
+{ "registries": { "@thl": "https://jadrizk.github.io/imprint_lab/r/thl/{name}.json" } }
 ```
 
 Then `npx shadcn add @thl/button`, or `@thl/report-kit` for the document tier.

@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "thl",
-  "homepage": "https://imprint-lab.vercel.app",
+  "homepage": "https://jadrizk.github.io/imprint_lab",
   "items": [
     {
       "name": "style",
@@ -123,6 +123,72 @@
           "path": "systems/human-laboratory/ui/components/image-frame.module.css",
           "type": "registry:file",
           "target": "~/thl/components/image-frame.module.css"
+        }
+      ]
+    },
+    {
+      "name": "mark",
+      "type": "registry:component",
+      "title": "Mark",
+      "description": "The Human Laboratory mark: a bounded frame with one corner promoted a tier. Roles only, so it reskins under another system. Accent and mono tones.",
+      "registryDependencies": ["style"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/ui/components/mark.tsx",
+          "type": "registry:file",
+          "target": "~/thl/components/mark.tsx"
+        }
+      ]
+    },
+    {
+      "name": "wordmark",
+      "type": "registry:component",
+      "title": "Wordmark",
+      "description": "The lockup: mark plus name, horizontal or stacked. The wordmark is type rather than an SVG, because this system names no font.",
+      "registryDependencies": ["style", "mark"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/ui/components/wordmark.tsx",
+          "type": "registry:file",
+          "target": "~/thl/components/wordmark.tsx"
+        }
+      ]
+    },
+    {
+      "name": "brand",
+      "type": "registry:file",
+      "title": "Brand assets",
+      "description": "Mark, monochrome mark, favicon and raster icons, plus the rules that govern them. The brand belongs to the system, not to imprint_lab — adopting @thl means adopting its identity.",
+      "files": [
+        {
+          "path": "systems/human-laboratory/brand/mark.svg",
+          "type": "registry:file",
+          "target": "~/thl/brand/mark.svg"
+        },
+        {
+          "path": "systems/human-laboratory/brand/mark-mono.svg",
+          "type": "registry:file",
+          "target": "~/thl/brand/mark-mono.svg"
+        },
+        {
+          "path": "systems/human-laboratory/brand/favicon.svg",
+          "type": "registry:file",
+          "target": "~/thl/brand/favicon.svg"
+        },
+        {
+          "path": "systems/human-laboratory/brand/favicon-32.png",
+          "type": "registry:file",
+          "target": "~/thl/brand/favicon-32.png"
+        },
+        {
+          "path": "systems/human-laboratory/brand/apple-icon-180.png",
+          "type": "registry:file",
+          "target": "~/thl/brand/apple-icon-180.png"
+        },
+        {
+          "path": "systems/human-laboratory/brand/README.md",
+          "type": "registry:file",
+          "target": "~/thl/brand/README.md"
         }
       ]
     },

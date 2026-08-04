@@ -69,7 +69,7 @@ standalone documents — no React, no build step, no network request. See
 Systems distribute through a shadcn-compatible registry, one namespace each:
 
 ```json
-{ "registries": { "@thl": "https://imprint-lab.vercel.app/r/thl/{name}.json" } }
+{ "registries": { "@thl": "https://jadrizk.github.io/imprint_lab/r/thl/{name}.json" } }
 ```
 
 Then `npx shadcn add @thl/button`, or `@thl/report-kit` for the document tier.

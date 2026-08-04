@@ -53,3 +53,6 @@ yarn-error.log*
 
 # Prototype reference
 The Human Laboratory/
+
+# Brand raster written only to be looked at — regenerate with `bun run brand:raster`.
+systems/*/brand/.verify/

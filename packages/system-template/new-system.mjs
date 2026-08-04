@@ -308,7 +308,7 @@ write(
     {
       $schema: 'https://ui.shadcn.com/schema/registry.json',
       name: ns,
-      homepage: 'https://imprint-lab.vercel.app',
+      homepage: 'https://jadrizk.github.io/imprint_lab',
       items: [
         {
           name: 'report-kit',

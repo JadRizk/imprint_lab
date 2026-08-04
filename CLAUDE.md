@@ -29,7 +29,7 @@ systems/
     tokens/          theme.css (source of truth) · base.css · generated/
     ui/              React components + lib/utils.ts
     static/          the report kit: parts/ (authored) + thl.* bundles (generated)
-    brand/           wordmark, favicon, OG card
+    brand/           the mark, its mono and favicon variants, the rules
     registry.json    the @thl namespace
     BRAND.md         thesis, voice, non-negotiables
 packages/
@@ -239,6 +239,42 @@ diagram forms, the chart rules and the editorial voice.
 
 ---
 
+## The brand
+
+**The mark belongs to the system, not to the house.** `imprint_lab` has no mark
+and should not get one until it has more than one inhabitant to be neutral
+between — a neutral mark designed now would be system 01 wearing a generic name,
+the same argument as `packages/core`. So `@thl`'s icon is scoped to its own route
+segment and `/` stays unbranded.
+
+Read [`systems/human-laboratory/brand/README.md`](systems/human-laboratory/brand/README.md)
+before touching any of it. The short version:
+
+- The mark is a frame in `--color-line` with one corner in `--color-accent` at
+  **twice the weight** — that 1:2 ratio is the line ladder, not a proportion
+  chosen by eye. The stroke widths are load-bearing: they are even so the mark
+  lands on whole pixels at 16, 24 and 32.
+- **The favicon is a different drawing**, not an export. The frame is 1.69:1 and
+  stops rendering below ~24px, and a transparent mark vanishes against chrome
+  this system does not control — so it drops the frame and carries its own tile.
+- **It does not glow.** Emission follows current; a brand mark is not live.
+- **There is no wordmark SVG.** This system names no font, so the wordmark is
+  *type* — use `Wordmark`, or the snippet in `static/SKILL.md`.
+- The namespace `@thl` is **neutral**, not accent: the mark already spent it.
+
+> ⚠ **An SVG comment may not contain `--`.** XML forbids it, and every custom
+> property starts with one — so writing `--color-line` in a comment invalidates
+> the file and it silently stops loading as `<img>` or as a favicon. It stays
+> invisible to anything that *inlines* the SVG into HTML, because HTML parsing is
+> lenient. `bun run brand:raster` validates this and fails on it.
+
+The rasters and the app's `icon.svg` are **generated** — by `brand:raster` and
+`sync-static.mjs` respectively. The OG card is generated too, from the token
+pipeline, in `apps/docs/app/systems/human-laboratory/opengraph-image.tsx`. None
+of them is hand-kept, for the same reason the safelist is not.
+
+---
+
 ## Skills
 
 Three, and they are loaded at different moments. **Check here before writing a
@@ -328,6 +364,7 @@ bun run check               # Biome across the repo
 bun run check-types
 bun run smoke               # proves the registry is installable
 bun run new-system <slug> <ns> ["Name"]
+bun run brand:raster          # regenerate brand PNGs; validates every brand SVG
 ```
 
 **Adding a system: use the `new-system` skill, not the bare command.** The
@@ -355,6 +392,59 @@ review cannot:
 
 ---
 
+## Deployment
+
+`apps/docs` is a **static export** published to GitHub Pages at
+`https://jadrizk.github.io/imprint_lab/` by
+[`.github/workflows/deploy-docs.yml`](.github/workflows/deploy-docs.yml) on every
+push to `main`. Pull requests build without publishing, so a broken export is
+caught on the PR.
+
+The workflow runs `bun run build` — turbo, not `next build` — so every token
+artifact is regenerated before the site is built. Building the app alone would
+publish whatever happened to be committed under `generated/`.
+
+### What static export forbids
+
+`output: 'export'` rules out API routes, server actions, middleware, ISR,
+`revalidate`, rewrites/redirects/headers, and `next/image` with the default
+loader. None are used today; `images.unoptimized` is set so that adding an
+`<Image>` fails at review rather than in CI. **Anything needing a server does not
+belong in this app** — it is a documentation site and a registry host.
+
+### The subpath is the sharp edge
+
+Pages serves a project site from `/imprint_lab`, so `basePath` is set from
+`NEXT_PUBLIC_BASE_PATH`, declared once in the workflow. It is empty in `dev`.
+
+Next rewrites `<Link href>`, `next/image` and its own `_next/*` URLs. It does
+**not** rewrite a raw `<a href="/thl-catalog.html">`, an `<iframe src>`, or a
+hand-written `<link>`/`<script>` pointing into `public/`. Those need
+[`lib/base-path.ts`](apps/docs/lib/base-path.ts)'s `asset()`.
+
+> This class of bug is invisible locally — with no basePath in `dev`, an
+> unprefixed path resolves correctly and only 404s once deployed. The report page
+> had four of them. **Verify an export by serving it under the subpath**, not by
+> looking at `dev`:
+>
+> ```bash
+> NEXT_PUBLIC_BASE_PATH=/imprint_lab bun run build
+> mkdir -p /tmp/pages && ln -sfn "$PWD/apps/docs/out" /tmp/pages/imprint_lab
+> python3 -m http.server 4321 --directory /tmp/pages
+> # then open http://localhost:4321/imprint_lab/
+> ```
+
+Do not use `asset()` on a `<Link href>` — Next prefixes those already, and doing
+it twice yields `/imprint_lab/imprint_lab/…`.
+
+**`metadataBase` must carry the basePath too.** Next does not apply `basePath` to
+metadata URLs, so an origin-only `https://jadrizk.github.io` emits an `og:image`
+at `/systems/…` rather than `/imprint_lab/systems/…`. It is the worst member of
+this family to catch: nothing renders wrong and nothing 404s in a page you look
+at — the card is simply never shown when a link is shared.
+
+---
+
 ## Key decisions
 
 | Decision | Choice | Rationale |
@@ -363,6 +453,8 @@ review cannot:
 | Token tiers | Primitives + roles, roles-only in components | The contract that lets a component move to another system unchanged |
 | Shared core | None, until a second system exists | Rule of two — designed now it would be one system wearing a generic name |
 | Distribution | shadcn registry, one namespace per system | Copy-in matches the copy-paste-not-node_modules philosophy; divergence is a feature |
+| Hosting | GitHub Pages, static export | The site is documentation and JSON; nothing here needs a server, and the registry host stops being a second vendor to keep alive |
+| basePath | One env var, read in config and app | A project site lives at a subpath; hardcoding it breaks `dev` and makes a rename a repo-wide search |
 | Token source | `theme.css`, hand-authored, everything generated | Native to Tailwind v4; one source, many targets |
 | CSS parser | Hand-rolled, not lightningcss | lightningcss sees zero custom properties inside `@theme` and throws on the namespace-reset syntax |
 | Unused tokens | `@theme static` | Hand-authored CSS must be able to rely on a variable existing; measured cost 328 bytes |
@@ -377,6 +469,10 @@ review cannot:
 | Prose measure | `64ch`, not a pixel width | The body face is monospaced; every glyph is an `m`, so the comfortable line is 60–72 characters |
 | Theming | Dark only | Deferred, not forgotten; the role layer makes adding light mode small |
 | Radius | Zero, everywhere | A constraint, not an omission |
+| Brand ownership | The system, never the house | A neutral house mark with one inhabitant is system 01 wearing a generic name — the `packages/core` argument again |
+| The mark | Frame in `line`, one corner in `accent` at 2× | The 1:2 ratio *is* the line ladder; the mark argues the contract rather than decorating with it |
+| Favicon | A separate drawing, not an export | The frame is 1.69:1 and gone by 16px; a transparent mark vanishes on chrome the system does not control |
+| Wordmark | Type, not an SVG | The system names no font — outlined letterforms would hard-code one, live `<text>` would fall back silently |
 
 ---
 
@@ -393,24 +489,39 @@ check-types, lint, check and test cold, and the base-layer contract is met.
 
 **The repo is `imprint_lab`.** Do not re-open this. Everything in code and docs
 already says so: `package.json`, `registry.json`, `README.md`, `REFACTOR.md`, the
-scaffold template, and the registry URL `https://imprint-lab.vercel.app/r/…`.
+scaffold template, and the registry URL `https://jadrizk.github.io/imprint_lab/r/…`.
 
 `the_human_laboratory` is **system 01's name, not the repo's** — the directory
 `systems/human-laboratory/` and the `@thl` namespace keep it and must not be
 renamed.
 
-Two things still carry the old name, and **neither can be changed from inside the
-repo** — they need doing by hand:
+The GitHub repo has been renamed to `imprint_lab`. One thing still carries the
+old name and **cannot be changed from inside the repo**: the working directory is
+`the_human_laboratory`.
 
-1. The git remote is `github.com/JadRizk/the_human_laboratory`.
-2. The working directory is `the_human_laboratory`.
+Vercel was never used. The `imprint-lab.vercel.app` host was aspirational and
+nothing was ever deployed to it; it has been dropped. **The site is published to
+GitHub Pages** at `https://jadrizk.github.io/imprint_lab/` by
+[`.github/workflows/deploy-docs.yml`](.github/workflows/deploy-docs.yml), and the
+registry resolves at `https://jadrizk.github.io/imprint_lab/r/thl/{name}.json`.
 
-And one thing is aspirational rather than wrong: `https://imprint-lab.vercel.app`
-is the intended registry host and is referenced consistently, but **nothing is
-deployed there yet**, so `shadcn add @thl/button` fails against it today. Deploy
-`apps/docs` before telling anyone to install from the registry — a published
-registry item advertising a dead homepage is the one part of this that is hard to
-walk back.
+**The underscore is the brand, and the hyphen was a hostname constraint.**
+`imprint-lab` only ever appeared in `imprint-lab.vercel.app` because DNS
+hostnames cannot contain underscores. A URL *path* can, so moving to
+`/imprint_lab` restores the name the rest of the repo already uses —
+`package.json`, the `<title>`, the OG card, and the wordmark that renders
+`IMPRINT_LAB // SYSTEMS`. Do not "tidy" it to a hyphen; that would be the
+constraint outliving its cause.
+
+> **Renaming the repo after this point breaks the site.** GitHub redirects web
+> traffic, git operations, issues and stars on rename — **project-site Pages URLs
+> are the one documented exception** and are not redirected. A rename would
+> silently 404 both `jadrizk.github.io/imprint_lab/` and the registry URL
+> consumers subscribe to. If the name must ever become insulated from this, the
+> fix is a custom domain, which is what GitHub recommends for exactly this
+> reason.
+
+See [Deployment](#deployment) for what static export constrains.
 
 **Also out of scope, deliberately:** the component coverage gap (input, card,
 badge, dialog, table) and light mode.

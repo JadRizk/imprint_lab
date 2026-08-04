@@ -51,6 +51,35 @@ kit's whole value is surviving email, PDF export and stripped script.
   footer.report-footer
 ```
 
+### The mark
+
+A document that represents the system should carry it. Inline the SVG — never
+link it, for the same reason you never link a font:
+
+```html
+<svg class="mark" viewBox="0 0 32 32" width="28" height="28" fill="none" aria-hidden="true">
+  <rect x="5" y="5" width="22" height="22" stroke="var(--color-line)" stroke-width="2"/>
+  <path d="M6 14 L6 6 L14 6" stroke="var(--color-accent)" stroke-width="4"/>
+</svg>
+```
+
+The frame is `--color-line`, the corner is `--color-accent` at twice the weight.
+**That 1:2 ratio is the line ladder** — keep it, and keep both strokes even, or
+the mark softens at small sizes.
+
+The corner spends the document's accent, so the eyebrow beside it stays neutral:
+`THE_HUMAN_LABORATORY // @thl` is all `--color-ink-subtle`, separators included.
+Two lime events in one lockup is the budget violation §4a describes.
+
+There is **no wordmark image**. This system names no font — it resolves
+`--font-mono` through a consumer-defined face — so the wordmark is *type*: mono,
+weight 500, uppercase, `--tracking-label`. Set it, do not import it.
+
+> If you write the mark into a standalone `.svg` file rather than inline, note
+> that **an XML comment cannot contain `--`**, so a role name written out in full
+> invalidates the file and it stops rendering as `<img>`. Inlined in HTML it
+> parses fine, which is what makes the fault easy to ship.
+
 ---
 
 ## 3. The vocabulary

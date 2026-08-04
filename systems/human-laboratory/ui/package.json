@@ -7,8 +7,10 @@
     "./components/bento-card": "./components/bento-card.tsx",
     "./components/bento-grid": "./components/bento-grid.tsx",
     "./components/image-frame": "./components/image-frame.tsx",
+    "./components/mark": "./components/mark.tsx",
     "./components/page-shell": "./components/page-shell.tsx",
     "./components/section-header": "./components/section-header.tsx",
+    "./components/wordmark": "./components/wordmark.tsx",
     "./lib/utils": "./lib/utils.ts",
     "./styles.css": "./styles.css"
   },

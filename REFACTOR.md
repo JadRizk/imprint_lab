@@ -394,7 +394,7 @@ moment a second existed. `apps/docs/scripts/build-registries.mjs` loops instead,
 a consumer subscribes to:
 
 ```json
-{ "registries": { "@thl": "https://imprint-lab.vercel.app/r/thl/{name}.json" } }
+{ "registries": { "@thl": "https://jadrizk.github.io/imprint_lab/r/thl/{name}.json" } }
 ```
 
 **The scaffold exists because cost-per-new-system decides whether this is a collection or a

@@ -131,7 +131,7 @@ export default function HumanLaboratoryPage() {
                 gives the document a horizontal scroll. */}
             <h1 className="text-2xl font-bold text-white md:text-4xl">
               {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
-              THE_HUMAN_LABORATORY // <span className="text-accent">@thl</span>
+              THE_HUMAN_LABORATORY // <span className="text-ink-subtle">@thl</span>
             </h1>
             <p className="max-w-2xl text-lg">
               System 01. Functional, brutalist, atomic. Components below reference roles only — the
