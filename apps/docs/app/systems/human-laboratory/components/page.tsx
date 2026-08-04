@@ -66,7 +66,7 @@ function Swatch({ name, value, utility }: { name: string; value: string; utility
   return (
     <div className="group space-y-2">
       <div
-        className="h-24 w-full border border-steel transition-all group-hover:shadow-lime-glow"
+        className="h-24 w-full border border-steel transition-colors group-hover:border-line-strong"
         style={{ backgroundColor: value }}
       />
       <div className="flex justify-between gap-2 text-xs">
@@ -99,11 +99,11 @@ function RoleSwatch({
   return (
     <div className="group space-y-2">
       <div
-        className="h-24 w-full border border-line transition-all group-hover:shadow-glow"
+        className="h-24 w-full border border-line transition-colors group-hover:border-line-strong"
         style={{ backgroundColor: resolved }}
       />
       <div className="flex justify-between gap-2 text-xs">
-        <span className="text-accent">{displayName(name)}</span>
+        <span className="text-ink">{displayName(name)}</span>
         <span className="text-ink">{resolved}</span>
       </div>
       <span className="block text-micro text-ink-subtle">
@@ -142,7 +142,7 @@ export default function HumanLaboratoryPage() {
           label="TYPOGRAPHY"
           description="Space Grotesk sets headings; IBM Plex Mono carries everything else. The scale below is closed — theme.css resets Tailwind's --text-* namespace, so these are the only sizes that exist."
         >
-          <div className="grid grid-cols-1 items-center gap-8 border border-steel bg-surface p-8 md:grid-cols-2">
+          <div className="grid grid-cols-1 items-center gap-8 border border-steel p-8 md:grid-cols-2">
             <div className="space-y-6">
               <div>
                 <Label>H1 / 5XL / BOLD</Label>
@@ -182,7 +182,7 @@ export default function HumanLaboratoryPage() {
               </div>
               <div>
                 <Label>MONOSPACE / MICRO / ACCENT</Label>
-                <p className="text-micro text-lime">console.log(&apos;Hello World&apos;);</p>
+                <p className="text-micro text-ink">console.log(&apos;Hello World&apos;);</p>
               </div>
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function HumanLaboratoryPage() {
                     key={token.name}
                     className="flex flex-wrap items-baseline gap-x-6 gap-y-1 px-4 py-3"
                   >
-                    <span className="w-24 shrink-0 text-xs text-lime">{utility}</span>
+                    <span className="w-24 shrink-0 text-xs text-ink">{utility}</span>
                     <span className="w-32 shrink-0 text-xs text-text-tertiary">{token.value}</span>
                     <span className={`${utility} text-white`}>The quick brown fox</span>
                   </div>
@@ -217,7 +217,7 @@ export default function HumanLaboratoryPage() {
           {/* Roles first: they are the contract components compile against.
               Primitives below are this system's private implementation of it. */}
           <div>
-            <p className="mb-2 text-micro font-bold uppercase tracking-label text-accent">
+            <p className="mb-2 text-micro font-medium uppercase tracking-label text-ink-subtle">
               ROLE — THE CONTRACT
             </p>
             <p className="mb-4 max-w-2xl text-xs text-ink-muted">
@@ -277,11 +277,11 @@ export default function HumanLaboratoryPage() {
 
         {/* 03 SPACING SCALE */}
         <Spec number="03" label="SPACING_SCALE">
-          <div className="space-y-3 border border-steel bg-surface p-8">
+          <div className="space-y-3 border border-steel p-8">
             {SPACING_STEPS.map((step) => (
               <div key={step} className="flex items-center gap-4">
                 <span className="w-8 text-right text-xs text-text-tertiary">{step}</span>
-                <div className="h-4 bg-lime" style={{ width: `${step * 4}px` }} />
+                <div className="h-4 bg-ink-subtle" style={{ width: `${step * 4}px` }} />
                 <span className="text-xs">{step * 4}px</span>
               </div>
             ))}
@@ -293,21 +293,21 @@ export default function HumanLaboratoryPage() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="space-y-3">
               <Label>SHADOW / LIME_GLOW</Label>
-              <div className="flex h-40 items-center justify-center border border-steel bg-surface shadow-lime-glow">
+              <div className="flex h-40 items-center justify-center border border-steel shadow-lime-glow">
                 <span className="text-xs text-lime">shadow-lime-glow</span>
               </div>
             </div>
 
             <div className="space-y-3">
               <Label>BORDER / HOVER_TRANSITION</Label>
-              <div className="flex h-40 cursor-pointer items-center justify-center border border-steel bg-surface transition-colors hover:border-lime">
+              <div className="flex h-40 cursor-pointer items-center justify-center border border-steel transition-colors hover:border-lime">
                 <span className="text-xs">hover:border-lime</span>
               </div>
             </div>
 
             <div className="space-y-3">
               <Label>ANIMATION / SCAN_LINE</Label>
-              <div className="relative flex h-40 items-center justify-center overflow-hidden border border-steel bg-surface">
+              <div className="relative flex h-40 items-center justify-center overflow-hidden border border-steel">
                 <div className="scan-line absolute" />
                 <span className="text-xs">.scan-line</span>
               </div>
@@ -322,16 +322,16 @@ export default function HumanLaboratoryPage() {
           description={
             <>
               Generated at build time from{' '}
-              <code className="text-lime">systems/human-laboratory/tokens/theme.css</code>. If you
+              <code className="text-ink">systems/human-laboratory/tokens/theme.css</code>. If you
               add a token there, run{' '}
-              <code className="text-lime">bun run --filter=@thl/tokens generate:tokens</code>.
+              <code className="text-ink">bun run --filter=@thl/tokens generate:tokens</code>.
             </>
           }
         >
           <div className="overflow-x-auto border border-steel">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-steel bg-surface">
+                <tr className="border-b border-steel">
                   <th className="px-4 py-3 font-bold text-text-secondary">CSS PROPERTY</th>
                   <th className="px-4 py-3 font-bold text-text-secondary">VALUE</th>
                   <th className="px-4 py-3 font-bold text-text-secondary">TAILWIND UTILITY</th>
@@ -341,9 +341,9 @@ export default function HumanLaboratoryPage() {
                 {tokens.map((token) => (
                   <tr
                     key={token.name}
-                    className="border-b border-steel/50 transition-colors hover:bg-surface"
+                    className="border-b border-ambient transition-colors hover:text-ink"
                   >
-                    <td className="px-4 py-2.5 text-lime">{token.name}</td>
+                    <td className="px-4 py-2.5 text-ink">{token.name}</td>
                     <td className="px-4 py-2.5 text-white">{token.value}</td>
                     <td className="px-4 py-2.5">{token.utility}</td>
                   </tr>
@@ -380,7 +380,7 @@ export default function HumanLaboratoryPage() {
         >
           <div className="space-y-3">
             <Label>VARIANTS</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
               <Button variant="primary">Primary</Button>
               <Button variant="outline">Outline</Button>
               <Button variant="ghost">Ghost</Button>
@@ -390,7 +390,7 @@ export default function HumanLaboratoryPage() {
 
           <div className="space-y-3">
             <Label>SIZES / TEXT AND ICON ALIGN</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
               <Button size="sm">Small</Button>
               <Button size="iconSm">
                 <ArrowDownRight size={12} />
@@ -408,7 +408,7 @@ export default function HumanLaboratoryPage() {
 
           <div className="space-y-3">
             <Label>OUTLINE / ALL SIZES</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
               <Button variant="outline" size="sm">
                 Small
               </Button>
@@ -423,7 +423,7 @@ export default function HumanLaboratoryPage() {
 
           <div className="space-y-3">
             <Label>TAG / ROW</Label>
-            <div className="flex flex-wrap items-center gap-2 border border-steel bg-surface p-6">
+            <div className="flex flex-wrap items-center gap-2 border border-steel p-6">
               {['React', 'TypeScript', 'Next.js', 'Tailwind', 'Node'].map((tag) => (
                 <Button key={tag} variant="tag" size="sm">
                   {tag}
@@ -434,7 +434,7 @@ export default function HumanLaboratoryPage() {
 
           <div className="space-y-3">
             <Label>ICON_ONLY</Label>
-            <div className="space-y-4 border border-steel bg-surface p-6">
+            <div className="space-y-4 border border-steel p-6">
               <div className="flex flex-wrap items-center gap-4">
                 <span className="w-16 text-micro text-text-tertiary">PRIMARY</span>
                 <Button variant="primary" size="icon">
@@ -485,7 +485,7 @@ export default function HumanLaboratoryPage() {
 
           <div className="space-y-3">
             <Label>DISABLED</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
               <Button variant="primary" disabled>
                 Primary
               </Button>
@@ -503,7 +503,7 @@ export default function HumanLaboratoryPage() {
 
           <div className="space-y-3">
             <Label>AS_CHILD / LINK</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel bg-surface p-6">
+            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
               <Button asChild variant="primary">
                 <Link href="/">Home Link</Link>
               </Button>
@@ -525,7 +525,9 @@ export default function HumanLaboratoryPage() {
             <div className="max-w-sm">
               <BentoCard>
                 <div className="p-6">
-                  <span className="text-micro font-bold tracking-label text-lime">CARD_LABEL</span>
+                  <span className="text-micro font-medium tracking-label text-ink-subtle">
+                    CARD_LABEL
+                  </span>
                   <p className="mt-2 text-sm">
                     A single BentoCard with placeholder content. Hover to see corner brackets
                     highlight and scale animation.
@@ -541,7 +543,7 @@ export default function HumanLaboratoryPage() {
               {[0, 1, 2].map((i) => (
                 <BentoCard key={i}>
                   <div className="p-6">
-                    <span className="text-micro font-bold tracking-label text-lime">
+                    <span className="text-micro font-medium tracking-label text-ink-subtle">
                       CARD_{String(i + 1).padStart(2, '0')}
                     </span>
                     <p className="mt-2 text-sm">Auto-staggered by BentoGrid</p>
@@ -556,19 +558,25 @@ export default function HumanLaboratoryPage() {
             <BentoGrid>
               <BentoCard className="md:col-span-2">
                 <div className="p-6">
-                  <span className="text-micro font-bold tracking-label text-lime">COL_SPAN_2</span>
+                  <span className="text-micro font-medium tracking-label text-ink-subtle">
+                    COL_SPAN_2
+                  </span>
                   <p className="mt-2 text-sm">md:col-span-2</p>
                 </div>
               </BentoCard>
               <BentoCard>
                 <div className="p-6">
-                  <span className="text-micro font-bold tracking-label text-lime">DEFAULT</span>
+                  <span className="text-micro font-medium tracking-label text-ink-subtle">
+                    DEFAULT
+                  </span>
                   <p className="mt-2 text-sm">1 column</p>
                 </div>
               </BentoCard>
               <BentoCard>
                 <div className="p-6">
-                  <span className="text-micro font-bold tracking-label text-lime">DEFAULT</span>
+                  <span className="text-micro font-medium tracking-label text-ink-subtle">
+                    DEFAULT
+                  </span>
                   <p className="mt-2 text-sm">1 column</p>
                 </div>
               </BentoCard>
@@ -600,7 +608,7 @@ export default function HumanLaboratoryPage() {
                 <BentoCard key={card.id} className={card.cls}>
                   <div className="flex h-full items-center justify-center p-6">
                     <div className="text-center">
-                      <span className="text-micro font-bold tracking-label text-lime">
+                      <span className="text-micro font-medium tracking-label text-ink-subtle">
                         {card.id}
                       </span>
                       <p className="mt-1 text-sm">{card.note}</p>

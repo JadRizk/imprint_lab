@@ -30,11 +30,22 @@ comments and multi-line values, and `lib/parse.mjs` handles both directly.
 
 Fails the build when a component references a primitive. The banned list is
 derived from `theme.css` rather than hand-kept, so adding a primitive guards it
-automatically. Catches Tailwind utilities including variants, and raw
-`var(--token)` in CSS modules.
+automatically.
 
-> Known holes: arbitrary-value utilities (`bg-[#DFFF00]`), raw hex in a CSS
-> module, and the `var(--x, fallback)` form all pass. See `REMEDIATION.md` R2.1.
+Three rules, in ascending order of strictness:
+
+- **Primitive utilities**, including variants — `hover:bg-lime`, and the same
+  names inside `cva` maps, ternaries and `clsx` arguments, because the check is
+  textual and does not depend on parsing.
+- **`var(--primitive)`** in a CSS module, in both the bare and fallback forms.
+- **Raw colour literals** — any hex, `rgb()`, `hsl()`, `oklch()` or
+  `color-mix()`. A component has no business naming a colour at all, so this
+  needs no allow-list, and it is what closes `className="bg-[#DFFF00]"` and
+  `.a { background: #DFFF00 }` — which produce a primitive exactly while naming
+  nothing the other two rules can see.
+
+The remaining gap is runtime-composed class strings, which Tailwind cannot see
+either, so they are not exploitable.
 
 ### `validate-palette [hexes]` — the chart palette
 

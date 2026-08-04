@@ -77,11 +77,22 @@ write(
    * system; components reference only these. Point them wherever you like.
    *
    * Any role used for text must clear 4.5:1 against --color-canvas. Measure it
-   * and record the ratio in a trailing comment, as system 01 does. */
+   * and record the ratio in a trailing comment, as system 01 does.
+   *
+   * ambient / line / line-strong are one LADDER, not three greys. Keep them in
+   * that order of visibility — decoration must never outrank the structure that
+   * contains it:
+   *   ambient      subdivision inside a block   (quietest)
+   *   line         the edge of a thing          (the default)
+   *   line-strong  a boundary that outranks its neighbours
+   *
+   * There is no --color-surface. A system may of course fill a panel, but the
+   * shared contract does not include one: system 01 found its fill measured
+   * 1.03:1 and never rendered, and structure is carried by line instead. */
   --color-canvas: var(--color-neutral-900);
-  --color-surface: var(--color-ink-900);
-  --color-line: var(--color-neutral-500);
   --color-ambient: var(--color-neutral-500); /* decoration only — never text */
+  --color-line: var(--color-neutral-500);
+  --color-line-strong: var(--color-neutral-100);
   --color-ink: var(--color-ink-000);
   --color-ink-muted: var(--color-neutral-100);
   --color-ink-subtle: var(--color-neutral-500);
@@ -117,7 +128,10 @@ write(
   --tracking-label: 0.1em;
 
   /* The one shadow role. Point it at a primitive, or set it to none. */
+  /* Both emission roles must exist, or a ported component's focus ring
+   * resolves to nothing. A value of none is a legitimate answer for either. */
   --shadow-glow: none;
+  --shadow-glow-strong: none;
 }
 `
 );

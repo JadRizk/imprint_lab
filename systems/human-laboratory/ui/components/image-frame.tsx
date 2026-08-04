@@ -49,7 +49,12 @@ export function ImageFrame({
   return (
     <div
       ref={containerRef}
-      className={cn('group relative overflow-hidden border border-line bg-surface', className)}
+      // `@container frame` lets the corner brackets size themselves against
+      // this frame rather than the viewport — see image-frame.module.css.
+      className={cn(
+        'group relative overflow-hidden border border-line bg-canvas [container-type:inline-size] [container-name:frame]',
+        className
+      )}
     >
       {/* Grid Background */}
       <div className={styles.gridBackground} />

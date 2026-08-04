@@ -74,6 +74,12 @@ kit's whole value is surviving email, PDF export and stripped script.
 Everything is roles-only, so it reskins with the tokens. **Never hand-write a
 colour.** If you need something bespoke, use the token variables.
 
+**There is no surface fill.** A `.panel`, a `pre`, a `.diagram` and a table are
+bounded by their edge, never by a background step — `--color-surface` was
+removed because it measured 1.03:1 against the canvas and never rendered. Do not
+reintroduce a panel background; if you need separation, use a line tier or use
+space.
+
 ### Interactive tables
 
 Add `is-sortable` to a table for click-to-sort columns (`data-nosort` on a
@@ -116,6 +122,37 @@ for the subject, `.is-ghost` for something absent or invisible), `.d-title`,
   dashes for emphasis.
 - Diagrams sit inside `.diagram`, which scrolls. Give the SVG a `viewBox` and no
   fixed width, so it scales.
+
+---
+
+## 4a. Line, weight and the accent budget
+
+**Line carries the hierarchy.** This tier draws structure with line and nothing
+else, so line needs the range elevation would otherwise provide. Pick the tier
+by what the boundary *means*:
+
+| Token | Weight | Job |
+|---|---|---|
+| `--color-ambient` | 1px | subdivision *inside* a block — table rules, grid overlays |
+| `--color-line` | 1px | the edge *of* a thing — panel, figure, input. The default |
+| `--color-line-strong` | 2px | a boundary that outranks its neighbours — section heads, the panel carrying the finding |
+| `--color-accent` | 2px | live state, or the one mark the document is making |
+
+If every rule in a document is the same 1px, nothing outranks anything and the
+page dissolves when you stop reading it. Squint at the draft: what survives
+should be what matters.
+
+**Weights carry jobs.** 500 for labels and eyebrows (400 reads frail at 10–12px
+on this ground), 600 for inline emphasis and buttons, 700 for headings only.
+
+**The accent has a budget** — a handful of events per screen, not a texture.
+Spend it on status, on the focus ring, and on the one mark the document exists
+to make. Never on a uniform table column, a measuring bar, inline code, or
+hover. If every row is accented, the accent distinguishes nothing. The worked
+example spends lime twice in 5,200px, and that is why it reads.
+
+**Glow is emission, not a drop shadow** — zero offset, tight bright core, thin
+falloff. It means *this is on*: focus, live values, a growing edge. Never hover.
 
 ---
 
@@ -221,6 +258,12 @@ sideways.
 - **Never link a font, script or stylesheet from a CDN.** Inline or omit.
 - **Dark only**, by policy. Do not add a light theme.
 - **Zero border radius**, everywhere. A deliberate constraint, not an omission.
+- **`--color-ambient` never carries text.** It is a line colour and does not meet
+  the contrast floor. This includes the `//` separators in an eyebrow — use
+  `--color-ink-subtle` and let the line tokens draw lines.
+- **No fifth series colour, and no black one.** The fold-in slot is a neutral or
+  a textured fill, never `#000` — on this ground black reads as a hole in the
+  chart rather than a category.
 - Give keyboard focus a visible state and respect `prefers-reduced-motion` —
   the reset already does both; do not undo them.
 - Every `<svg>` gets `role="img"` and a meaningful `aria-label`.

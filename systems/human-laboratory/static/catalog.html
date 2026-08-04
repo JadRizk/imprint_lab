@@ -163,8 +163,12 @@
             <div class="chip-color" style="background: var(--color-critical)"></div>
             <div class="meta"><span>CRITICAL</span><span class="v">#FF4A4A</span></div>
           </div>
+          <!-- Success has no token of its own: it IS the accent. Drawn rather than
+               left blank, because an empty bordered box reads as a missing asset
+               instead of as a statement. `.is-absent` marks it as "no separate
+               value", and the chip shows what it resolves to. -->
           <div class="swatch is-absent">
-            <div class="chip-color"></div>
+            <div class="chip-color" style="background: var(--color-accent)"></div>
             <div class="meta"><span>SUCCESS</span><span class="v">= accent</span></div>
           </div>
         </div>
@@ -192,8 +196,10 @@
         <p class="lede">
           The accent is <strong>not</strong> a series colour — at OKLCH L 0.944 it sits far outside
           the band a categorical palette needs on a dark ground, and it would dominate every chart.
-          It stays reserved for emphasis. The five series below were generated in OKLCH and
-          validated: worst adjacent CVD separation ΔE 8.2, all steps in band, all clearing 3:1.
+          It stays reserved for emphasis. The four series below were generated in OKLCH and
+          validated on ALL pairs, not adjacent ones: worst CVD separation ΔE 9.8 (tritan), worst
+          normal-vision ΔE 17.4, all four in band, all clearing 3:1. Four is the ceiling — a fifth
+          category folds into a neutral "Other", which is what the last bar shows.
         </p>
 
         <figure class="chart">
@@ -202,9 +208,9 @@
             <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-2)"></span>Components</span>
             <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-3)"></span>Emitters</span>
             <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-4)"></span>Docs</span>
-            <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-5)"></span>Other</span>
+            <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-other)"></span>Other</span>
           </div>
-          <svg viewBox="0 0 520 160" role="img" aria-label="Example bar chart across five series">
+          <svg viewBox="0 0 520 160" role="img" aria-label="Example bar chart: four categorical series plus a neutral fold-in">
             <g class="grid">
               <line x1="0" y1="40" x2="520" y2="40" />
               <line x1="0" y1="80" x2="520" y2="80" />
@@ -214,7 +220,7 @@
             <rect class="bar series-2" x="120" y="66" width="72" height="74" />
             <rect class="bar series-3" x="220" y="50" width="72" height="90" />
             <rect class="bar series-4" x="320" y="94" width="72" height="46" />
-            <rect class="bar series-5" x="420" y="110" width="72" height="30" />
+            <rect class="bar series-other" x="420" y="110" width="72" height="30" />
             <g class="axis"><line x1="0" y1="140" x2="520" y2="140" /></g>
             <line class="target-line" x1="0" y1="56" x2="520" y2="56" />
           </svg>

@@ -38,11 +38,7 @@ function getMotionProps(
   }
 
   if (isOrchestrated) {
-    return {
-      variants: cardVariants,
-      whileHover: { scale: 1.01 },
-      whileTap: { scale: 0.98 }
-    };
+    return { variants: cardVariants };
   }
 
   return {
@@ -50,9 +46,7 @@ function getMotionProps(
     initial: 'hidden' as const,
     whileInView: 'visible' as const,
     viewport: { once: true },
-    transition: { duration: 0.5, delay },
-    whileHover: { scale: 1.01 },
-    whileTap: { scale: 0.98 }
+    transition: { duration: 0.5, delay }
   };
 }
 
@@ -66,20 +60,27 @@ export function BentoCard({ className, delay = 0, children }: BentoCardProps) {
       {...motionProps}
       className={cn(
         'group relative overflow-hidden border border-line bg-canvas',
-        'transition-colors duration-300 hover:border-accent hover:bg-surface',
+        // No scale on hover: a 1% transform lands a hard 1px border on
+        // fractional pixels and the edge shimmers. A brutalist card snaps.
+        // No fill change either — there is no surface token to change it to.
+        'transition-colors duration-300 hover:border-line-strong',
         className
       )}
     >
       {/* Corner brackets — decorative, hidden from assistive technology.
-          Geometry matches ImageFrame (12px / 2px) so the bracket motif reads
-          as one language across the system. Idle in --color-ambient because
-          they carry no information until the card is hovered. */}
+          Geometry matches ImageFrame so the bracket motif reads as one
+          language across the system.
+
+          Hover climbs the line ladder — ambient to line-strong — rather than
+          firing the accent. A card is not an action, and hover is a state of
+          the pointer, not of the system; spending lime here is what made the
+          accent read as texture. Lime stays for focus, status and the finding. */}
       {CORNERS.map((corner) => (
         <div
           key={corner}
           aria-hidden="true"
           className={cn(
-            'absolute z-20 size-3 border-ambient transition-colors group-hover:border-accent',
+            'absolute z-20 size-3 border-ambient transition-colors group-hover:border-line-strong',
             corner
           )}
         />

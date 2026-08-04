@@ -33,7 +33,7 @@ export default function HomePage() {
                 key={system.slug}
                 href={`/systems/${system.slug}`}
                 data-system={system.slug}
-                className="group relative border border-line bg-surface p-6 transition-colors hover:border-accent"
+                className="group relative border border-line p-6 transition-colors hover:border-accent"
               >
                 <div className="flex items-baseline justify-between gap-4">
                   <span className="text-micro tracking-label text-accent">{system.namespace}</span>

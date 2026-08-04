@@ -169,8 +169,9 @@
   color: var(--color-ink-subtle);
   font-weight: 700;
   padding: 12px 16px;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-line);
+  /* The header/body boundary outranks the row rules beneath it, so it takes the
+     emphatic tier. This is the line ladder doing what a fill used to fake. */
+  border-bottom: 2px solid var(--color-line-strong);
   white-space: nowrap;
 }
 
@@ -184,8 +185,15 @@
   border-bottom: 0;
 }
 
+/* Hover is drawn, not filled. A fill step is not available on this ground —
+   the old one measured 1.03:1 — so the row brightens its ink and grows an
+   emphatic edge instead. */
 .table-wrap tbody tr:hover td {
-  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.table-wrap tbody tr:hover td:first-child {
+  box-shadow: inset 2px 0 0 var(--color-line-strong);
 }
 
 /* Emphasise the identifying column. */
@@ -228,7 +236,6 @@
 
 .panel {
   border: 1px solid var(--color-line);
-  background: var(--color-surface);
   padding: 22px 24px;
   display: flex;
   flex-direction: column;
@@ -338,14 +345,390 @@
   opacity: 0.55;
 }
 
+/* ── Tabs ──
+ * Radio-driven, so switching a panel costs no script: the checked input *is*
+ * the state and CSS does the showing. interact.js upgrades the labels into a
+ * real ARIA tablist with arrow-key navigation, but it only moves focus and
+ * syncs attributes — the radio stays the single source of truth for which
+ * panel is visible, so the enhanced and unenhanced pages cannot disagree.
+ *
+ *   <div class="tabs">
+ *     <input class="tab-radio" type="radio" name="g" id="g-1" checked>
+ *     <input class="tab-radio" type="radio" name="g" id="g-2">
+ *     <div class="tab-list"><label class="tab" for="g-1">ONE</label>…</div>
+ *     <div class="tab-panels"><section class="tab-panel">…</section>…</div>
+ *   </div>
+ *
+ * The pairing is positional — the nth radio shows the nth panel — which is why
+ * the rules below are enumerated rather than expressed once. Six is the
+ * ceiling: a seventh tab is a document that wants sections, not tabs.
+ *
+ * Tabs hide content. Never put a finding behind one; put the alternate *view*
+ * of a finding behind one — the chart and its data table, the summary and the
+ * raw log.
+ */
+
+.tabs {
+  position: relative;
+}
+
+/* Visually gone, still focusable. display:none would take the input out of the
+   tab order and leave the unscripted page keyboard-inoperable. */
+.tabs > .tab-radio {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 4px;
+  border-block-end: 1px solid var(--color-line);
+}
+
+.tab {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  padding: 9px 14px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  /* The active marker is always occupying its space, so selecting a tab does
+     not shift the row by 2px. */
+  border-block-end: 2px solid transparent;
+  margin-block-end: -1px;
+}
+
+.tab:hover {
+  color: var(--color-ink);
+}
+
+.tab-panel {
+  display: none;
+  padding-block-start: 22px;
+}
+
+.tabs > .tab-radio:nth-of-type(1):checked ~ .tab-list > .tab:nth-child(1),
+.tabs > .tab-radio:nth-of-type(2):checked ~ .tab-list > .tab:nth-child(2),
+.tabs > .tab-radio:nth-of-type(3):checked ~ .tab-list > .tab:nth-child(3),
+.tabs > .tab-radio:nth-of-type(4):checked ~ .tab-list > .tab:nth-child(4),
+.tabs > .tab-radio:nth-of-type(5):checked ~ .tab-list > .tab:nth-child(5),
+.tabs > .tab-radio:nth-of-type(6):checked ~ .tab-list > .tab:nth-child(6) {
+  color: var(--color-accent);
+  border-block-end-color: var(--color-accent);
+}
+
+.tabs > .tab-radio:nth-of-type(1):checked ~ .tab-panels > .tab-panel:nth-child(1),
+.tabs > .tab-radio:nth-of-type(2):checked ~ .tab-panels > .tab-panel:nth-child(2),
+.tabs > .tab-radio:nth-of-type(3):checked ~ .tab-panels > .tab-panel:nth-child(3),
+.tabs > .tab-radio:nth-of-type(4):checked ~ .tab-panels > .tab-panel:nth-child(4),
+.tabs > .tab-radio:nth-of-type(5):checked ~ .tab-panels > .tab-panel:nth-child(5),
+.tabs > .tab-radio:nth-of-type(6):checked ~ .tab-panels > .tab-panel:nth-child(6) {
+  display: block;
+}
+
+/* Without script the focused control is the hidden radio, so the ring has to be
+   drawn on the label it belongs to. */
+.tabs > .tab-radio:nth-of-type(1):focus-visible ~ .tab-list > .tab:nth-child(1),
+.tabs > .tab-radio:nth-of-type(2):focus-visible ~ .tab-list > .tab:nth-child(2),
+.tabs > .tab-radio:nth-of-type(3):focus-visible ~ .tab-list > .tab:nth-child(3),
+.tabs > .tab-radio:nth-of-type(4):focus-visible ~ .tab-list > .tab:nth-child(4),
+.tabs > .tab-radio:nth-of-type(5):focus-visible ~ .tab-list > .tab:nth-child(5),
+.tabs > .tab-radio:nth-of-type(6):focus-visible ~ .tab-list > .tab:nth-child(6) {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* Paper has no tabs. Every panel prints, labelled, in document order. */
+@media print {
+  .tabs > .tab-panels > .tab-panel {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat the :checked rule */
+    display: block !important;
+    border-block-start: 1px solid var(--color-ambient);
+  }
+  .tab {
+    color: var(--color-ink);
+  }
+}
+
+/* ── Disclosure ──
+ * Native <details>, so it opens with the script stripped and its state is the
+ * browser's, not ours. Use for the long tail of a document — evidence, method,
+ * the full log — where the summary line is genuinely enough for most readers.
+ */
+
+.accordion {
+  border: 1px solid var(--color-line);
+}
+
+.accordion > .disclosure + .disclosure {
+  border-block-start: 1px solid var(--color-ambient);
+}
+
+.disclosure > summary {
+  padding: 12px 16px;
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure > summary::before {
+  content: "▸ ";
+  color: var(--color-ink-subtle);
+}
+
+.disclosure[open] > summary::before {
+  content: "▾ ";
+  color: var(--color-accent);
+}
+
+/* Ink, not accent — matching .tab:hover a few rules above. Hover is a state of
+   the pointer, not of the machine; the accent marks what is open, not what the
+   cursor happens to be over. */
+.disclosure > summary:hover {
+  color: var(--color-ink);
+}
+
+/* summary is focusable but is neither a link, a button, nor [tabindex], so the
+   reset's focus rule does not reach it. */
+.disclosure > summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.disclosure > .disclosure-body {
+  padding: 0 16px 16px;
+  font-size: var(--text-xs);
+}
+
+/* Best effort: a closed disclosure has no rendered content to print, and this
+   is the only lever CSS has on it. */
+@media print {
+  .disclosure:not([open]) > *:not(summary) {
+    display: block;
+  }
+}
+
+/* ── Timeline ──
+ * A sequence where the interval matters. If the gaps between entries carry no
+ * meaning, this is a list — use one.
+ */
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline > .event {
+  position: relative;
+  border-inline-start: 1px solid var(--color-ambient);
+  padding: 0 0 22px 22px;
+}
+
+/* The spine stops at the last mark rather than running off the end. The border
+   stays, so the entry keeps its indent. */
+.timeline > .event:last-child {
+  border-inline-start-color: transparent;
+  padding-block-end: 0;
+}
+
+.timeline > .event::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -4px;
+  inset-block-start: 6px;
+  inline-size: 7px;
+  block-size: 7px;
+  background: var(--color-line-strong);
+}
+
+.timeline > .event.is-accent::before {
+  background: var(--color-accent);
+}
+.timeline > .event.is-critical::before {
+  background: var(--color-critical);
+}
+.timeline > .event.is-warning::before {
+  background: var(--color-warning);
+}
+
+.timeline > .event > .when {
+  display: block;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+.timeline > .event > .what {
+  display: block;
+  color: var(--color-ink);
+  font-size: var(--text-xs);
+}
+
+.timeline > .event > .detail {
+  display: block;
+  font-size: var(--text-xs);
+  max-inline-size: 78ch;
+}
+
+/* ── Meter ──
+ * One number against its ceiling. Drawn, not filled with a gradient — the fill
+ * is the measurement and the mark is the threshold it is being read against.
+ *
+ *   <div class="meter is-warning">
+ *     <div class="meter-head"><span>P99_LATENCY</span><span class="v">412ms</span></div>
+ *     <div class="meter-track" role="meter" aria-valuenow="412" …>
+ *       <div class="meter-fill" style="--v: 82%"></div>
+ *       <div class="meter-mark" style="--at: 80%"></div>
+ *     </div>
+ *   </div>
+ */
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.meter-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+.meter-head > .v {
+  color: var(--color-ink);
+  letter-spacing: 0;
+}
+
+.meter-track {
+  position: relative;
+  block-size: 10px;
+  border: 1px solid var(--color-line);
+}
+
+.meter-fill {
+  block-size: 100%;
+  inline-size: var(--v, 0%);
+  background: var(--color-line-strong);
+}
+
+.meter.is-accent > .meter-track > .meter-fill {
+  background: var(--color-accent);
+}
+.meter.is-warning > .meter-track > .meter-fill {
+  background: var(--color-warning);
+}
+.meter.is-critical > .meter-track > .meter-fill {
+  background: var(--color-critical);
+}
+
+/* The threshold. Dashed and accented, the same language the target line uses in
+   a chart, so a budget reads the same in both. */
+.meter-mark {
+  position: absolute;
+  inset-block: -3px;
+  inset-inline-start: var(--at, 100%);
+  inline-size: 0;
+  border-inline-start: 1px dashed var(--color-accent);
+}
+
+/* ── Notes and footnotes ──
+ * A margin note glosses; a footnote sources. Keeping them different shapes
+ * keeps the difference readable.
+ */
+
+.margin-note {
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+  border-inline-start: 1px solid var(--color-ambient);
+  padding-inline-start: 12px;
+  margin-block: 12px;
+  max-inline-size: 34ch;
+}
+
+/* Only once there is a gutter to put it in. Below this it stays in the flow as
+   an indented block, which is a fine second state. */
+@media (min-width: 1180px) {
+  .margin-note {
+    float: inline-end;
+    inline-size: 26ch;
+    margin-inline-start: 32px;
+    margin-block-start: 4px;
+  }
+}
+
+.fn-ref {
+  font-size: 0.72em;
+  vertical-align: super;
+  line-height: 0;
+  border-block-end: 0;
+}
+
+.footnotes {
+  margin-block-start: 44px;
+  border-block-start: 1px solid var(--color-line);
+  padding-block-start: 16px;
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+.footnotes > ol {
+  list-style: none;
+  counter-reset: fn;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footnotes > ol > li {
+  counter-increment: fn;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  scroll-margin-block-start: 40px;
+}
+
+.footnotes > ol > li::before {
+  content: "[" counter(fn) "]";
+  color: var(--color-ink-subtle);
+}
+
+/* The note you were sent to. Without this the jump lands you in a grey block
+   with no indication of which line was the destination. */
+.footnotes > ol > li:target {
+  color: var(--color-ink-muted);
+}
+
+.footnotes > ol > li:target::before {
+  color: var(--color-accent);
+}
+
 /* ── Code and trees ── */
 
 code,
 .code {
   font-family: var(--font-mono);
   font-size: 0.92em;
-  color: var(--color-accent);
-  background: var(--color-surface);
+  /* Code is a register, not a signal. The mono family and the rule carry it;
+     spending the accent here is what made lime the page's texture. */
+  color: var(--color-ink);
   border: 1px solid var(--color-ambient);
   padding: 0.05em 0.35em;
   white-space: nowrap;
@@ -354,7 +737,6 @@ code,
 pre {
   overflow-x: auto;
   border: 1px solid var(--color-line);
-  background: var(--color-surface);
   padding: 20px 22px;
   font-size: var(--text-xs);
   line-height: 1.8;
@@ -455,15 +837,19 @@ pre.tree {
   user-select: none;
 }
 
+/* Ink on hover; the accent is reserved for the column actually sorted, which
+   is the state that carries information. */
 .table-wrap table.is-sortable thead th[role="button"]:hover {
-  color: var(--color-accent);
+  color: var(--color-ink);
 }
 
 /* The indicator has to be present in all three states or the column heads jump
- * as you sort. Idle is a dim glyph, not an absent one. */
+ * as you sort. Idle is a dim glyph, not an absent one — which is why it wears a
+ * TEXT token. --color-ambient is a line colour at 1.23:1 and would render this
+ * glyph invisible, breaking the rule that decoration tokens never carry text. */
 .table-wrap table.is-sortable thead th[role="button"]::after {
   content: " ↕";
-  color: var(--color-ambient);
+  color: var(--color-ink-subtle);
 }
 .table-wrap table.is-sortable thead th[aria-sort="ascending"]::after {
   content: " ↑";
@@ -502,7 +888,10 @@ pre.tree {
 .filter-bar input {
   flex: 1 1 220px;
   min-inline-size: 0;
-  background: var(--color-surface);
+  /* Explicitly transparent, not merely unset — a form control carries a UA
+     default background (light, in every engine) that survives removing the
+     declaration, so the field renders as a pale bar on an obsidian page. */
+  background: transparent;
   border: 1px solid var(--color-line);
   color: var(--color-ink);
   font: inherit;

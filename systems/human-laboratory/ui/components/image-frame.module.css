@@ -19,7 +19,7 @@
   z-index: 10;
   width: 100%;
   overflow: hidden;
-  background-color: var(--color-surface);
+  background-color: var(--color-canvas);
 }
 
 .imageLayerBorder {
@@ -47,12 +47,30 @@
 
 /* ── Corner markers ── */
 
-/* 12px / 2px — matches BentoCard's brackets so the motif is one language. */
+/* The bracket scales with what it brackets. At a fixed 12px it was 12% of a
+   small card's edge and 2% of the hero frame's — proportionate in one place and
+   a speck in the other. A motif meaning "this is a bounded instrument" has to
+   hold as a RATIO, so it steps with the container. Geometry still matches
+   BentoCard's brackets, so the motif stays one language. */
 .corner {
   position: absolute;
   z-index: 15;
   width: calc(var(--spacing) * 3);
   height: calc(var(--spacing) * 3);
+}
+
+@container frame (min-width: 480px) {
+  .corner {
+    width: calc(var(--spacing) * 5);
+    height: calc(var(--spacing) * 5);
+  }
+}
+
+@container frame (min-width: 900px) {
+  .corner {
+    width: calc(var(--spacing) * 7);
+    height: calc(var(--spacing) * 7);
+  }
 }
 
 .cornerTopLeft {

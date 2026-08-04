@@ -58,12 +58,33 @@ export const tokens: Token[] = [
     "subcategory": "core"
   },
   {
+    "name": "--color-slate",
+    "value": "#242424",
+    "resolved": "#242424",
+    "base": "#242424",
+    "category": "color",
+    "utility": "bg-slate · text-slate · border-slate",
+    "note": "1.23:1 — the quietest drawn line",
+    "subcategory": "core"
+  },
+  {
     "name": "--color-steel",
-    "value": "#333333",
-    "resolved": "#333333",
-    "base": "#333333",
+    "value": "#3A3A3A",
+    "resolved": "#3A3A3A",
+    "base": "#3A3A3A",
     "category": "color",
     "utility": "bg-steel · text-steel · border-steel",
+    "note": "1.69:1 — the default drawn line",
+    "subcategory": "core"
+  },
+  {
+    "name": "--color-graphite",
+    "value": "#585858",
+    "resolved": "#585858",
+    "base": "#585858",
+    "category": "color",
+    "utility": "bg-graphite · text-graphite · border-graphite",
+    "note": "2.69:1 — the loud drawn line",
     "subcategory": "core"
   },
   {
@@ -83,15 +104,6 @@ export const tokens: Token[] = [
     "category": "color",
     "utility": "bg-black · text-black · border-black",
     "subcategory": "core"
-  },
-  {
-    "name": "--color-surface",
-    "value": "#0A0A0A",
-    "resolved": "#0A0A0A",
-    "base": "#0A0A0A",
-    "category": "color",
-    "utility": "bg-surface · text-surface · border-surface",
-    "subcategory": "role"
   },
   {
     "name": "--color-text-secondary",
@@ -115,11 +127,12 @@ export const tokens: Token[] = [
   },
   {
     "name": "--color-ambient",
-    "value": "#3A3A3A",
-    "resolved": "#3A3A3A",
-    "base": "#3A3A3A",
+    "value": "var(--color-slate)",
+    "resolved": "#242424",
+    "base": "#242424",
     "category": "color",
     "utility": "bg-ambient · border-ambient",
+    "aliasOf": "--color-slate",
     "subcategory": "role"
   },
   {
@@ -130,16 +143,6 @@ export const tokens: Token[] = [
     "category": "color",
     "utility": "bg-canvas · text-canvas · border-canvas",
     "aliasOf": "--color-obsidian",
-    "subcategory": "role"
-  },
-  {
-    "name": "--color-line",
-    "value": "var(--color-steel)",
-    "resolved": "#333333",
-    "base": "#333333",
-    "category": "color",
-    "utility": "bg-line · text-line · border-line",
-    "aliasOf": "--color-steel",
     "subcategory": "role"
   },
   {
@@ -193,6 +196,26 @@ export const tokens: Token[] = [
     "subcategory": "role"
   },
   {
+    "name": "--color-line",
+    "value": "var(--color-steel)",
+    "resolved": "#3A3A3A",
+    "base": "#3A3A3A",
+    "category": "color",
+    "utility": "bg-line · text-line · border-line",
+    "aliasOf": "--color-steel",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-line-strong",
+    "value": "var(--color-graphite)",
+    "resolved": "#585858",
+    "base": "#585858",
+    "category": "color",
+    "utility": "bg-line-strong · text-line-strong · border-line-strong",
+    "aliasOf": "--color-graphite",
+    "subcategory": "role"
+  },
+  {
     "name": "--color-critical",
     "value": "#FF4A4A",
     "resolved": "#FF4A4A",
@@ -204,12 +227,12 @@ export const tokens: Token[] = [
   },
   {
     "name": "--color-warning",
-    "value": "#FF8A00",
-    "resolved": "#FF8A00",
-    "base": "#FF8A00",
+    "value": "#C86A00",
+    "resolved": "#C86A00",
+    "base": "#C86A00",
     "category": "color",
     "utility": "bg-warning · text-warning · border-warning",
-    "note": "8.11:1 — warnings, degraded states",
+    "note": "5.04:1 — warnings, degraded states",
     "subcategory": "role"
   },
   {
@@ -337,28 +360,37 @@ export const tokens: Token[] = [
   },
   {
     "name": "--shadow-lime-glow",
-    "value": "0 0 15px rgba(223, 255, 0, 0.3)",
-    "resolved": "0 0 15px rgba(223, 255, 0, 0.3)",
-    "base": "0 0 15px rgba(223, 255, 0, 0.3)",
+    "value": "0 0 4px rgba(223, 255, 0, 0.45), 0 0 14px rgba(223, 255, 0, 0.22)",
+    "resolved": "0 0 4px rgba(223, 255, 0, 0.45), 0 0 14px rgba(223, 255, 0, 0.22)",
+    "base": "0 0 4px rgba(223, 255, 0, 0.45), 0 0 14px rgba(223, 255, 0, 0.22)",
     "category": "shadow",
     "utility": "shadow-lime-glow"
   },
   {
     "name": "--shadow-lime-glow-lg",
-    "value": "0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1)",
-    "resolved": "0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1)",
-    "base": "0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1)",
+    "value": "0 0 6px rgba(223, 255, 0, 0.55), 0 0 22px rgba(223, 255, 0, 0.28), 0 0 60px rgba(223, 255, 0, 0.08)",
+    "resolved": "0 0 6px rgba(223, 255, 0, 0.55), 0 0 22px rgba(223, 255, 0, 0.28), 0 0 60px rgba(223, 255, 0, 0.08)",
+    "base": "0 0 6px rgba(223, 255, 0, 0.55), 0 0 22px rgba(223, 255, 0, 0.28), 0 0 60px rgba(223, 255, 0, 0.08)",
     "category": "shadow",
     "utility": "shadow-lime-glow-lg"
   },
   {
     "name": "--shadow-glow",
     "value": "var(--shadow-lime-glow)",
-    "resolved": "0 0 15px rgba(223, 255, 0, 0.3)",
-    "base": "0 0 15px rgba(223, 255, 0, 0.3)",
+    "resolved": "0 0 4px rgba(223, 255, 0, 0.45), 0 0 14px rgba(223, 255, 0, 0.22)",
+    "base": "0 0 4px rgba(223, 255, 0, 0.45), 0 0 14px rgba(223, 255, 0, 0.22)",
     "category": "shadow",
     "utility": "shadow-glow",
     "aliasOf": "--shadow-lime-glow"
+  },
+  {
+    "name": "--shadow-glow-strong",
+    "value": "var(--shadow-lime-glow-lg)",
+    "resolved": "0 0 6px rgba(223, 255, 0, 0.55), 0 0 22px rgba(223, 255, 0, 0.28), 0 0 60px rgba(223, 255, 0, 0.08)",
+    "base": "0 0 6px rgba(223, 255, 0, 0.55), 0 0 22px rgba(223, 255, 0, 0.28), 0 0 60px rgba(223, 255, 0, 0.08)",
+    "category": "shadow",
+    "utility": "shadow-glow-strong",
+    "aliasOf": "--shadow-lime-glow-lg"
   },
   {
     "name": "--animate-scan",

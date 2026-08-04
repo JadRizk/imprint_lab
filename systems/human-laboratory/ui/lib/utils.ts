@@ -22,6 +22,12 @@ export function cn(...inputs: ClassValue[]): string {
 /**
  * The one focus indicator for the system. Every interactive surface uses
  * this so keyboard focus reads identically everywhere.
+ *
+ * It EMITS. Focus is the clearest case of "this element is live", and it was
+ * previously a flat outline in the same accent as the system's eight hover
+ * rules — so the one state a keyboard user depends on looked identical to the
+ * one a mouse user causes by accident. The glow is what separates them, and it
+ * costs no new colour.
  */
 export const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:shadow-glow-strong';

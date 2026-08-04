@@ -46,6 +46,8 @@
       "bin": {
         "token-tools": "./generate.mjs",
         "check-roles": "./check-roles.mjs",
+        "smoke-install": "./smoke-install.mjs",
+        "validate-palette": "./validate-palette.mjs",
       },
     },
     "packages/typescript-config": {

@@ -2,7 +2,7 @@
 // Validates a categorical chart palette. Computed, never eyeballed.
 //
 //   validate-palette                       # checks the shipped palettes
-//   validate-palette "#aaa,#bbb" --surface "#0A0A0A"
+//   validate-palette "#aaa,#bbb" --surface "#0F0F0F"
 //
 // Committed because an uncommitted validator makes its own claim
 // unreproducible — the archaeology this repo exists to prevent. Cross-checked
@@ -160,7 +160,10 @@ if (positional.length) {
   sets = [{ name: 'human-laboratory series', hexes }];
 }
 
-const surfaces = flag('surface', '#0A0A0A,#0F0F0F')
+// The grounds a chart can sit on. System 01 has exactly one — panels are
+// bounded by line, not filled, so --color-surface no longer exists. Override
+// with --surface for a system that does fill.
+const surfaces = flag('surface', '#0F0F0F')
   .split(',')
   .map((x) => x.trim());
 

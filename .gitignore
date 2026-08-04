@@ -39,8 +39,14 @@ yarn-error.log*
 
 # AI / Agent tooling
 .agents/
-.claude/
 .gemini/
+
+# .claude is local config EXCEPT skills/, which ship with the repo — a skill
+# that documents how to add a system to imprint_lab has to travel with it.
+# Git cannot re-include a path whose parent directory is excluded, so this
+# ignores the contents of .claude rather than the directory itself.
+.claude/*
+!.claude/skills/
 
 # Git worktrees
 .worktrees/

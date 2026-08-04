@@ -71,9 +71,14 @@ compositions may use primitives freely.
 `check-roles` fails the build on violation. It derives its banned list from
 `theme.css`, so adding a primitive guards it automatically.
 
-The eleven roles: `canvas` · `surface` · `line` · `ambient` · `ink` ·
+The eleven roles: `canvas` · `ambient` · `line` · `line-strong` · `ink` ·
 `ink-muted` · `ink-subtle` · `accent` · `accent-ink` · `critical` · `warning`.
-Plus one non-colour role, `--shadow-glow`.
+Plus two non-colour roles, `--shadow-glow` and `--shadow-glow-strong`.
+
+There is deliberately **no `surface`**. It measured 1.03:1 against the canvas and
+never rendered; pure black only reaches 1.14:1 here, so a panel cannot be made
+perceptibly darker and the only visible fill is a lighter grey box — which is
+elevation. Panels are bounded by line. See contract 5.
 
 ### 2. The system version is the atomic unit
 
@@ -84,6 +89,8 @@ breaks every project silently.
 ### 3. Decoration and text are different roles
 
 `--color-ambient` is for grid overlays, idle brackets and rules. **Never text.**
+This includes `//` separators in an eyebrow — two shipped report templates used
+it as a text colour before August 2026.
 
 **Any token used for text must clear 4.5:1 against the canvas.** Measured ratios
 live beside each token in `theme.css`. Not negotiable per-component — if a label
@@ -93,7 +100,12 @@ looks too loud, change the hierarchy or the size, not the contrast.
 |---|---|---|
 | `--color-ink-muted` `#A3A3A3` | 7.62:1 | Body copy — the `body` default |
 | `--color-ink-subtle` `#7C7C7C` | 4.59:1 | Labels, metadata, eyebrows |
-| `--color-ambient` `#3A3A3A` | — | **Decoration only. Never text.** |
+| `--color-ambient` `#242424` | — | **Decoration only. Never text.** |
+
+Severity reads by luminance on this ground, so `--color-warning` `#C86A00`
+(5.04:1) must stay **darker** than `--color-critical` `#FF4A4A` (5.78:1). It
+shipped at `#FF8A00` / 8.11:1 and shouted 1.4x louder than the colour meaning
+"this is worse".
 
 ### 4. Base layers must be scopable
 
@@ -112,6 +124,42 @@ registry `style` item do the same.
 > scrollbar have no container to move to and stay global. Two systems with
 > different colour schemes cannot share a document; the second needs its own
 > page. That is a constraint to design around, not a bug to fix.
+
+### 5. Line carries the hierarchy, and the accent has a budget
+
+This system draws structure with line and nothing else, so line needs the range
+elevation would otherwise provide. Four tiers, picked by what a boundary
+**means** — never by taste:
+
+| Role | Weight | Ratio | Job |
+|---|---|---|---|
+| `--color-ambient` `#242424` | 1px | 1.23:1 | Subdivision *inside* a panel — table rules, grid overlays |
+| `--color-line` `#3A3A3A` | 1px | 1.69:1 | The edge *of* a thing — card, panel, frame, input. The default |
+| `--color-line-strong` `#585858` | 2px | 2.69:1 | A boundary that outranks its neighbours — section divisions, selected edge |
+| `--color-accent` `#DFFF00` | 2px | 16.83:1 | Live state — focus, the growing edge, the finding |
+
+Ambient is **darker** than line on purpose. Decoration that outranks the
+structure containing it is the inversion this system shipped with: ambient was
+`#3A3A3A` against a `#333333` line, so an `ImageFrame`'s grid overlay drew
+brighter than the frame around it.
+
+> **The squint test.** Blur the page until you cannot read it. What survives
+> should be what matters. Before this ladder, 392 of the components page's
+> borders were the same 1px at 1.52:1 — nothing outranked anything, and whole
+> sections vanished.
+
+**The accent is a signal with a budget**, not a texture — a handful of events per
+screen. It is not for uniform table columns, scale bars, inline code, card
+labels, or hover. If every row is lime, lime distinguishes nothing.
+`SectionHeader` is neutral by default and takes `marked` for the one section
+carrying the finding. Hover climbs the line ladder instead: hover is a state of
+the pointer, not of the machine.
+
+**Glow is emission, not a drop shadow.** A drop shadow claims depth — offset,
+soft spread, imaginary sun — and is the vocabulary this system rejects. Glow
+claims *energy*: this element is on. Zero offset, bright tight core, thin
+falloff. It belongs on focus, the active item, a live readout and a growing
+edge. Never on hover.
 
 ---
 
@@ -250,10 +298,15 @@ review cannot:
 | Token source | `theme.css`, hand-authored, everything generated | Native to Tailwind v4; one source, many targets |
 | CSS parser | Hand-rolled, not lightningcss | lightningcss sees zero custom properties inside `@theme` and throws on the namespace-reset syntax |
 | Unused tokens | `@theme static` | Hand-authored CSS must be able to rely on a variable existing; measured cost 328 bytes |
-| Chart series | Four, validated on all pairs | No fifth colour clears the floors while staying clear of the accent and status hues |
+| Chart series | Four, validated on all pairs | No fifth colour clears the floors while staying clear of the accent and status hues; a fifth category folds into the neutral `--chart-other` |
+| Elevation | None — no surface fill | A 1.03:1 step is not subtle, it is absent; line carries every boundary instead |
+| Line weight | Four tiers: ambient / line / line-strong / accent | One hairline doing every job is why pages dissolved at squint distance |
+| Glow | Emission, not shadow | Zero offset, tight core; follows current (focus, live, growing edge), never hover |
+| Font weights | 300/500/600/700 have assigned jobs | Only 400 and 700 ever rendered, so the interface read flat even where it was dense |
 | Text contrast | 4.5:1 floor, enforced by token | Splitting decoration into `--color-ambient` keeps the mood without sacrificing legibility |
 | Type scale | Closed and tokenized, incl. `micro` | `--text-*` is reset so it cannot silently fall back to Tailwind's defaults |
 | Page measure | `PageShell`, not `container` | Tailwind's `container` is breakpoint-dependent |
+| Prose measure | `64ch`, not a pixel width | The body face is monospaced; every glyph is an `m`, so the comfortable line is 60–72 characters |
 | Theming | Dark only | Deferred, not forgotten; the role layer makes adding light mode small |
 | Radius | Zero, everywhere | A constraint, not an omission |
 

@@ -8,7 +8,10 @@ import { cn, focusRing } from '../lib/utils';
 const buttonVariants = cva(
   [
     'inline-flex items-center justify-center whitespace-nowrap',
-    'font-mono font-bold uppercase tracking-label',
+    // font-semibold, not bold: 700 is the heading weight, and a button set in
+    // it competes with the headings around it. 600 holds a tracked, uppercase
+    // label at these sizes without shouting.
+    'font-mono font-semibold uppercase tracking-label',
     'transition-colors duration-300',
     'disabled:pointer-events-none disabled:opacity-40',
     focusRing,

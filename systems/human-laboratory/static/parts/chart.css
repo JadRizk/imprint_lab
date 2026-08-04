@@ -50,6 +50,9 @@
   --chart-div-4: #498fb4;
   --chart-div-5: #006da1;
 
+  /* The fold-in slot for a fifth-and-beyond category. Neutral by design. */
+  --chart-other: var(--color-line-strong);
+
   /* Chart furniture, deliberately recessive. */
   --chart-grid: var(--color-ambient);
   --chart-axis: var(--color-line);
@@ -101,10 +104,12 @@
   shape-rendering: crispEdges;
 }
 
-/* A 2px surface gap keeps adjacent and stacked fills legible without borders. */
+/* A 2px gap keeps adjacent and stacked fills legible without borders. It
+   strokes in the GROUND colour, so the gap reads as a cut rather than a line —
+   which is why it follows --color-canvas and not a panel fill. */
 .chart .bar + .bar,
 .chart .stack > * + * {
-  stroke: var(--color-surface);
+  stroke: var(--color-canvas);
   stroke-width: 2;
 }
 
@@ -122,7 +127,7 @@
 
 .chart .dot {
   r: 4; /* ≥8px diameter */
-  stroke: var(--color-surface);
+  stroke: var(--color-canvas);
   stroke-width: 2;
 }
 
@@ -157,7 +162,22 @@
   fill: var(--chart-4);
   stroke: var(--chart-4);
 }
-/* .series-5 is deliberately absent. Four is the ceiling — see the header. */
+/* .series-5 is deliberately absent. Four is the ceiling — see the header.
+ *
+ * What a fifth category gets instead: the fold-in slot. It is a NEUTRAL, not a
+ * hue, so it reads as "everything else" rather than as a peer of the four. It
+ * must never be #000 — on this ground black is a hole in the chart, not a
+ * category. (catalog.html used to reference an undefined --chart-5 here, which
+ * computed to nothing and rendered exactly that hole.) */
+.series-other {
+  fill: var(--chart-other);
+}
+
+.chart line.series-other,
+.chart path.series-other {
+  stroke: var(--chart-other);
+  fill: none;
+}
 
 /* Texture, for the CVD / print / forced-colors case. Pair with a series slot. */
 .is-textured {
