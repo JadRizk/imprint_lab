@@ -14,6 +14,7 @@
 // placeholder that fails the contrast floor on purpose, so the first thing you
 // must do is make real decisions.
 
+import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -331,6 +332,19 @@ only, borders are structural, a single accent.
 `
 );
 
+// Hand the output to the repo's own formatter rather than trying to match it
+// from string templates. A scaffold that fails `lint` and `check` on the first
+// run teaches that the gates are noise, and JSON.stringify's array wrapping does
+// not agree with Biome's. This absorbs any future formatter config change too.
+const fmt = spawnSync('bunx', ['biome', 'check', '--write', `systems/${slug}`], {
+  cwd: repoRoot,
+  encoding: 'utf8'
+});
+if (fmt.status !== 0) {
+  console.error(`\nwarning: could not format systems/${slug} — run \`bun run check\` yourself`);
+  if (fmt.stderr) console.error(fmt.stderr.trim());
+}
+
 console.log(`
 Scaffolded systems/${slug} (@${ns})
 
@@ -347,7 +361,11 @@ Next:
   3. Every role used for text must clear 4.5:1 against --color-canvas. Measure
      it and record the ratio beside the token.
   4. bun run --filter=@${ns}/tokens generate:tokens
-  5. Add to apps/docs: an entry in lib/systems.ts, an @import of
-     @${ns}/tokens/theme.scoped.css in globals.css, and a page under
+  5. Add to apps/docs/app/globals.css, BOTH lines — the @import alone is not
+     enough, and the failure is silent (utilities simply never generate):
+       @import "@${ns}/tokens/theme.scoped.css";
+       @source "../../../systems/${slug}/ui";
+  6. Add an entry to apps/docs/lib/systems.ts and a page under
      app/systems/${slug}/.
+  7. bun run lint && bun run check && bun run test
 `);
