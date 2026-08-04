@@ -268,11 +268,31 @@ of what actually landed; treat them as the backlog.
 Nothing currently blocks a second system — the scaffold passes build,
 check-types, lint, check and test cold, and the base-layer contract is met.
 
-**Still open:** the repo name is unsettled (`imprint_lab` in `package.json`,
-`the_human_laboratory` on disk and on the remote, and a `registry.json` homepage
-that does not resolve). Settle it **before anything installs from the registry**.
-The component coverage gap (input, card, badge, dialog, table) and light mode
-remain deliberately out of scope.
+### Naming — settled
+
+**The repo is `imprint_lab`.** Do not re-open this. Everything in code and docs
+already says so: `package.json`, `registry.json`, `README.md`, `REFACTOR.md`, the
+scaffold template, and the registry URL `https://imprint-lab.vercel.app/r/…`.
+
+`the_human_laboratory` is **system 01's name, not the repo's** — the directory
+`systems/human-laboratory/` and the `@thl` namespace keep it and must not be
+renamed.
+
+Two things still carry the old name, and **neither can be changed from inside the
+repo** — they need doing by hand:
+
+1. The git remote is `github.com/JadRizk/the_human_laboratory`.
+2. The working directory is `the_human_laboratory`.
+
+And one thing is aspirational rather than wrong: `https://imprint-lab.vercel.app`
+is the intended registry host and is referenced consistently, but **nothing is
+deployed there yet**, so `shadcn add @thl/button` fails against it today. Deploy
+`apps/docs` before telling anyone to install from the registry — a published
+registry item advertising a dead homepage is the one part of this that is hard to
+walk back.
+
+**Also out of scope, deliberately:** the component coverage gap (input, card,
+badge, dialog, table) and light mode.
 
 ## Verification
 
