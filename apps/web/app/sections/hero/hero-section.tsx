@@ -1,22 +1,19 @@
 import { ImageFrame } from '@repo/ui/components/image-frame';
+import { PageShell } from '@repo/ui/components/page-shell';
+import { SectionHeader } from '@repo/ui/components/section-header';
 import { ArrowDownRight } from 'lucide-react';
 
 import { heroContent } from './data';
 
 export function HeroSection() {
   return (
-    <section className="w-full border-b border-steel pt-24 pb-12">
-      <div className="container mx-auto px-4 md:px-8">
+    <section className="w-full border-b border-steel py-12">
+      <PageShell>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
           {/* Left Column: Typography */}
           <div className="flex h-full flex-col justify-between space-y-12 lg:col-span-5">
             <div>
-              <div className="mb-6 flex items-center gap-2">
-                <div className="h-2 w-2 bg-lime" />
-                <h2 className="text-xs font-bold tracking-[0.2em] text-text-secondary">
-                  {heroContent.badge}
-                </h2>
-              </div>
+              <SectionHeader label={heroContent.badge} className="mb-6" />
 
               <h1 className="mb-8 text-3xl font-bold leading-tight tracking-tighter text-white md:text-5xl lg:text-6xl">
                 {heroContent.heading}
@@ -40,7 +37,7 @@ export function HeroSection() {
             className="h-[400px] lg:col-span-7 lg:h-[600px]"
           />
         </div>
-      </div>
+      </PageShell>
     </section>
   );
 }

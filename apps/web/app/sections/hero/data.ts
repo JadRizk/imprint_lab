@@ -19,8 +19,10 @@ export const heroContent: HeroContent = {
   description:
     'Investigating the intersection of robust backend infrastructure and fluid user interfaces. Field notes from a career in code.',
   image: {
-    src: 'https://picsum.photos/1200/800',
-    alt: 'Technical schematic of a full-stack architecture',
+    // Seeded so the placeholder is deterministic across loads and machines.
+    // Swap for real artwork; update `alt` to describe it when you do.
+    src: 'https://picsum.photos/seed/thl-hero/1200/800',
+    alt: 'Placeholder photograph standing in for the hero image',
     badge: {
       label: 'IMG_SRC_LOADED'
     }

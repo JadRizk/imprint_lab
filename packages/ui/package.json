@@ -1,11 +1,16 @@
 {
   "name": "@repo/ui",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "exports": {
-    "./*": "./src/*.tsx",
-    "./styles.css": "./src/styles.css",
-    "./lib/*": "./src/lib/*.ts"
+    "./components/button": "./src/components/button.tsx",
+    "./components/bento-card": "./src/components/bento-card.tsx",
+    "./components/bento-grid": "./src/components/bento-grid.tsx",
+    "./components/image-frame": "./src/components/image-frame.tsx",
+    "./components/page-shell": "./src/components/page-shell.tsx",
+    "./components/section-header": "./src/components/section-header.tsx",
+    "./lib/utils": "./src/lib/utils.ts",
+    "./styles.css": "./src/styles.css"
   },
   "scripts": {
     "lint": "biome check .",

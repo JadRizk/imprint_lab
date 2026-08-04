@@ -18,6 +18,13 @@ const cardVariants = {
   visible: { opacity: 1, scale: 1 }
 };
 
+const CORNERS = [
+  'top-0 left-0 border-t-2 border-l-2',
+  'top-0 right-0 border-t-2 border-r-2',
+  'bottom-0 left-0 border-b-2 border-l-2',
+  'bottom-0 right-0 border-b-2 border-r-2'
+] as const;
+
 function getMotionProps(
   prefersReducedMotion: boolean | null,
   isOrchestrated: boolean,
@@ -63,23 +70,20 @@ export function BentoCard({ className, delay = 0, children }: BentoCardProps) {
         className
       )}
     >
-      {/* Corner brackets — decorative, hidden from assistive technology */}
-      <div
-        aria-hidden="true"
-        className="absolute top-0 left-0 z-20 h-2 w-2 border-t border-l border-text-tertiary transition-colors group-hover:border-lime"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute top-0 right-0 z-20 h-2 w-2 border-t border-r border-text-tertiary transition-colors group-hover:border-lime"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute bottom-0 left-0 z-20 h-2 w-2 border-b border-l border-text-tertiary transition-colors group-hover:border-lime"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute bottom-0 right-0 z-20 h-2 w-2 border-b border-r border-text-tertiary transition-colors group-hover:border-lime"
-      />
+      {/* Corner brackets — decorative, hidden from assistive technology.
+          Geometry matches ImageFrame (12px / 2px) so the bracket motif reads
+          as one language across the system. Idle in --color-ambient because
+          they carry no information until the card is hovered. */}
+      {CORNERS.map((corner) => (
+        <div
+          key={corner}
+          aria-hidden="true"
+          className={cn(
+            'absolute z-20 size-3 border-ambient transition-colors group-hover:border-lime',
+            corner
+          )}
+        />
+      ))}
 
       {children}
     </motion.article>

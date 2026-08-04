@@ -12,7 +12,7 @@ Personal portfolio website built as a Turborepo monorepo. The main application l
 - **Language**: TypeScript 5.9 (strict mode)
 - **Monorepo**: Turborepo 2.7
 - **Linting/Formatting**: Biome 2.2
-- **Fonts**: Geist Sans + Geist Mono
+- **Fonts**: Space Grotesk (sans) + IBM Plex Mono (mono)
 
 ## Monorepo Structure
 
@@ -102,7 +102,73 @@ Each section owns its types and data. No global data layer needed.
 // Importing from the design system
 import { Button } from "@repo/ui/components/button";
 import { cn } from "@repo/ui/lib/utils";
+import { tokens } from "@repo/tailwind-config/tokens";
 ```
+
+The `@repo/ui` package uses an explicit `exports` map — every public component is listed by path. Adding a new component means editing `packages/ui/package.json`.
+
+### Consumer Wiring Contract
+
+The design system is portable — any Next.js app can adopt it with two imports and two font variables. See `packages/tailwind-config/README.md` for the full bootstrap.
+
+**globals.css** (single import for tokens + base layer):
+
+```css
+@import "tailwindcss";
+@import "@repo/tailwind-config";
+
+@theme inline {
+  --font-sans-face: var(--font-space-grotesk, "Space Grotesk", sans-serif);
+  --font-mono-face: var(--font-ibm-plex-mono, "IBM Plex Mono", monospace);
+}
+```
+
+**layout.tsx** must expose `--font-space-grotesk` and `--font-ibm-plex-mono` via `next/font` (both fonts loaded at weights 300–700).
+
+The tokens `--font-sans` / `--font-mono` resolve through the `-face` indirection. Substitute a different sans/mono by pointing those two variables somewhere else — the design system itself never names a font.
+
+### Token Generation
+
+`packages/tailwind-config/tokens.generated.ts` is auto-generated from `theme.css`. It is the single source of truth for anything that needs to enumerate tokens (like the `/design-system` reference table). Regenerate after editing `theme.css`:
+
+```bash
+bun run --filter=@repo/tailwind-config generate:tokens
+```
+
+Turbo runs this as the package's `build` step, so any `turbo build` picks up changes automatically.
+
+### Theming Policy
+
+Dark mode only, for now. `html { color-scheme: dark }` is hard-coded in the base layer and every token is a single value. Light-mode support is deferred — when added, it will layer under `[data-theme]` selectors without changing the current default values.
+
+### Contrast Policy
+
+**Any token used for text must clear 4.5:1 against `--color-obsidian`.** Measured ratios live as comments beside each token in `theme.css`. This is not negotiable per-component — if a label looks too loud, change the hierarchy or the size, not the contrast.
+
+Decoration and text are separate concerns and use separate tokens:
+
+| Token | Ratio | Use for |
+|-------|-------|---------|
+| `--color-text-secondary` `#A3A3A3` | 7.62:1 | Body copy — this is the `body` default, so it rarely needs stating |
+| `--color-text-tertiary` `#7C7C7C` | 4.59:1 | Labels, metadata, tags, eyebrows |
+| `--color-ambient` `#3A3A3A` | — | **Decoration only.** Grid overlays, idle brackets, rules. Never text. |
+
+The generator deliberately omits a `text-*` utility from `--color-ambient`'s row in the reference table, and `/design-system` prints `DECORATION ONLY — NEVER TEXT` under its swatch.
+
+### Type Scale
+
+`theme.css` resets `--text-*`, so the scale is **closed** — `micro` through `6xl` are the only sizes that exist. `text-micro` (10px) is the instrument-label step the interface leans on for metadata and eyebrows; reach for it instead of an arbitrary `text-[10px]`.
+
+Letter-spacing for eyebrows and labels is `tracking-label` (0.2em). Don't hand-pick `tracking-widest` for that role.
+
+> **Adding a scale value means updating `cn()`.** `tailwind-merge` cannot tell a custom font size from a color, so `text-micro` and `text-text-tertiary` land in the same conflict group and the color gets silently dropped. Custom scale names must be registered in `extendTailwindMerge` in `packages/ui/src/lib/utils.ts`.
+
+### Layout Primitives
+
+- **`PageShell`** owns the horizontal gutter and page measure (`default` 1280px · `prose` 3xl · `full`). Use it instead of Tailwind's `container`, whose width varies by breakpoint. **Never nest it** — a section that already sits inside a shell should lay out at full width and let the parent own the gutter.
+- **`SectionHeader`** is the lime-square eyebrow. Use it rather than rebuilding the square-plus-label pattern.
+
+Sections that bring their own `PageShell` (like `HeroSection`) must be rendered *outside* a parent shell — see the `bleed` prop on `/design-system`'s `Spec` wrapper.
 
 ## Coding Conventions
 
@@ -157,3 +223,7 @@ bun run check            # Run Biome check (lint + format) from root
 | Rendering default | React Server Components | Performance-first; client boundaries only when needed |
 | Package manager | Bun | Already configured; fast installs and script execution |
 | Linting/Formatting | Biome | Single tool replacing ESLint + Prettier; faster, simpler config |
+| Text contrast | 4.5:1 floor, enforced by token | Dimness was making labels unreadable (2.6:1); splitting decoration into `--color-ambient` keeps the mood without sacrificing legibility |
+| Type scale | Closed, tokenized, incl. `micro` | `--text-*` is reset so the scale can't silently fall back to Tailwind's defaults; kills 40 `text-[10px]` magic numbers |
+| Button sizing | Explicit heights on the 4px grid | Icon and text buttons of the same size are now identical heights (24 / 36 / 48); previously `icon` was 48 while `default` was 34 |
+| Page measure | `PageShell`, not `container` | Tailwind's `container` is breakpoint-dependent, which is how `/` ended up 768px while other routes were 1280px |

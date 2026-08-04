@@ -4,23 +4,70 @@
   --radius-*: initial;
   --shadow-*: initial;
   --font-*: initial;
+  --text-*: initial;
+
+  /* ── Spacing base ── */
+  --spacing: 0.25rem;
 
   /* ── Core palette ── */
   --color-obsidian: #0F0F0F;
   --color-lime: #DFFF00;
   --color-steel: #333333;
-  --color-text: #8E8E93;
   --color-white: #FFFFFF;
   --color-black: #000000;
 
-  /* ── Semantic palette ── */
+  /* ── Semantic palette ──
+   * Contrast ratios are measured against --color-obsidian (#0F0F0F).
+   * Any token used for text must clear 4.5:1 (WCAG AA, normal text).
+   */
   --color-surface: #0A0A0A;
-  --color-text-secondary: #A3A3A3;
-  --color-text-tertiary: #555555;
+  --color-text-secondary: #A3A3A3; /* 7.62:1 — body copy (the body default) */
+  --color-text-tertiary: #7C7C7C; /* 4.59:1 — labels, metadata, tags */
 
-  /* ── Typography ── */
+  /* Decoration only. Never place text in this color — it does not
+   * meet contrast minimums. Grid overlays, rules, idle brackets. */
+  --color-ambient: #3A3A3A;
+
+  /* ── Typography ──
+   * Consumer must define --font-sans-face and --font-mono-face
+   * (typically via next/font). Falls back to system fonts if absent.
+   */
   --font-sans: var(--font-sans-face, sans-serif);
   --font-mono: var(--font-mono-face, monospace);
+
+  /* ── Type scale ──
+   * Explicit and closed: --text-* is reset above, so these are the only
+   * sizes that exist. `micro` is the instrument-label step (10px) that
+   * the interface leans on for metadata and eyebrows.
+   */
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 1;
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 1;
+
+  /* ── Letter spacing ──
+   * One eyebrow/label tracking, so labels stop drifting between
+   * 0.1em and 0.2em across pages.
+   */
+  --tracking-label: 0.2em;
 
   /* ── Shadows ── */
   --shadow-lime-glow: 0 0 15px rgba(223, 255, 0, 0.3);
@@ -36,5 +83,101 @@
   }
   100% {
     top: 100%;
+  }
+}
+
+/* ── Base layer ── */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-obsidian);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    cursor: crosshair;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: var(--color-lime);
+    color: var(--color-black);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-obsidian);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-steel);
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-lime);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* ── Utilities ── */
+
+@utility scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background-color: var(--color-lime);
+  box-shadow:
+    0 0 8px rgba(223, 255, 0, 0.6),
+    0 0 20px rgba(223, 255, 0, 0.4),
+    0 0 40px rgba(223, 255, 0, 0.2),
+    0 0 80px rgba(223, 255, 0, 0.1);
+  animation: var(--animate-scan);
+  pointer-events: none;
+  z-index: 50;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 40px;
+    background: linear-gradient(
+      to bottom,
+      rgba(223, 255, 0, 0.12),
+      rgba(223, 255, 0, 0.04) 40%,
+      transparent
+    );
+    pointer-events: none;
   }
 }

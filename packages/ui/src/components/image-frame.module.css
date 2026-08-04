@@ -4,10 +4,9 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.3;
   background-image:
-    linear-gradient(var(--color-steel) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-steel) 1px, transparent 1px);
+    linear-gradient(var(--color-ambient) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-ambient) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -48,11 +47,12 @@
 
 /* ── Corner markers ── */
 
+/* 12px / 2px — matches BentoCard's brackets so the motif is one language. */
 .corner {
   position: absolute;
   z-index: 15;
-  width: calc(var(--spacing) * 4);
-  height: calc(var(--spacing) * 4);
+  width: calc(var(--spacing) * 3);
+  height: calc(var(--spacing) * 3);
 }
 
 .cornerTopLeft {
@@ -124,9 +124,10 @@
 }
 
 .errorLabel {
-  font-size: 10px;
-  font-family: var(--font-geist-mono), monospace;
-  letter-spacing: 0.2em;
+  font-size: var(--text-micro);
+  line-height: var(--text-micro--line-height);
+  font-family: var(--font-mono), monospace;
+  letter-spacing: var(--tracking-label);
   color: var(--color-text-tertiary);
 }
 

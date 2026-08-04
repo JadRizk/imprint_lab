@@ -4,7 +4,7 @@ import { motion, useInView, useReducedMotion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { cn } from '../lib/utils';
+import { cn, focusRing } from '../lib/utils';
 import styles from './image-frame.module.css';
 
 interface ImageFrameProps {
@@ -124,12 +124,11 @@ export function ImageFrame({
           className={cn(
             styles.badge,
             'flex items-center gap-2 border border-steel bg-obsidian',
-            badge.onClick &&
-              'cursor-pointer focus-visible:outline-2 focus-visible:outline-lime focus-visible:outline-offset-2'
+            badge.onClick && ['cursor-pointer', focusRing]
           )}
           {...(badge.onClick ? { onClick: badge.onClick, type: 'button' as const } : {})}
         >
-          <span className="text-[10px] text-lime">{badge.label}</span>
+          <span className="text-micro text-lime">{badge.label}</span>
           {badge.icon}
         </BadgeElement>
       )}
