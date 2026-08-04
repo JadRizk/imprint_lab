@@ -38,6 +38,8 @@ packages/
   typescript-config/
 apps/
   docs/              the only app — thesis · components · example · report kit
+.claude/
+  skills/new-system/ how to add a system here — the only part of .claude tracked
 ```
 
 **Systems never import each other.** Only `system → packages/*`. That keeps any
@@ -275,6 +277,20 @@ bun run check-types
 bun run smoke               # proves the registry is installable
 bun run new-system <slug> <ns> ["Name"]
 ```
+
+**Adding a system: use the `new-system` skill, not the bare command.** The
+scaffold emits structure and deliberately refuses to invent an aesthetic — it
+ships a magenta accent and four `TODO`s so the first act is a real decision.
+[`.claude/skills/new-system/`](.claude/skills/new-system/SKILL.md) wraps it with
+the parts the command cannot do: the four `globals.css`/`systems.ts` edits
+(**three of which fail silently**), the adversarial fixtures the enforcement
+tools must still defeat, and the gate list. Its
+[`references/failure-catalogue.md`](.claude/skills/new-system/references/failure-catalogue.md)
+is the catalogue of everything in this stack that fails while reporting success.
+
+The direction — thesis, voice, palette, type, form — is decided *before* that, by
+the `design-direction` skill, which is personal rather than repo-local. It
+outputs `BRAND.md` and `PALETTE.md`; `new-system` refuses to start without them.
 
 **Verify visually.** Headless Chrome needs no extension and catches what source
 review cannot:
