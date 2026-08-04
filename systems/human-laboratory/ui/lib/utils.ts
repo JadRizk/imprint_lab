@@ -4,7 +4,7 @@ import { extendTailwindMerge } from 'tailwind-merge';
 
 /**
  * tailwind-merge has to be told about scale values we invent in theme.css.
- * Without this it cannot tell `text-micro` (a font size) from `text-lime`
+ * Without this it cannot tell `text-micro` (a font size) from `text-accent`
  * (a color), lumps both into the text-color group, and silently drops the
  * real color — so `<Button variant="tag" size="sm">` renders uncolored.
  *
@@ -24,4 +24,4 @@ export function cn(...inputs: ClassValue[]): string {
  * this so keyboard focus reads identically everywhere.
  */
 export const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime';
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';

@@ -65,8 +65,8 @@ export function BentoCard({ className, delay = 0, children }: BentoCardProps) {
     <motion.article
       {...motionProps}
       className={cn(
-        'group relative overflow-hidden border border-steel bg-obsidian',
-        'transition-colors duration-300 hover:border-lime hover:bg-surface',
+        'group relative overflow-hidden border border-line bg-canvas',
+        'transition-colors duration-300 hover:border-accent hover:bg-surface',
         className
       )}
     >
@@ -79,7 +79,7 @@ export function BentoCard({ className, delay = 0, children }: BentoCardProps) {
           key={corner}
           aria-hidden="true"
           className={cn(
-            'absolute z-20 size-3 border-ambient transition-colors group-hover:border-lime',
+            'absolute z-20 size-3 border-ambient transition-colors group-hover:border-accent',
             corner
           )}
         />

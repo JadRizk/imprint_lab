@@ -91,7 +91,7 @@ export const tokens: Token[] = [
     "base": "#0A0A0A",
     "category": "color",
     "utility": "bg-surface · text-surface · border-surface",
-    "subcategory": "semantic"
+    "subcategory": "role"
   },
   {
     "name": "--color-text-secondary",
@@ -120,7 +120,7 @@ export const tokens: Token[] = [
     "base": "#3A3A3A",
     "category": "color",
     "utility": "bg-ambient · border-ambient",
-    "subcategory": "semantic"
+    "subcategory": "role"
   },
   {
     "name": "--color-canvas",
@@ -350,6 +350,15 @@ export const tokens: Token[] = [
     "base": "0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1)",
     "category": "shadow",
     "utility": "shadow-lime-glow-lg"
+  },
+  {
+    "name": "--shadow-glow",
+    "value": "var(--shadow-lime-glow)",
+    "resolved": "0 0 15px rgba(223, 255, 0, 0.3)",
+    "base": "0 0 15px rgba(223, 255, 0, 0.3)",
+    "category": "shadow",
+    "utility": "shadow-glow",
+    "aliasOf": "--shadow-lime-glow"
   },
   {
     "name": "--animate-scan",

@@ -1,16 +1,16 @@
 // Emitters. One parsed theme.css in, five artifacts out.
 
-const SEMANTIC_COLOR_NAMES = new Set([
-  '--color-surface',
-  '--color-text-secondary',
-  '--color-text-tertiary',
-  '--color-ambient'
-]);
+// Superseded by roles, kept until nothing references them.
+const SEMANTIC_COLOR_NAMES = new Set(['--color-text-secondary', '--color-text-tertiary']);
 
 // Roles are the cross-system contract: named by job, not appearance.
-const ROLE_COLOR_NAMES = new Set([
+// --color-surface and --color-ambient are here rather than aliased through a
+// second name — they already carry role names and role semantics.
+export const ROLE_COLOR_NAMES = new Set([
   '--color-canvas',
+  '--color-surface',
   '--color-line',
+  '--color-ambient',
   '--color-ink',
   '--color-ink-muted',
   '--color-ink-subtle',
@@ -19,6 +19,12 @@ const ROLE_COLOR_NAMES = new Set([
   '--color-critical',
   '--color-warning'
 ]);
+
+// Non-colour roles. Shadows are otherwise system-specific: --shadow-lime-glow
+// names an appearance, so it stays a primitive — but the *job* it does (an
+// emphasis glow on an active edge) is one another system would want to express
+// differently, or not at all. Hence one role pointing at it.
+export const ROLE_OTHER_NAMES = new Set(['--shadow-glow']);
 
 // Decoration-only colors: too low-contrast for text, so the reference table
 // must not advertise a text-* utility for them.

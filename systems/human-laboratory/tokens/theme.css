@@ -109,6 +109,12 @@
   --shadow-lime-glow: 0 0 15px rgba(223, 255, 0, 0.3);
   --shadow-lime-glow-lg: 0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1);
 
+  /* The one shadow role. --shadow-lime-glow names an appearance and stays a
+   * primitive, but the job it does — emphasis on an active or growing edge — is
+   * something another system would express differently, or set to `none`.
+   * Without this, ImageFrame could not be ported to roles at all. */
+  --shadow-glow: var(--shadow-lime-glow);
+
   /* ── Animation ── */
   --animate-scan: scan 4s linear infinite;
 }

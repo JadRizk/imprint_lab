@@ -23,8 +23,8 @@
 }
 
 .imageLayerBorder {
-  border-bottom: 1px solid var(--color-lime);
-  box-shadow: var(--shadow-lime-glow);
+  border-bottom: 1px solid var(--color-accent);
+  box-shadow: var(--shadow-glow);
 }
 
 .image {
@@ -41,8 +41,8 @@
   left: 0;
   height: 2px;
   width: 100%;
-  background-color: var(--color-lime);
-  box-shadow: var(--shadow-lime-glow);
+  background-color: var(--color-accent);
+  box-shadow: var(--shadow-glow);
 }
 
 /* ── Corner markers ── */
@@ -59,32 +59,32 @@
   composes: corner;
   top: 0;
   left: 0;
-  border-top: 2px solid var(--color-lime);
-  border-left: 2px solid var(--color-lime);
+  border-top: 2px solid var(--color-accent);
+  border-left: 2px solid var(--color-accent);
 }
 
 .cornerTopRight {
   composes: corner;
   top: 0;
   right: 0;
-  border-top: 2px solid var(--color-lime);
-  border-right: 2px solid var(--color-lime);
+  border-top: 2px solid var(--color-accent);
+  border-right: 2px solid var(--color-accent);
 }
 
 .cornerBottomLeft {
   composes: corner;
   bottom: 0;
   left: 0;
-  border-bottom: 2px solid var(--color-lime);
-  border-left: 2px solid var(--color-lime);
+  border-bottom: 2px solid var(--color-accent);
+  border-left: 2px solid var(--color-accent);
 }
 
 .cornerBottomRight {
   composes: corner;
   bottom: 0;
   right: 0;
-  border-bottom: 2px solid var(--color-lime);
-  border-right: 2px solid var(--color-lime);
+  border-bottom: 2px solid var(--color-accent);
+  border-right: 2px solid var(--color-accent);
 }
 
 /* ── Error state ── */
@@ -111,7 +111,7 @@
   left: 0;
   width: 100%;
   height: 1px;
-  background-color: var(--color-text-tertiary);
+  background-color: var(--color-ink-subtle);
 }
 
 .errorCrosshairV {
@@ -120,7 +120,7 @@
   top: 0;
   height: 100%;
   width: 1px;
-  background-color: var(--color-text-tertiary);
+  background-color: var(--color-ink-subtle);
 }
 
 .errorLabel {
@@ -128,7 +128,7 @@
   line-height: var(--text-micro--line-height);
   font-family: var(--font-mono), monospace;
   letter-spacing: var(--tracking-label);
-  color: var(--color-text-tertiary);
+  color: var(--color-ink-subtle);
 }
 
 /* ── Status badge ── */

@@ -29,9 +29,9 @@ export function SectionHeader({
   className
 }: SectionHeaderProps) {
   return (
-    <div className={cn('flex items-center gap-2', rule && 'border-b border-steel pb-2', className)}>
-      <span aria-hidden="true" className="size-2 shrink-0 bg-lime" />
-      <Tag className="text-xs font-bold uppercase tracking-label text-text-secondary">
+    <div className={cn('flex items-center gap-2', rule && 'border-b border-line pb-2', className)}>
+      <span aria-hidden="true" className="size-2 shrink-0 bg-accent" />
+      <Tag className="text-xs font-bold uppercase tracking-label text-ink-muted">
         {number ? `${number}_${label}` : label}
       </Tag>
     </div>

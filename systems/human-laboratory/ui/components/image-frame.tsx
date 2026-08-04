@@ -49,7 +49,7 @@ export function ImageFrame({
   return (
     <div
       ref={containerRef}
-      className={cn('group relative overflow-hidden border border-steel bg-surface', className)}
+      className={cn('group relative overflow-hidden border border-line bg-surface', className)}
     >
       {/* Grid Background */}
       <div className={styles.gridBackground} />
@@ -123,12 +123,12 @@ export function ImageFrame({
         <BadgeElement
           className={cn(
             styles.badge,
-            'flex items-center gap-2 border border-steel bg-obsidian',
+            'flex items-center gap-2 border border-line bg-canvas',
             badge.onClick && ['cursor-pointer', focusRing]
           )}
           {...(badge.onClick ? { onClick: badge.onClick, type: 'button' as const } : {})}
         >
-          <span className="text-micro text-lime">{badge.label}</span>
+          <span className="text-micro text-accent">{badge.label}</span>
           {badge.icon}
         </BadgeElement>
       )}

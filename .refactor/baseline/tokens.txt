@@ -38,6 +38,7 @@
 --leading-tight: 1.25
 --lightningcss-dark: initial
 --lightningcss-light:
+--shadow-glow: var(--shadow-lime-glow)
 --shadow-lime-glow-lg: 0 0 30px #dfff0066, 0 0 60px #dfff001a
 --shadow-lime-glow: 0 0 15px #dfff004d
 --spacing: .25rem

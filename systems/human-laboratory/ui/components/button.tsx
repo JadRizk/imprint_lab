@@ -19,15 +19,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: ['border-lime bg-lime text-black', 'hover:bg-transparent hover:text-lime'],
-        outline: [
-          'border-steel bg-transparent text-text-secondary',
-          'hover:border-lime hover:text-lime'
+        primary: [
+          'border-accent bg-accent text-accent-ink',
+          'hover:bg-transparent hover:text-accent'
         ],
-        ghost: ['border-transparent bg-transparent text-text-secondary', 'hover:text-lime'],
+        outline: [
+          'border-line bg-transparent text-ink-muted',
+          'hover:border-accent hover:text-accent'
+        ],
+        ghost: ['border-transparent bg-transparent text-ink-muted', 'hover:text-accent'],
         tag: [
-          'border-steel bg-transparent text-text-tertiary',
-          'hover:border-lime hover:bg-lime hover:text-black'
+          'border-line bg-transparent text-ink-subtle',
+          'hover:border-accent hover:bg-accent hover:text-accent-ink'
         ]
       },
       // Heights are explicit and land on the 4px spacing grid, so an icon

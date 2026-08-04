@@ -279,18 +279,42 @@ against Tailwind's defaults: redundancy is harmless, omission is the bug.
 Phases 01–03 are mechanical and interlocking, so they may run as one session. **Stop here.**
 Renaming a role after Phase 04 means sweeping six components; before it, it is a one-line edit.
 
-### Phase 04 — Port
+### Phase 04 — Port ✅ DONE
 
-- **Land the Biome lint rule first.** Watch it fail against current code, *then* port until it
-  passes. This turns the phase from "trust the convention" into "the build says when it's done."
-- Port `Button`, `BentoCard`, `BentoGrid`, `ImageFrame`, `PageShell`, `SectionHeader`.
-- Expect friction: `image-frame.module.css` reaches straight for `--color-lime` and
-  `--shadow-lime-glow`.
+All six components reference roles only, enforced by `packages/token-tools/check-roles.mjs`,
+wired into `@thl/ui`'s lint script and therefore into `turbo lint`.
+
+**The rule is not a Biome rule.** Biome 2.2 has no restricted-class lint, and a GritQL plugin
+would still need the banned list hand-kept. `check-roles` instead derives it from `theme.css`:
+any colour or shadow token that is not a declared role is banned inside `systems/*/ui/`. Add a
+primitive to `theme.css` and it is guarded automatically. It catches both Tailwind utilities
+(including `hover:` / `group-hover:` variants) and raw `var(--color-…)` in CSS modules.
+
+**The ImageFrame judgment call, resolved by adding one role.** `image-frame.module.css` reached
+straight for `--shadow-lime-glow`. Under the naming test that is a primitive — it describes an
+appearance. But the *job* it does, emphasis on an active or growing edge, is something another
+system would express differently or set to `none`. Without a role for it, ImageFrame could not
+be ported at all. So `--shadow-glow: var(--shadow-lime-glow)` — one role, two consumers, earning
+its place under Standing Judgment 3.
+
+**Also corrected here:** `--color-surface` and `--color-ambient` were still classified `semantic`
+by the generator while `theme.css` described them as roles. They are roles. The tiers are now
+5 core / 11 role / 2 semantic, and the two remaining semantics
+(`--color-text-secondary`, `--color-text-tertiary`) are superseded by `ink-muted` / `ink-subtle`
+and can go once app code stops using them.
 
 > **Claim:** roles-only changed nothing visible.
-> **Falsify it:** diff against baseline again — this is the phase most likely to drift. Then
-> break the rule on purpose: put `bg-lime` in a `ui/` component and confirm the build fails.
-> **A lint rule that has never failed hasn't been tested.**
+> **Verified:**
+> - The rule was watched failing **before** the port: 43 violations across every component.
+>   Afterwards, zero. Then a single deliberate `bg-lime` was reintroduced and it failed with
+>   exit 1 naming `button.tsx:23` — a rule that has only ever passed has not been tested.
+> - Utility diff is a clean rename: 7 primitive utilities no longer generated, 14 role
+>   utilities in their place. Asymmetric because app code may still use primitives, so some
+>   generate under both names.
+> - **All 8 renamed utilities compute byte-identical values** (`bg-obsidian`/`bg-canvas` both
+>   `#0f0f0f`, and so on), resolved through the var() chains in the served CSS. `--shadow-glow`
+>   resolves to the same value as `--shadow-lime-glow`.
+> - `tokens.txt` gained exactly one entry: `--shadow-glow`.
 
 ### Phase 4.5 — Report kit
 
@@ -364,6 +388,11 @@ noise that nobody reads — which is the same as having no check.
 **A clean diff is not automatically a pass.** Phase 02 reported zero drift while its entire
 payload was missing, because Tailwind had tree-shaken the unused tokens. Ask what the change
 *should* have produced before accepting that it produced nothing.
+
+**Capture against a cold dev server.** Turbopack's HMR does not always recompile CSS before the
+next request lands, so a capture taken moments after an edit can report the *previous* build.
+Phase 04 hit this: the same comparison read 3 dropped utilities warm and 7 cold. If a diff looks
+implausible, restart the server, delete `apps/web/.next/dev`, and re-capture before believing it.
 
 ---
 

@@ -48,5 +48,6 @@
   --tracking-label:          0.2em;
   --shadow-lime-glow:        0 0 15px rgba(223, 255, 0, 0.3);
   --shadow-lime-glow-lg:     0 0 30px rgba(223, 255, 0, 0.4), 0 0 60px rgba(223, 255, 0, 0.1);
+  --shadow-glow:             var(--shadow-lime-glow);
   --animate-scan:            scan 4s linear infinite;
 }

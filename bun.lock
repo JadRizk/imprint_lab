@@ -35,6 +35,7 @@
       "version": "0.1.0",
       "bin": {
         "token-tools": "./generate.mjs",
+        "check-roles": "./check-roles.mjs",
       },
     },
     "packages/typescript-config": {
@@ -63,6 +64,7 @@
         "tailwindcss": "^4.1.0",
       },
       "devDependencies": {
+        "@imprint/token-tools": "*",
         "@repo/typescript-config": "*",
         "@thl/tokens": "*",
         "@types/node": "^22.15.3",
