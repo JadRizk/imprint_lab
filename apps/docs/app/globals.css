@@ -9,13 +9,19 @@
  * behind those names. Because roles carry the same names in every system, one
  * utility set serves all of them and the data attribute does the switching.
  *
- * Adding a system: one more @import here plus an entry in lib/systems.ts.
+ * Adding a system takes THREE edits, and missing the third fails silently —
+ * the utilities its components use simply never generate:
+ *   1. @import "@<ns>/tokens/theme.scoped.css";   (below)
+ *   2. @source "../../../systems/<slug>/ui";      (below — do not forget this)
+ *   3. an entry in lib/systems.ts
  *
  * Note the asymmetry — primitives (bg-obsidian) exist only for the system whose
  * @theme is imported above. That is intentional: docs chrome uses roles, and a
  * system's private vocabulary is not meant to be reachable from another's page. */
 @import "@thl/tokens/theme.scoped.css";
 
+/* One @source per system. Tailwind scans these for class names; a system absent
+ * here compiles and renders unstyled, with nothing reported. */
 @source "../../../systems/human-laboratory/ui";
 
 @theme inline {

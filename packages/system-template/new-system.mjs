@@ -126,9 +126,21 @@ write(
   'tokens/base.css',
   `/* Base layer — this system's opinions.
  *
- * Every rule must stay bindable to either :root or a [data-system="${slug}"]
- * scope: apps/docs renders several systems on one page, and an unscoped body
- * rule would leak across them.
+ * Two rules govern this file:
+ *
+ * 1. Anything expressing this system's look is scoped to
+ *    [data-system="${slug}"]. apps/docs renders several systems on one page and
+ *    an unscoped \`body\` rule leaks across all of them. Colour, font and cursor
+ *    inherit, so the nearest data-system ancestor wins.
+ * 2. It binds to ROLES, never primitives — a primitive is private to one system
+ *    and would resolve to nothing under another.
+ *
+ * \`color-scheme\`, the \`*\` reset and the PAGE scrollbar have no container to
+ * move to and stay global. Two systems with different colour schemes cannot
+ * share a document; the second one needs its own page.
+ *
+ * Standalone consumers put the attribute on <body>:
+ *   <body data-system="${slug}">
  */
 
 @layer base {
@@ -140,14 +152,14 @@ write(
     padding: 0;
   }
 
-  body {
+  [data-system='${slug}'] {
     background-color: var(--color-canvas);
     color: var(--color-ink-muted);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 
-  ::selection {
+  [data-system='${slug}'] ::selection {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
   }

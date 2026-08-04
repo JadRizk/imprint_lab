@@ -1,12 +1,36 @@
 /* Base layer — the opinions.
  *
  * Separate from theme.css so a consumer can take the tokens without taking the
- * attitude. Every rule here must remain bindable to either :root or a
- * [data-system="…"] scope — apps/docs renders several systems on one page, and
- * an unscoped `body` rule would leak across them.
+ * attitude.
+ *
+ * Two rules govern this file, and the previous version stated the first and
+ * then broke it fifteen lines later:
+ *
+ * 1. Anything expressing THIS system's look is scoped to [data-system]. An
+ *    unscoped `body` rule leaks across every system on the page, and apps/docs
+ *    renders several. Colour, font, cursor and selection all inherit, so the
+ *    nearest data-system ancestor wins and a second system nested inside the
+ *    first simply overrides it.
+ *
+ * 2. It binds to ROLES, never to primitives. A second system defines its own
+ *    roles, not THL's private vocabulary — scoping the selector while leaving
+ *    var(--color-obsidian) inside would produce rules that resolve to nothing
+ *    under system 02. That was the larger half of the bug.
+ *
+ * The document-level boundary. `color-scheme`, the `*` reset and the PAGE
+ * scrollbar have no container to move to. They stay global, and that is a real
+ * constraint rather than an oversight: two systems with different colour
+ * schemes cannot coexist on one document. If that day comes, the second system
+ * needs its own page, not a deeper selector.
+ *
+ * Standalone consumers (the registry `style` item ships this file) put the
+ * attribute on <body> and get the whole treatment:
+ *
+ *   <body data-system="human-laboratory">
  */
 
 @layer base {
+  /* Global — every system wants this, and none of it carries a look. */
   *,
   *::before,
   *::after {
@@ -15,53 +39,51 @@
     padding: 0;
   }
 
+  /* Document-level. See the boundary note above. */
   html {
     color-scheme: dark;
   }
 
-  body {
-    background-color: var(--color-obsidian);
-    color: var(--color-text-secondary);
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  /* ── Scoped: this system's opinions ── */
+
+  [data-system="human-laboratory"] {
+    background-color: var(--color-canvas);
+    color: var(--color-ink-muted);
     font-family: var(--font-mono);
     cursor: crosshair;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  [data-system="human-laboratory"] :is(h1, h2, h3, h4, h5, h6) {
     font-family: var(--font-sans);
   }
 
-  ::selection {
-    background-color: var(--color-lime);
-    color: var(--color-black);
+  [data-system="human-laboratory"] ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
   }
 
-  /* Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
+  [data-system="human-laboratory"] a {
+    color: inherit;
+    text-decoration: none;
   }
 
-  ::-webkit-scrollbar-track {
-    background: var(--color-obsidian);
+  /* Scrollbars on elements INSIDE the system. The page scrollbar is above. */
+  [data-system="human-laboratory"] ::-webkit-scrollbar-track {
+    background: var(--color-canvas);
   }
 
-  ::-webkit-scrollbar-thumb {
-    background: var(--color-steel);
+  [data-system="human-laboratory"] ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
     border-radius: 0;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-lime);
-  }
-
-  a {
-    color: inherit;
-    text-decoration: none;
+  [data-system="human-laboratory"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
   }
 }
