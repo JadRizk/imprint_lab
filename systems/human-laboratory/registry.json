@@ -4,6 +4,129 @@
   "homepage": "https://imprint-lab.vercel.app",
   "items": [
     {
+      "name": "style",
+      "type": "registry:style",
+      "extends": "none",
+      "title": "The Human Laboratory",
+      "description": "The base style. Tokens, base layer and cn(). Install this before any component \u2014 it is what the components' class names resolve against.",
+      "dependencies": ["clsx", "tailwind-merge"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/tokens/theme.css",
+          "type": "registry:file",
+          "target": "~/thl/styles/theme.css"
+        },
+        {
+          "path": "systems/human-laboratory/tokens/base.css",
+          "type": "registry:file",
+          "target": "~/thl/styles/base.css"
+        },
+        {
+          "path": "systems/human-laboratory/ui/lib/utils.ts",
+          "type": "registry:file",
+          "target": "~/thl/lib/utils.ts"
+        },
+        {
+          "path": "systems/human-laboratory/ui/lib/tw-merge.generated.ts",
+          "type": "registry:file",
+          "target": "~/thl/lib/tw-merge.generated.ts"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:component",
+      "title": "Button",
+      "description": "Variant-based button. Four variants, four sizes, Radix Slot for polymorphism.",
+      "dependencies": ["@radix-ui/react-slot", "class-variance-authority"],
+      "registryDependencies": ["style"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/ui/components/button.tsx",
+          "type": "registry:file",
+          "target": "~/thl/components/button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "page-shell",
+      "type": "registry:component",
+      "title": "PageShell",
+      "description": "Owns the horizontal gutter and page measure. Use instead of Tailwind's container, whose width varies by breakpoint. Never nest it.",
+      "registryDependencies": ["style"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/ui/components/page-shell.tsx",
+          "type": "registry:file",
+          "target": "~/thl/components/page-shell.tsx"
+        }
+      ]
+    },
+    {
+      "name": "section-header",
+      "type": "registry:component",
+      "title": "SectionHeader",
+      "description": "The lime-square eyebrow. Use rather than rebuilding the square-plus-label pattern.",
+      "registryDependencies": ["style"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/ui/components/section-header.tsx",
+          "type": "registry:file",
+          "target": "~/thl/components/section-header.tsx"
+        }
+      ]
+    },
+    {
+      "name": "bento-grid",
+      "type": "registry:component",
+      "title": "BentoGrid",
+      "description": "Grid primitive that orchestrates BentoCard entrance staggering via context. Reduced-motion aware.",
+      "dependencies": ["framer-motion"],
+      "registryDependencies": ["style"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/ui/components/bento-grid.tsx",
+          "type": "registry:file",
+          "target": "~/thl/components/bento-grid.tsx"
+        }
+      ]
+    },
+    {
+      "name": "bento-card",
+      "type": "registry:component",
+      "title": "BentoCard",
+      "description": "Animated card surface with corner brackets. Defers to a parent BentoGrid's stagger when inside one, self-triggers when standalone.",
+      "dependencies": ["framer-motion"],
+      "registryDependencies": ["style", "bento-grid"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/ui/components/bento-card.tsx",
+          "type": "registry:file",
+          "target": "~/thl/components/bento-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "image-frame",
+      "type": "registry:component",
+      "title": "ImageFrame",
+      "description": "Animated image reveal with grid overlay, scan line, corner markers and a SIGNAL_LOST error state. Ships its own CSS module.",
+      "dependencies": ["framer-motion"],
+      "registryDependencies": ["style"],
+      "files": [
+        {
+          "path": "systems/human-laboratory/ui/components/image-frame.tsx",
+          "type": "registry:file",
+          "target": "~/thl/components/image-frame.tsx"
+        },
+        {
+          "path": "systems/human-laboratory/ui/components/image-frame.module.css",
+          "type": "registry:file",
+          "target": "~/thl/components/image-frame.module.css"
+        }
+      ]
+    },
+    {
       "name": "report-kit",
       "type": "registry:file",
       "title": "THL report kit",

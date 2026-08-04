@@ -1,6 +1,6 @@
-import { twMergeConfig } from '@thl/tokens/tw-merge';
 import { type ClassValue, clsx } from 'clsx';
 import { extendTailwindMerge } from 'tailwind-merge';
+import { twMergeConfig } from './tw-merge.generated';
 
 /**
  * tailwind-merge has to be told about scale values we invent in theme.css.

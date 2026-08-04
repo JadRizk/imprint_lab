@@ -37,3 +37,8 @@ next-env.d.ts
 
 # Registry JSON is generated from systems/*/registry.json at build time.
 public/r/
+
+# Report kit bundles are staged from systems/*/static at build time.
+public/*.css
+public/*-catalog.html
+public/report.html

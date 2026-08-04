@@ -13,7 +13,7 @@
 // system exists.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,4 +40,25 @@ if (built.length === 0) {
   console.error('build-registries: no systems/*/registry.json found');
   process.exit(1);
 }
+
+// Stage each system's report kit into public/ so the /report route can load the
+// real bundle in an iframe. Copied at build time rather than committed: these
+// are generated artifacts, and a committed copy would drift from the source the
+// moment theme.css changed.
+const staged = [];
+for (const slug of readdirSync(systemsDir).sort()) {
+  const staticDir = join(systemsDir, slug, 'static');
+  if (!existsSync(staticDir)) continue;
+  const { name } = JSON.parse(readFileSync(join(systemsDir, slug, 'registry.json'), 'utf8'));
+
+  for (const file of readdirSync(staticDir)) {
+    if (!/\.(css|html)$/.test(file)) continue;
+    // catalog.html is namespaced so several systems can coexist in public/.
+    const out = file === 'catalog.html' ? `${name}-catalog.html` : file;
+    copyFileSync(join(staticDir, file), join(docsRoot, 'public', out));
+    staged.push(out);
+  }
+}
+
 console.log(`build-registries: ${built.join(', ')}`);
+console.log(`build-registries: staged ${staged.length} static files into public/`);

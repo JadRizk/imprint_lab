@@ -443,16 +443,105 @@ stubbed and a deliberately awful magenta accent, so the first act is a real deci
 > with no manual fixes. Two systems on one page must not bleed — check the cursor, the scrollbar
 > and the body font, the base-layer rules most likely to escape scope.
 
-### Phase 06 — Evict
+### Phase 06 — One site ✅ DONE
 
-- `apps/web` → its own repo.
-- Adds `@thl` to `components.json`, installs from the registry.
-- `imprint_lab` is left with no product code — only systems, tooling and the showcase.
+`apps/web` is deleted. `apps/docs` is the only app, five static routes:
 
-> **Claim:** the portfolio survives on installed code.
-> **Falsify it:** it builds from registry-installed components and renders identically. **If it
-> needs even one manual patch, the registry manifest is incomplete** — fix the manifest, not the
-> portfolio.
+```
+/                                        systems index
+/systems/human-laboratory                thesis, rendered from BRAND.md
+/systems/human-laboratory/components     the showcase
+/systems/human-laboratory/example        a whole page built in the system
+/systems/human-laboratory/report         the report kit, live in an iframe
+```
+
+**`BRAND.md` now exists and is the single source for the prose.** The manifesto was trapped in
+`apps/web/app/page.tsx`; the thesis page reads the markdown at build time and renders it with
+`marked`, so the sentence exists once. Transcribing it into JSX would have been the same drift
+this repo is built against.
+
+**The registry went from 1 item to 8.** `style` (`extends: "none"`, carrying tokens, base layer
+and `cn()`), the six components with their npm and registry dependencies, and `report-kit`.
+
+**`cn()` had to stop importing `@thl/tokens/tw-merge`.** A registry consumer receives `lib/` as
+plain files with no workspace to resolve a scoped package against. `token-tools` now also emits
+`ui/lib/tw-merge.generated.ts` beside `utils.ts`, and the import is relative — the only form that
+works identically in the workspace and in a consumer.
+
+**No proving-ground app.** `packages/token-tools/smoke-install.mjs` replaces it: materialise every
+registry item into a temp project, typecheck it, and assert every import is declared and every
+relative import resolves to a shipped file. `bun run smoke`.
+
+> **Claim:** the one site shows everything, and the registry manifest is complete.
+> **Verified:**
+> - All five routes prerender static. `build`, `check-types`, `lint`, `check` pass.
+> - `smoke-install`: 8 items, 16 files, materialised and typechecked clean.
+> - Generated artifacts are stable — a second `generate:tokens` produces no diff.
+>
+> **Two bugs the smoke test caught, both on its first runs:**
+> - Components targeted `~/components/thl/`, so their `../lib/utils` resolved to
+>   `components/lib/utils` — outside the namespace, and broken for every consumer. Targets now
+>   mirror the source layout under `~/thl/`.
+> - **The smoke test's own first version had a false negative.** Deleting
+>   `image-frame.module.css` from the manifest passed, because the ambient
+>   `declare module '*.module.css'` that any real project has makes a missing stylesheet resolve
+>   happily. Check 3 — every relative import must resolve to a *shipped* file — was added because
+>   of it. Both negative tests now fail correctly.
+>
+> **⚠ Still unverified visually.** Five routes, none of them looked at. The Chrome extension was
+> unresponsive across every attempt this session.
+
+### Phase 06 — plan *(as revised, for reference)*
+
+**The original plan was wrong, on a stale reading.** It called for evicting `apps/web` as "the
+portfolio". Re-reading it after Phase 05: `apps/web/app/page.tsx` is not portfolio content at
+all — it is a manifesto *about the design system* ("This design system strips interfaces down to
+raw structure… constraint produces coherence"). The only portfolio-flavoured material in the
+whole app is `sections/hero/data.ts`, one data file of placeholder copy.
+
+So `apps/web` is ~90% design-system material. There is nothing meaningful to evict, and a real
+personal portfolio does not exist yet — it will be written later, in its own repo, consuming
+`@thl` like any other project. **The eviction happens by not writing it here.**
+
+`apps/docs` becomes the one site. `apps/web` dissolves into it.
+
+```
+/                                the systems index
+/systems/[system]                thesis — why this system is the way it is
+/systems/[system]/components     the showcase (exists)
+/systems/[system]/example        a whole page built in the system
+/systems/[system]/report         the report kit, live in an iframe
+```
+
+**Redistribution:**
+
+| From `apps/web` | To | Why |
+|---|---|---|
+| The manifesto (`/`) | `BRAND.md` + the thesis page | It is the system's statement of belief, currently trapped in JSX. `BRAND.md` is the source an agent reads; the page renders it. |
+| `/demo` | `/systems/[system]/example` | Component docs show parts; this shows a whole page. Nothing else covers it. |
+| `sections/hero` | Folded into the example, copy neutralised | Not a documented component — just part of a page you can look at. |
+| The app shell | — | Dissolves. |
+
+**The report tab is an `<iframe>`, not a re-implementation.** `catalog.html` carries its own reset
+and would fight the app's CSS if embedded. An iframe gives full isolation, keeps it inside the
+site's navigation, and exercises the standalone bundle exactly as a consumer receives it — it
+tests the artifact while displaying it.
+
+**No proving-ground app.** An earlier revision proposed one to prove the `shadcn add` path. It is
+not worth an app: you would discover a broken manifest within a minute of first use on project 02.
+Replaced by `packages/token-tools/smoke-install.mjs` — installs from the registry into a temp
+directory, typechecks, deletes it. Keeps the guarantee, costs no UI.
+
+**Still required first:** the registry ships exactly one item (`report-kit`). **None of the six
+React components are registered**, so `shadcn add @thl/button` does not exist. That has to be
+built before the smoke script means anything.
+
+> **Claim:** the one site shows every system's thesis, components, an example page and the report
+> kit, and nothing from `apps/web` was lost.
+> **Falsify it:** every route renders; the manifesto prose appears in exactly one source, not two;
+> the example page is the demo composition intact; the report iframe loads the real bundle. Then
+> `smoke-install.mjs` installs every registry item into a clean temp project and typechecks it —
+> **if it needs one manual patch, the manifest is incomplete.**
 
 ---
 
@@ -564,9 +653,16 @@ structure that doesn't exist yet.
   and cheaper to close after the contract exists.
 - No React Native emitter. Web-only; the emitter layer stays pluggable anyway.
 - No print stylesheet, no slide layouts.
-- The portfolio is the only thing evicted. `apps/docs` stays and grows.
+- **No second app.** One site — `apps/docs`. No separate portfolio, no proving-ground app. The
+  registry install path is covered by a smoke script, not a UI.
+- No personal portfolio. It does not exist yet and will not be faked into existence here; when
+  it is written it goes in its own repo and installs `@thl`.
 
 **Risks accepted:**
+
+- **The registry install path is only checked by a script, never by a real consuming app.** A
+  failure mode that only appears in a real Next.js build could survive the smoke test. Accepted:
+  the cost of finding out on project 02 is one minute; the cost of an app is permanent.
 
 - Role vocabulary v1 will be revised at system 02. The lint rule keeps that a mechanical sweep.
 - The repo name becomes permanent once a project installs from it — settled in Phase 01.

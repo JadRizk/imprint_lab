@@ -14,10 +14,10 @@ interface HeroContent {
 
 export const heroContent: HeroContent = {
   badge: 'RESEARCH_OBJECTIVE',
-  heading: 'ARCHITECTING FULL-STACK',
-  headingAccent: ' EQUILIBRIUM',
+  heading: 'A PAGE BUILT IN THIS',
+  headingAccent: ' SYSTEM',
   description:
-    'Investigating the intersection of robust backend infrastructure and fluid user interfaces. Field notes from a career in code.',
+    'An end-to-end composition rather than a component gallery — the same primitives assembled the way a real page assembles them.',
   image: {
     // Seeded so the placeholder is deterministic across loads and machines.
     // Swap for real artwork; update `alt` to describe it when you do.

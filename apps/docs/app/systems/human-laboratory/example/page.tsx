@@ -3,9 +3,10 @@ import { PageShell } from '@thl/ui/components/page-shell';
 import { SectionHeader } from '@thl/ui/components/section-header';
 
 import { ArrowDownRight } from 'lucide-react';
-import Link from 'next/link';
 
-import { HeroSection } from '../sections/hero/hero-section';
+import { SystemNav } from '../system-nav';
+
+import { HeroSection } from './hero-section';
 
 const SAMPLES = [
   {
@@ -37,17 +38,12 @@ export default function DemoPage() {
     // not something HeroSection should be padded to compensate for.
     <div className="min-h-screen w-full pt-12">
       {/* Navigation Bar */}
-      <nav className="fixed top-0 z-50 w-full border-b border-steel bg-obsidian/80 backdrop-blur-sm">
+      <nav className="fixed top-0 z-50 w-full border-b border-line bg-canvas/80 backdrop-blur-sm">
         <PageShell className="flex items-center justify-between py-3">
-          <Link
-            href="/"
-            className="text-xs font-bold tracking-label text-text-secondary transition-colors hover:text-lime"
-          >
-            &lt;- HOME
-          </Link>
-          <span className="text-xs font-bold tracking-label text-text-tertiary">
+          <SystemNav base="/systems/human-laboratory" current="/example" />
+          <span className="text-micro tracking-label text-ink-subtle">
             {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
-            DEMO // <span className="text-lime">LANDING_PAGE</span>
+            EXAMPLE // <span className="text-accent">FULL_PAGE</span>
           </span>
         </PageShell>
       </nav>

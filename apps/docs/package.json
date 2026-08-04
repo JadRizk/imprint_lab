@@ -15,6 +15,7 @@
     "@thl/tokens": "*",
     "@thl/ui": "*",
     "lucide-react": "^0.563.0",
+    "marked": "^18.0.9",
     "next": "16.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

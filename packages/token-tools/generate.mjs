@@ -47,6 +47,14 @@ for (const [file, contents] of Object.entries(artifacts)) {
   writeFileSync(join(outDir, file), contents);
 }
 
+// The tailwind-merge config also lands beside cn(), because a registry consumer
+// receives ui/lib/ as plain files with no workspace to resolve @<ns>/tokens
+// against. A relative import is the only one that works in both places.
+const uiLib = join(dirname(tokenDir), 'ui', 'lib');
+if (existsSync(uiLib)) {
+  writeFileSync(join(uiLib, 'tw-merge.generated.ts'), artifacts['tw-merge.ts']);
+}
+
 // ── Static tier ────────────────────────────────────────────────────────────
 // One self-contained stylesheet a standalone HTML report can inline: tokens,
 // reset, and the report primitives. Assembled here rather than hand-kept, so

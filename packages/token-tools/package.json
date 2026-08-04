@@ -6,7 +6,8 @@
   "description": "Shared token pipeline. Parses a system's theme.css and emits typed/derived artifacts.",
   "bin": {
     "token-tools": "./generate.mjs",
-    "check-roles": "./check-roles.mjs"
+    "check-roles": "./check-roles.mjs",
+    "smoke-install": "./smoke-install.mjs"
   },
   "exports": {
     ".": "./generate.mjs"

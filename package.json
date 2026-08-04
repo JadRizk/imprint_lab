@@ -8,7 +8,8 @@
     "format": "biome format --write .",
     "check": "biome check .",
     "check-types": "turbo run check-types",
-    "new-system": "bun run --cwd packages/system-template new-system.mjs"
+    "new-system": "bun run --cwd packages/system-template new-system.mjs",
+    "smoke": "bun run --filter=docs registry:build && node packages/token-tools/smoke-install.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",

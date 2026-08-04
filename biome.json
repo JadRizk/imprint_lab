@@ -55,6 +55,7 @@
       "!systems/*/tokens/theme.css",
       "!systems/*/tokens/tokens.generated.ts",
       "!systems/*/tokens/generated",
+      "!**/tw-merge.generated.ts",
       "!systems/*/static/thl.css",
       "!systems/*/static/thl.chart.css",
       "!systems/*/static/thl.fonts.css"

@@ -47,8 +47,8 @@
 .bg-accent
 .bg-ambient
 .bg-canvas
+.bg-canvas\
 .bg-lime
-.bg-obsidian\
 .bg-surface
 .bg-transparent
 .block
@@ -102,6 +102,7 @@
 .gap-px
 .gap-x-6
 .gap-y-1
+.gap-y-2
 .grayscale
 .grid
 .grid-cols-1
@@ -131,7 +132,6 @@
 .hover\:border-lime:hover
 .hover\:text-accent-ink:hover
 .hover\:text-accent:hover
-.hover\:text-lime:hover
 .ibm_plex_mono_b8f2d093-module__HASH__className
 .ibm_plex_mono_b8f2d093-module__HASH__variable
 .image-frame-module__HASH__badge
@@ -190,8 +190,6 @@
 .md\:h-\
 .md\:px-8
 .md\:row-span-2
-.md\:space-y-10
-.md\:space-y-5
 .md\:text-5xl
 .md\:text-base
 .min-h-screen
@@ -212,6 +210,7 @@
 .p-8
 .pb-2
 .pb-20
+.pb-3
 .pb-8
 .pl-4
 .pt-10
@@ -220,7 +219,6 @@
 .px-4
 .px-6
 .px-8
-.py-10
 .py-12
 .py-16
 .py-2\
@@ -236,9 +234,9 @@
 .shrink-0
 .size-2
 .size-3
-.sm\:text-3xl
 .space_grotesk_3fc8433f-module__HASH__className
 .space_grotesk_3fc8433f-module__HASH__variable
+.space-y-10
 .space-y-12
 .space-y-2
 .space-y-24
@@ -246,6 +244,7 @@
 .space-y-4
 .space-y-6
 .space-y-8
+.static
 .text-2xl
 .text-3xl
 .text-4xl

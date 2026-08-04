@@ -4,7 +4,7 @@
 #   ./.refactor/capture.sh              # write baseline (or promote after an accepted phase)
 #   ./.refactor/capture.sh --compare    # capture to current/ and diff vs baseline/
 #
-# Env: PORT (apps/web, default 3117) · DOCS_PORT (apps/docs, default 3118)
+# Env: PORT (apps/docs, default 3118)
 #
 # Why CSS and not screenshots: a lost token or dropped utility shows up here
 # exactly, where a screenshot only catches it if the loss happens to be visible.
@@ -17,10 +17,8 @@
 
 set -uo pipefail
 
-PORT="${PORT:-3117}"
-DOCS_PORT="${DOCS_PORT:-3118}"
-WEB="http://localhost:${PORT}"
-DOCS="http://localhost:${DOCS_PORT}"
+PORT="${PORT:-3118}"
+DOCS="http://localhost:${PORT}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODE="${1:-}"
 
@@ -30,9 +28,14 @@ else
   OUT="$ROOT/.refactor/baseline"
 fi
 
-# The showcase moved to apps/docs in phase 05, so the baseline spans two apps.
-WEB_ROUTES=("/" "/demo")
-DOCS_ROUTES=("/" "/systems/human-laboratory")
+# Phase 06 dissolved apps/web into apps/docs — one site, four routes per system.
+DOCS_ROUTES=(
+  "/"
+  "/systems/human-laboratory"
+  "/systems/human-laboratory/components"
+  "/systems/human-laboratory/example"
+  "/systems/human-laboratory/report"
+)
 
 require_server() {
   if ! curl -sf -m 10 -o /dev/null "$1/"; then
@@ -41,8 +44,7 @@ require_server() {
     exit 1
   fi
 }
-require_server "$WEB" apps/web "$PORT"
-require_server "$DOCS" apps/docs "$DOCS_PORT"
+require_server "$DOCS" apps/docs "$PORT"
 
 rm -rf "$OUT"; mkdir -p "$OUT"
 
@@ -67,8 +69,7 @@ capture() {   # capture <base-url> <prefix> <route>
   echo "  $name — $(wc -c < "$html" | tr -d ' ') bytes html, $(wc -c < "$OUT/$name.css" | tr -d ' ') bytes css"
 }
 
-for route in "${WEB_ROUTES[@]}";  do capture "$WEB"  "web_"  "$route"; done
-for route in "${DOCS_ROUTES[@]}"; do capture "$DOCS" "docs_" "$route"; done
+for route in "${DOCS_ROUTES[@]}"; do capture "$DOCS" "" "$route"; done
 
 # ── Normalised, order-independent signals ──
 # Custom properties: the token surface. Any disappearance here is a lost token.
