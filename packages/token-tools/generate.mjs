@@ -79,13 +79,20 @@ if (existsSync(partsDir)) {
     `${bundleHeader('report kit: tokens + reset + primitives')}${emitTokensCss(parsed.declarations)}\n${part('reset.css')}\n\n${part('components.css')}\n`
   );
   staticCount = 1;
-  // The chart layer is optional — a system earns one when it has data to show.
-  if (existsSync(join(partsDir, 'chart.css'))) {
-    writeFileSync(
-      join(staticDir, `${short}.chart.css`),
-      `${bundleHeader('report kit: chart layer (opt-in, load after the base bundle)')}${part('chart.css')}\n`
-    );
-    staticCount = 2;
+  // Optional layers. A system earns each one when it has something to show.
+  for (const [file, what] of [
+    ['chart.css', 'report kit: chart layer (opt-in, load after the base bundle)'],
+    ['diagram.css', 'report kit: diagram layer (opt-in, load after the base bundle)']
+  ]) {
+    if (!existsSync(join(partsDir, file))) continue;
+    writeFileSync(join(staticDir, `${short}.${file}`), `${bundleHeader(what)}${part(file)}\n`);
+    staticCount++;
+  }
+  // The interactivity layer is copied rather than wrapped — it is script, and a
+  // CSS comment header would not be valid in it.
+  if (existsSync(join(partsDir, 'interact.js'))) {
+    writeFileSync(join(staticDir, `${short}.interact.js`), `${part('interact.js')}\n`);
+    staticCount++;
   }
 }
 

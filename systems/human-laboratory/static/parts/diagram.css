@@ -1,0 +1,167 @@
+/* ── Diagrams ──────────────────────────────────────────────────────────────
+ *
+ * Opt-in layer. Load after the base bundle.
+ *
+ * A diagram earns its place by showing a mechanism — how something works, what
+ * depends on what, what is inside a boundary and what is outside it. If it is
+ * restating a list, it is decoration and a list is better.
+ *
+ * Four shapes cover almost every report. Each has a job:
+ *
+ *   FLOW        left-to-right stages. Use when order is causal, not just
+ *               sequential. A band beneath the spine can carry what verified
+ *               each stage, or what it cost.
+ *   ANATOMY     nested boxes. Use to show what sits inside a boundary versus
+ *               outside it — the strongest way to draw a blind spot or a scope.
+ *   GRAPH       nodes and edges. Use when the point is that the order is
+ *               forced. Solid edges are hard dependencies, dashed are soft.
+ *   FIELD       two axes, quadrants named. Use to place many items at once
+ *               when the placement itself is the argument.
+ *
+ * These classes style SVG elements so a diagram is authored as structure rather
+ * than as repeated inline fills. Everything reads role tokens, so a diagram
+ * reskins with the system.
+ */
+
+.diagram {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  padding: 24px;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.diagram > svg {
+  display: block;
+  min-inline-size: 640px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.diagram > figcaption {
+  margin-block-start: 14px;
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+  max-inline-size: 78ch;
+}
+
+/* ── Nodes ── */
+
+.d-node {
+  fill: var(--color-canvas);
+  stroke: var(--color-line);
+}
+
+/* The subject of the diagram. At most one or two per figure. */
+.d-node.is-active {
+  stroke: var(--color-accent);
+  stroke-width: 2;
+}
+
+.d-node.is-critical {
+  stroke: var(--color-critical);
+}
+
+/* Something absent, proposed, or invisible to the thing being described. */
+.d-node.is-ghost {
+  fill: none;
+  stroke: var(--color-ambient);
+  stroke-dasharray: 4 4;
+}
+
+/* ── Text ── */
+
+.d-title {
+  fill: var(--color-ink);
+}
+.d-title.is-active {
+  fill: var(--color-accent);
+}
+.d-title.is-critical {
+  fill: var(--color-critical);
+}
+.d-label {
+  fill: var(--color-ink-muted);
+}
+.d-sub {
+  fill: var(--color-ink-subtle);
+  font-size: 9px;
+}
+.d-axis-label {
+  fill: var(--color-ink-subtle);
+  font-size: 9px;
+}
+
+/* ── Edges ──
+ * Hard dependency versus soft. If every edge looks the same the graph is only
+ * telling you that things are connected, which is rarely the point.
+ */
+
+.d-edge {
+  fill: none;
+  stroke: var(--color-ambient);
+  stroke-width: 1;
+}
+
+.d-edge.is-hard {
+  stroke: var(--color-accent);
+  stroke-width: 1.5;
+}
+
+/* ── Rules, axes, quadrants ── */
+
+.d-rule {
+  stroke: var(--color-line);
+}
+.d-rule.is-soft {
+  stroke: var(--color-ambient);
+  stroke-dasharray: 3 3;
+}
+
+.d-quadrant {
+  fill: color-mix(in srgb, var(--color-accent) 6%, transparent);
+}
+
+/* ── Marks in a field plot ── */
+
+.d-dot {
+  r: 5;
+}
+.d-dot.is-critical {
+  fill: var(--color-critical);
+}
+.d-dot.is-warning {
+  fill: var(--color-warning);
+}
+.d-dot.is-muted {
+  fill: var(--color-ink-subtle);
+}
+.d-dot.is-accent {
+  fill: var(--color-accent);
+}
+
+/* ── Legend ── */
+
+.diagram-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-ink-subtle);
+  margin-block-start: 14px;
+}
+
+.diagram-legend > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.diagram-legend .key {
+  inline-size: 10px;
+  block-size: 10px;
+  flex: none;
+  border: 1px solid var(--color-line);
+}

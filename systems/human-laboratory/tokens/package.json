@@ -12,7 +12,8 @@
   },
   "scripts": {
     "generate:tokens": "token-tools",
-    "build": "token-tools"
+    "build": "token-tools",
+    "lint": "node ../../../packages/token-tools/validate-palette.mjs"
   },
   "devDependencies": {
     "@imprint/token-tools": "*"

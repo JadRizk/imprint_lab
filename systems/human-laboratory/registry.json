@@ -130,7 +130,7 @@
       "name": "report-kit",
       "type": "registry:file",
       "title": "THL report kit",
-      "description": "Pure HTML/CSS tier for standalone reports, audits and documents. Tokens, reset and ~15 report primitives in one inline-able stylesheet, plus the agent instructions for using them.",
+      "description": "Pure HTML/CSS tier for standalone reports, audits and documents. Tokens, reset and ~20 primitives, plus opt-in chart, diagram and interaction layers, a worked example, and the agent instructions for composing them.",
       "files": [
         {
           "path": "systems/human-laboratory/static/thl.css",
@@ -156,6 +156,21 @@
           "path": "systems/human-laboratory/static/SKILL.md",
           "type": "registry:file",
           "target": "~/thl/SKILL.md"
+        },
+        {
+          "path": "systems/human-laboratory/static/thl.diagram.css",
+          "type": "registry:file",
+          "target": "~/thl/thl.diagram.css"
+        },
+        {
+          "path": "systems/human-laboratory/static/thl.interact.js",
+          "type": "registry:file",
+          "target": "~/thl/thl.interact.js"
+        },
+        {
+          "path": "systems/human-laboratory/static/example-report.html",
+          "type": "registry:file",
+          "target": "~/thl/example-report.html"
         }
       ]
     }

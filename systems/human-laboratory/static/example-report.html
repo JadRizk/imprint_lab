@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SPECIMEN // Worked report — The Human Laboratory</title>
+    <link rel="stylesheet" href="./thl.fonts.css" />
+    <link rel="stylesheet" href="./thl.css" />
+    <link rel="stylesheet" href="./thl.chart.css" />
+    <link rel="stylesheet" href="./thl.diagram.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="masthead">
+        <div class="eyebrow">SPECIMEN &nbsp;//&nbsp; WORKED_REPORT &nbsp;//&nbsp; SYNTHETIC_DATA</div>
+        <h1>Every form the kit supports, composed the way a real document composes them</h1>
+        <p class="standfirst">
+          <strong>All figures below are invented.</strong> This is a specimen, not a record — it
+          exists so the next report has something to copy the <em>shape</em> of.
+          <code>catalog.html</code> shows the primitives in isolation; this shows them assembled,
+          with the editorial rules from <code>SKILL.md</code> §7 applied throughout.
+        </p>
+
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="label">Requests served</span>
+            <span class="value">2.41<span style="font-size: var(--text-lg)">B</span></span>
+            <span class="foot">+8.2% on the quarter</span>
+          </div>
+          <div class="stat">
+            <span class="label">Availability</span>
+            <span class="value is-accent">99.94%</span>
+            <span class="foot">target 99.90 — cleared every month</span>
+          </div>
+          <div class="stat">
+            <span class="label">p99 latency</span>
+            <span class="value is-warning">412ms</span>
+            <span class="foot">budget 400ms — breached in September</span>
+          </div>
+          <div class="stat">
+            <span class="label">Incidents</span>
+            <span class="value is-critical">7</span>
+            <span class="foot">2 customer-visible · 1 unresolved</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ── FLOW ── -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Latency is introduced downstream of the cache, not upstream</h2>
+          <span class="note">flow — order is causal</span>
+        </div>
+
+        <p class="lede">
+          A flow earns its place when the sequence is causal rather than merely chronological. The
+          band underneath is what makes it useful: it carries the measurement at each stage, so the
+          diagram answers <em>where</em> rather than just <em>what</em>.
+        </p>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 1080 210" role="img"
+            aria-label="Request pipeline showing p99 latency contributed by each stage; the persistence stage contributes 244 of 412 milliseconds">
+            <line class="d-rule" x1="30" y1="70" x2="1050" y2="70" />
+            <g>
+              <rect class="d-node" x="30" y="46" width="170" height="48" />
+              <text class="d-title" x="46" y="66">EDGE</text>
+              <text class="d-sub" x="46" y="82">tls · routing</text>
+              <text class="d-label" x="46" y="132">18ms</text>
+              <rect class="d-node is-ghost" x="30" y="144" width="170" height="8" />
+
+              <rect class="d-node" x="230" y="46" width="170" height="48" />
+              <text class="d-title" x="246" y="66">CACHE</text>
+              <text class="d-sub" x="246" y="82">hit ratio 0.87</text>
+              <text class="d-label" x="246" y="132">31ms</text>
+              <rect class="d-node is-ghost" x="230" y="144" width="170" height="8" />
+
+              <rect class="d-node" x="430" y="46" width="170" height="48" />
+              <text class="d-title" x="446" y="66">APPLICATION</text>
+              <text class="d-sub" x="446" y="82">business logic</text>
+              <text class="d-label" x="446" y="132">64ms</text>
+              <rect class="d-node is-ghost" x="430" y="144" width="170" height="20" />
+
+              <rect class="d-node is-active" x="630" y="46" width="170" height="48" />
+              <text class="d-title is-active" x="646" y="66">PERSISTENCE</text>
+              <text class="d-sub" x="646" y="82">primary + replicas</text>
+              <text class="d-title is-active" x="646" y="132">244ms</text>
+              <rect x="630" y="144" width="170" height="56" fill="var(--color-accent)" opacity="0.5" />
+
+              <rect class="d-node" x="830" y="46" width="220" height="48" />
+              <text class="d-title" x="846" y="66">SERIALISATION</text>
+              <text class="d-sub" x="846" y="82">response assembly</text>
+              <text class="d-label" x="846" y="132">55ms</text>
+              <rect class="d-node is-ghost" x="830" y="144" width="220" height="16" />
+            </g>
+            <text class="d-axis-label" x="30" y="180">CONTRIBUTION TO p99 &mdash; 412ms TOTAL</text>
+          </svg>
+          <figcaption>
+            One stage carries 59% of the budget. Everything upstream of it is within tolerance,
+            which is why cache tuning in August moved the number by 4ms.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ── CHARTS ── -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Four series is the ceiling, and it is enough</h2>
+          <span class="note">charts — hover for values</span>
+        </div>
+
+        <div class="cols">
+          <figure class="chart">
+            <figcaption class="chart-title">Requests by tier &mdash; monthly, billions</figcaption>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-1)"></span>Edge</span>
+              <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-2)"></span>API</span>
+              <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-3)"></span>Batch</span>
+              <span class="legend-item"><span class="swatch-dot" style="background: var(--chart-4)"></span>Internal</span>
+            </div>
+            <svg viewBox="0 0 520 220" class="has-tooltip" role="img"
+              aria-label="Stacked bars of monthly requests by tier across July, August and September; total rises from 2.22 to 2.41 billion">
+              <g class="grid">
+                <line x1="44" y1="40" x2="510" y2="40" /><line x1="44" y1="90" x2="510" y2="90" />
+                <line x1="44" y1="140" x2="510" y2="140" />
+              </g>
+              <g class="bar">
+                <rect class="series-1" x="80" y="96" width="72" height="84" data-tip="<span class='k'>JUL Edge</span> <span class='v'>0.94B</span>" />
+                <rect class="series-2" x="80" y="60" width="72" height="36" data-tip="<span class='k'>JUL API</span> <span class='v'>0.61B</span>" />
+                <rect class="series-3" x="80" y="42" width="72" height="18" data-tip="<span class='k'>JUL Batch</span> <span class='v'>0.44B</span>" />
+                <rect class="series-4" x="80" y="32" width="72" height="10" data-tip="<span class='k'>JUL Internal</span> <span class='v'>0.23B</span>" />
+
+                <rect class="series-1" x="224" y="92" width="72" height="88" data-tip="<span class='k'>AUG Edge</span> <span class='v'>0.98B</span>" />
+                <rect class="series-2" x="224" y="54" width="72" height="38" data-tip="<span class='k'>AUG API</span> <span class='v'>0.65B</span>" />
+                <rect class="series-3" x="224" y="36" width="72" height="18" data-tip="<span class='k'>AUG Batch</span> <span class='v'>0.45B</span>" />
+                <rect class="series-4" x="224" y="26" width="72" height="10" data-tip="<span class='k'>AUG Internal</span> <span class='v'>0.24B</span>" />
+
+                <rect class="series-1" x="368" y="88" width="72" height="92" data-tip="<span class='k'>SEP Edge</span> <span class='v'>1.02B</span>" />
+                <rect class="series-2" x="368" y="48" width="72" height="40" data-tip="<span class='k'>SEP API</span> <span class='v'>0.70B</span>" />
+                <rect class="series-3" x="368" y="30" width="72" height="18" data-tip="<span class='k'>SEP Batch</span> <span class='v'>0.44B</span>" />
+                <rect class="series-4" x="368" y="20" width="72" height="10" data-tip="<span class='k'>SEP Internal</span> <span class='v'>0.25B</span>" />
+              </g>
+              <g class="axis">
+                <line x1="44" y1="180" x2="510" y2="180" />
+                <text x="98" y="200">JUL</text><text x="242" y="200">AUG</text><text x="386" y="200">SEP</text>
+              </g>
+            </svg>
+          </figure>
+
+          <figure class="chart">
+            <figcaption class="chart-title">p99 latency against budget &mdash; weekly, ms</figcaption>
+            <svg viewBox="0 0 520 220" class="has-tooltip" role="img"
+              aria-label="Weekly p99 latency rising from 340 to 412 milliseconds and crossing the 400 millisecond budget in the final three weeks">
+              <g class="grid">
+                <line x1="44" y1="46" x2="510" y2="46" /><line x1="44" y1="100" x2="510" y2="100" />
+                <line x1="44" y1="154" x2="510" y2="154" />
+              </g>
+              <polyline class="line series-2"
+                points="70,150 128,146 186,140 244,128 302,110 360,92 418,74 476,58" />
+              <line class="target-line" x1="44" y1="86" x2="510" y2="86" />
+              <text class="d-sub" x="452" y="80" fill="var(--color-accent)">BUDGET 400</text>
+              <g class="series-2">
+                <circle class="dot" cx="70" cy="150" data-tip="<span class='k'>W1</span> <span class='v'>340ms</span>" />
+                <circle class="dot" cx="186" cy="140" data-tip="<span class='k'>W3</span> <span class='v'>352ms</span>" />
+                <circle class="dot" cx="302" cy="110" data-tip="<span class='k'>W5</span> <span class='v'>378ms</span>" />
+                <circle class="dot" cx="418" cy="74" data-tip="<span class='k'>W7</span> <span class='v'>404ms</span>" />
+              </g>
+              <circle class="dot is-emphasis" cx="476" cy="58" data-tip="<span class='k'>W8</span> <span class='v'>412ms — over budget</span>" />
+              <g class="axis"><line x1="44" y1="180" x2="510" y2="180" /></g>
+            </svg>
+            <figcaption>
+              One series needs no legend — the title names it. The accent appears exactly twice:
+              the budget line, and the endpoint being read.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ── ANATOMY ── -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Monitoring covers the request path and nothing either side of it</h2>
+          <span class="note">anatomy — inside a boundary vs outside</span>
+        </div>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 1080 260" role="img"
+            aria-label="Diagram showing that instrumentation covers request rate, error rate and latency, while queue depth, replica lag, cache eviction and client-side timing are uninstrumented">
+            <text class="d-axis-label" x="24" y="22">THE_SYSTEM &mdash; EVERYTHING THAT CAN FAIL</text>
+            <rect class="d-node" x="24" y="34" width="1032" height="204" />
+
+            <rect x="48" y="62" width="290" height="52" fill="color-mix(in srgb, var(--color-accent) 12%, transparent)" stroke="var(--color-accent)" />
+            <text class="d-title is-active" x="66" y="84">request rate · errors · latency</text>
+            <text class="d-sub" x="66" y="102">instrumented, alerted, on the dashboard</text>
+            <text class="d-title is-active" x="48" y="140">▲ WHAT IS WATCHED</text>
+            <line x1="48" y1="150" x2="338" y2="150" stroke="var(--color-accent)" />
+
+            <g class="d-node is-ghost">
+              <rect x="386" y="62" width="310" height="44" />
+              <rect x="386" y="118" width="310" height="44" />
+              <rect x="722" y="62" width="310" height="44" />
+              <rect x="722" y="118" width="310" height="44" />
+            </g>
+            <g>
+              <text class="d-sub" x="404" y="82">queue depth</text>
+              <text class="d-sub" x="404" y="98">the actual cause of two incidents</text>
+              <text class="d-sub" x="404" y="138">replica lag</text>
+              <text class="d-sub" x="404" y="154">no metric exists</text>
+              <text class="d-sub" x="740" y="82">cache eviction rate</text>
+              <text class="d-sub" x="740" y="98">inferred from hit ratio, never measured</text>
+              <text class="d-sub" x="740" y="138">client-side timing</text>
+              <text class="d-sub" x="740" y="154">what the user actually experiences</text>
+            </g>
+            <text class="d-sub" x="386" y="188">▲ WHAT IS NOT</text>
+            <line class="d-rule is-soft" x1="386" y1="196" x2="1032" y2="196" />
+
+            <text class="d-title is-critical" x="48" y="222">Four of seven incidents began outside the instrumented set.</text>
+          </svg>
+          <figcaption>
+            An anatomy is the strongest way to draw a gap. The boxes on the right are dashed
+            because they exist in the system but not in the instrument — the same shape as any
+            blind-spot argument.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ── INTERACTIVE TABLE ── -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Incident log</h2>
+          <span class="note">sortable · filterable · rows expand</span>
+        </div>
+
+        <div class="filter-bar">
+          <input type="search" placeholder="Filter incidents…" aria-label="Filter incidents"
+            data-filter-target="#incidents" data-filter-count="#incident-count" />
+          <span class="count"><span id="incident-count">7</span> SHOWN</span>
+        </div>
+
+        <div class="table-wrap">
+          <table id="incidents" class="is-sortable">
+            <thead>
+              <tr>
+                <th style="width:110px">ID</th>
+                <th style="width:260px">Summary</th>
+                <th style="width:110px">Duration</th>
+                <th style="width:120px">Customer</th>
+                <th>Origin</th>
+                <th style="width:120px" data-nosort>State</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="has-detail"><td class="key">0x2F91</td><td>Replica lag stalled reads</td><td>94 min</td><td>Visible</td><td>Persistence</td><td><span class="chip is-critical">UNRESOLVED</span></td></tr>
+              <tr class="detail"><td colspan="6">Uninstrumented. Detected by a customer report 41 minutes after onset. Root cause is the same replica lag the anatomy above marks as unwatched.</td></tr>
+
+              <tr class="has-detail"><td class="key">0x2F44</td><td>Queue saturation during batch window</td><td>38 min</td><td>Visible</td><td>Batch</td><td><span class="chip is-warning">MITIGATED</span></td></tr>
+              <tr class="detail"><td colspan="6">Mitigated by raising concurrency. No metric on queue depth, so the ceiling is unknown and the mitigation is untested against a larger batch.</td></tr>
+
+              <tr class="has-detail"><td class="key">0x2E17</td><td>Certificate rotation raced deploy</td><td>12 min</td><td>None</td><td>Edge</td><td><span class="chip is-accent">CLOSED</span></td></tr>
+              <tr class="detail"><td colspan="6">Ordering fixed in the deploy pipeline. Regression test added.</td></tr>
+
+              <tr><td class="key">0x2DA8</td><td>Serialisation timeout on large payloads</td><td>26 min</td><td>None</td><td>Serialisation</td><td><span class="chip is-accent">CLOSED</span></td></tr>
+              <tr><td class="key">0x2D53</td><td>Cache stampede after eviction</td><td>7 min</td><td>None</td><td>Cache</td><td><span class="chip is-accent">CLOSED</span></td></tr>
+              <tr><td class="key">0x2CE0</td><td>Connection pool exhaustion</td><td>51 min</td><td>None</td><td>Persistence</td><td><span class="chip is-accent">CLOSED</span></td></tr>
+              <tr><td class="key">0x2C1B</td><td>Dependency upgrade broke retries</td><td>19 min</td><td>None</td><td>Application</td><td><span class="chip is-accent">CLOSED</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="callout is-warning" style="margin-block-start: 18px">
+          Sorting by duration is numeric, not lexical — otherwise 94 sorts before 7 and the table
+          quietly lies. Any column can opt out with <code>data-nosort</code>; state does here,
+          because its order is severity, not alphabet.
+        </p>
+      </section>
+
+      <!-- ── GRAPH + FIELD ── -->
+      <section class="section">
+        <div class="section-head">
+          <h2>What to do, and in what order</h2>
+          <span class="note">graph and field</span>
+        </div>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 1080 250" role="img"
+            aria-label="Dependency graph: instrumenting queue depth and replica lag must precede capacity work, which precedes the latency budget review">
+            <defs>
+              <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" fill="var(--color-accent)" />
+              </marker>
+              <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" fill="var(--color-ambient)" />
+              </marker>
+            </defs>
+
+            <text class="d-axis-label" x="30" y="24">NOW</text>
+            <text class="d-axis-label" x="410" y="24">NEXT</text>
+            <text class="d-axis-label" x="790" y="24">AFTER</text>
+
+            <rect class="d-node is-active" x="30" y="40" width="240" height="52" />
+            <text class="d-title is-active" x="48" y="62">INSTRUMENT THE GAP</text>
+            <text class="d-sub" x="48" y="80">queue depth · replica lag</text>
+
+            <rect class="d-node" x="410" y="40" width="240" height="44" />
+            <text class="d-label" x="428" y="66">CAPACITY MODEL</text>
+            <rect class="d-node" x="410" y="104" width="240" height="44" />
+            <text class="d-label" x="428" y="130">CLIENT-SIDE TIMING</text>
+
+            <rect class="d-node" x="790" y="40" width="260" height="44" />
+            <text class="d-label" x="808" y="66">LATENCY BUDGET REVIEW</text>
+            <rect class="d-node is-ghost" x="790" y="104" width="260" height="44" />
+            <text class="d-sub" x="808" y="130">SLO RENEGOTIATION &mdash; blocked</text>
+
+            <g class="d-edge is-hard" marker-end="url(#a1)">
+              <path d="M270 62 L404 62" />
+              <path d="M270 72 Q340 126 404 126" />
+            </g>
+            <g class="d-edge" marker-end="url(#a2)">
+              <path d="M650 62 L784 62" />
+              <path d="M650 126 Q720 126 784 122" />
+              <path d="M920 84 L920 100" />
+            </g>
+
+            <text class="d-sub" x="30" y="180">Accent edges are hard dependencies: the capacity model cannot be built from metrics that do not exist.</text>
+            <text class="d-sub" x="30" y="200">The dashed node is blocked on evidence, not on effort &mdash; renegotiating a target requires knowing the real ceiling.</text>
+          </svg>
+          <figcaption>
+            A graph is worth drawing when the point is that the order is <em>forced</em>. If any
+            order would do, a list is clearer and cheaper.
+          </figcaption>
+        </figure>
+
+        <figure class="diagram" style="margin-block-start: 16px">
+          <svg viewBox="0 0 900 380" role="img"
+            aria-label="Field plot of remediation items by severity against effort; instrumenting queue depth and replica lag sit in the high-severity low-effort quadrant">
+            <rect class="d-quadrant" x="80" y="36" width="330" height="150" />
+            <text class="d-axis-label" x="96" y="56" fill="var(--color-accent)">DO FIRST</text>
+            <text class="d-axis-label" x="440" y="56">PLAN PROPERLY</text>
+            <text class="d-axis-label" x="96" y="330">TIDY WHEN PASSING</text>
+            <text class="d-axis-label" x="440" y="330">DEFER</text>
+
+            <line class="d-rule" x1="80" y1="350" x2="820" y2="350" />
+            <line class="d-rule" x1="80" y1="36" x2="80" y2="350" />
+            <line class="d-rule is-soft" x1="410" y1="36" x2="410" y2="350" />
+            <line class="d-rule is-soft" x1="80" y1="186" x2="820" y2="186" />
+            <text class="d-axis-label" x="400" y="372">EFFORT &rarr;</text>
+            <text class="d-axis-label" x="20" y="50">SEVERITY &uarr;</text>
+
+            <g>
+              <circle class="d-dot is-critical" cx="150" cy="72" /><text class="d-label" x="164" y="76">Queue depth metric</text>
+              <circle class="d-dot is-critical" cx="196" cy="104" /><text class="d-label" x="210" y="108">Replica lag metric</text>
+              <circle class="d-dot is-critical" cx="520" cy="86" /><text class="d-label" x="534" y="90">Capacity model</text>
+              <circle class="d-dot is-warning" cx="238" cy="150" /><text class="d-label" x="252" y="154">Alert on lag</text>
+              <circle class="d-dot is-warning" cx="470" cy="210" /><text class="d-label" x="484" y="214">Client-side timing</text>
+              <circle class="d-dot is-warning" cx="180" cy="238" /><text class="d-label" x="194" y="242">Runbook refresh</text>
+              <circle class="d-dot is-muted" cx="140" cy="300" /><text class="d-label" x="154" y="304">Dashboard tidy-up</text>
+              <circle class="d-dot is-muted" cx="600" cy="286" /><text class="d-label" x="614" y="290">Log retention review</text>
+            </g>
+          </svg>
+          <figcaption>
+            A field places many items at once when the placement itself is the argument. Label the
+            quadrants with verbs — a quadrant called &ldquo;high severity, low effort&rdquo; states
+            a fact; one called &ldquo;do first&rdquo; states a decision.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ── SUPPORTING ── -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Supporting forms</h2>
+          <span class="note">panels · spec lists · callouts</span>
+        </div>
+
+        <div class="cols">
+          <div class="panel has-brackets">
+            <h3>What would change this conclusion</h3>
+            <p style="margin:0;font-size:var(--text-xs)">
+              If queue depth turns out to be bounded by a configuration limit rather than by
+              capacity, the persistence finding collapses and the whole remediation order changes.
+              That is the cheapest experiment available and it has not been run.
+            </p>
+          </div>
+          <div class="panel">
+            <h3>Measurement basis</h3>
+            <dl class="spec-list" style="margin:0">
+              <dt>Window</dt><dd>13 weeks, synthetic</dd>
+              <dt>Percentile</dt><dd>p99, per-region, unweighted</dd>
+              <dt>Excludes</dt><dd>Internal traffic, health checks</dd>
+              <dt>Confidence</dt><dd>Low — four of seven incidents uninstrumented</dd>
+            </dl>
+          </div>
+        </div>
+
+        <p class="callout" style="margin-block-start: 18px">
+          A document that reports only what worked is not trustworthy. Mark what was unverified,
+          what was assumed, and what would falsify the conclusion — the panels above do all three.
+        </p>
+      </section>
+
+      <footer class="report-footer">
+        <span>SPECIMEN <span style="color: var(--color-ambient)">//</span> WORKED_REPORT <span style="color: var(--color-ambient)">//</span> ALL FIGURES INVENTED</span>
+        <span>RENDERED IN <span style="color: var(--color-accent)">@THL</span> REPORT_KIT</span>
+      </footer>
+    </div>
+
+    <script src="./thl.interact.js"></script>
+  </body>
+</html>

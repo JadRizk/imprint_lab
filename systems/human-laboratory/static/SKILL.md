@@ -1,6 +1,6 @@
 ---
 name: thl-report
-description: Build a standalone HTML report, audit, spec or document in The Human Laboratory design system. Use whenever producing an HTML artifact, page, or report for a project that has adopted @thl — including Claude Code artifacts. Covers the stylesheet, the class vocabulary, the voice, and the chart rules.
+description: Build a standalone HTML document — report, audit, spec, handoff, dashboard — in The Human Laboratory design system. Use whenever producing an HTML artifact for a project that has adopted @thl, including Claude artifacts. Covers the stylesheets, the class vocabulary, the four diagram forms, chart rules, interactive tables, and the editorial voice that makes the output read as one system.
 ---
 
 # The Human Laboratory — report kit
@@ -8,117 +8,210 @@ description: Build a standalone HTML report, audit, spec or document in The Huma
 A pure HTML/CSS tier. No React, no build step, no network request. Drop the
 stylesheet in and the document is on-brand by construction.
 
-## Wiring
+**The stylesheet is the easy part.** Most of what makes these documents work is
+in §4 and §5 — what to draw and how to write it. Read those before composing.
 
-Inline the bundle into a `<style>` block, or link it if the page can reach the
-file. A strict CSP is the normal case for a standalone report, so **never link a
-font CDN** — it will fail silently and the page will fall back to system faces.
+---
 
-```html
-<style>/* contents of thl.fonts.css — optional, ~116KB, embeds Space Grotesk */</style>
-<style>/* contents of thl.css     — required, ~14KB: tokens + reset + primitives */</style>
-<style>/* contents of thl.chart.css — only if the report carries data */</style>
+## 1. Wiring
+
+Inline into `<style>` blocks, or link if the page can reach the files. A strict
+CSP is the normal case for a standalone document, so **never link a font CDN** —
+it fails silently and the page falls back to system faces.
+
+| File | Size | When |
+|---|---|---|
+| `thl.css` | ~15KB | **Always.** Tokens, reset, ~20 primitives. |
+| `thl.fonts.css` | ~116KB | When brand fidelity beats bytes. Embeds the display face. Load **before** `thl.css`. |
+| `thl.chart.css` | ~6KB | The document carries data. |
+| `thl.diagram.css` | ~3KB | The document draws a mechanism. |
+| `thl.interact.js` | ~5KB | Sortable tables, filtering, expandable rows, chart tooltips. |
+
+Without the fonts bundle the page renders correctly in a system mono stack.
+That is a supported degradation, not a bug.
+
+**Everything works without the script.** Tables read, charts render, detail rows
+stay visible. Never build a document whose meaning depends on JavaScript — the
+kit's whole value is surviving email, PDF export and stripped script.
+
+---
+
+## 2. Page skeleton
+
 ```
-
-Order matters: fonts first (they set `--font-sans-face`), then `thl.css`.
-
-Without the fonts bundle the page still renders correctly in a system mono
-stack — that is a supported degradation, not a bug.
-
-## Page skeleton
-
-```html
-<div class="wrap">
-  <header class="masthead">
-    <div class="eyebrow">PROJECT_NAME // DOCUMENT_TYPE // 2026-08-04</div>
-    <h1>A sentence that states the finding, not the topic</h1>
-    <p class="standfirst">Two or three lines that let a reader stop here.</p>
-  </header>
-
-  <section class="section">
-    <div class="section-head">
-      <h2>Section name</h2>
-      <span class="note">optional right-aligned gloss</span>
-    </div>
+.wrap                        ← 1440px. Use .wrap--prose (80ch) for reading-led docs.
+  header.masthead
+    .eyebrow                 ← PROJECT // DOC_TYPE // DATE
+    h1                       ← states the finding, not the topic
+    p.standfirst             ← 2–3 lines a reader could stop at
+    .stat-grid > .stat       ← the numbers that matter, if any
+  section.section
+    .section-head            ← h2 + optional right-aligned .note
     …
-  </section>
-
-  <footer class="report-footer">
-    <span>PROJECT // DOCUMENT // STATUS</span>
-  </footer>
-</div>
+  footer.report-footer
 ```
 
-Use `.wrap--prose` instead of `.wrap` for reading-led documents; it narrows the
-measure to 80ch. The default is wide, for tables and dashboards.
+---
 
-## The vocabulary
+## 3. The vocabulary
 
-| Class | Use for |
+| Class | For |
 |---|---|
 | `.masthead` `.eyebrow` `.standfirst` | Page opening |
-| `.section` `.section-head` `.lede` | Section structure |
-| `.stat-grid` `.stat` | A row of headline numbers |
-| `.table-wrap` + `<table>` | Any tabular data — the wrapper is what scrolls |
-| `.chip` | State, with `.is-accent` / `.is-critical` / `.is-warning` |
+| `.section` `.section-head` `.lede` | Section structure; `.note` is the right-aligned gloss |
+| `.stat-grid` `.stat` | Headline numbers. `.label` + `.value` + `.foot` |
+| `.table-wrap` + `table` | Any tabular data — **the wrapper is what scrolls** |
+| `.chip` | State. `.is-accent` / `.is-critical` / `.is-warning` |
 | `.panel` `.has-brackets` | A bounded block; brackets add the corner motif |
-| `.callout` | A claim that needs weight |
+| `.callout` | A claim that needs weight. Takes the status modifiers |
 | `.spec-list` (`dl`/`dt`/`dd`) | Label→value pairs |
 | `.swatch-grid` `.swatch` | Colour specimens; `.is-absent` for proposed values |
 | `pre` `code` `.tree` | Code and directory trees |
 | `.cols` | Responsive multi-column grid |
 | `.rule` | Section divider |
-| `.scan-line` | The CRT motif; needs a `position: relative` parent |
+| `.scan-line` | The CRT motif; needs a positioned parent |
 
-Everything is roles-only, so it reskins with the tokens. Do not hand-write
-colours — use the token variables if you need something bespoke.
+Everything is roles-only, so it reskins with the tokens. **Never hand-write a
+colour.** If you need something bespoke, use the token variables.
 
-## Voice
+### Interactive tables
 
-The register is a lab notebook driving an instrument panel. It is consistent
-across the whole system and it is most of what makes output recognisable.
+Add `is-sortable` to a table for click-to-sort columns (`data-nosort` on a
+header opts out). For filtering, put a `.filter-bar` above it with an input
+carrying `data-filter-target="#tableId"` and optionally `data-filter-count`.
+For expandable rows, give a row `has-detail` and follow it with a `tr.detail`.
 
-- **Labels and eyebrows are `SCREAMING_SNAKE_CASE`** — `RESEARCH_OBJECTIVE`,
-  `FIELD_SAMPLES`, `DEPTH_CALIBRATION`, `SIGNAL_PROCESSING`.
-- **`//` separates parts of a label** — `DEMO // LANDING_PAGE`.
-- **Status words come from instrumentation** — `NOMINAL`, `RENDERING`,
-  `SIGNAL_LOST`, `UNDER_CONSTRUCTION`. Not "OK", "Done", "Error".
-- **Identifiers look like readings** — `SYSTEM_ID: 0x8291`, `LAYER_01`.
-- **Back-links are drawn, not worded** — `<- HOME`.
-- Prose itself is plain and declarative. The instrument vocabulary belongs to
-  labels and chrome; body copy should not be written in it.
+Sorting is numeric when a column's cells parse as numbers — otherwise "10"
+sorts before "9" and the table quietly lies.
 
-Headings state the finding, not the topic. "Colours are named by appearance,
-not by role" beats "Colour naming".
+---
 
-## Charts
+## 4. Diagrams
+
+**A diagram earns its place by showing a mechanism.** How something works, what
+depends on what, what is inside a boundary and what is outside it. If it is
+restating a list, it is decoration — and a list is better.
+
+Four forms cover almost every document. Wrap each in
+`<figure class="diagram">` with a `<figcaption>` that says what to take from it.
+
+| Form | Use when | Anatomy |
+|---|---|---|
+| **Flow** | Order is causal, not merely sequential | A spine, stages along it, and — often the most useful part — a band underneath carrying what verified each stage or what it cost |
+| **Anatomy** | Showing what sits inside a boundary vs outside | Nested boxes. The strongest way to draw a blind spot, a scope, or a contract |
+| **Graph** | The point is that the order is *forced* | Nodes and edges. `.is-hard` for a real dependency, plain for a soft one. If every edge looks the same you are only saying things are connected |
+| **Field** | Placing many items at once, where the placement is the argument | Two axes, quadrants named. Label the quadrants with verbs — "do first", "defer" |
+
+Style with the `d-` classes rather than inline fills: `.d-node` (`.is-active`
+for the subject, `.is-ghost` for something absent or invisible), `.d-title`,
+`.d-label`, `.d-sub`, `.d-edge`, `.d-rule`, `.d-quadrant`, `.d-dot`.
+
+**Rules that keep them legible.**
+
+- Give every `<svg>` a `role="img"` and an `aria-label` that states the finding,
+  not the shape. A screen reader should get the point without the picture.
+- Two type sizes maximum inside a diagram: a title and a sub.
+- The accent marks the subject. If three things are accented, none of them are.
+- A dashed ghost box says "absent" or "invisible" and nothing else. Do not use
+  dashes for emphasis.
+- Diagrams sit inside `.diagram`, which scrolls. Give the SVG a `viewBox` and no
+  fixed width, so it scales.
+
+---
+
+## 5. Charts
 
 Load `thl.chart.css`. Then:
 
-- **The accent is never a series colour.** `--color-accent` sits at OKLCH
-  L 0.944, far outside the band a categorical palette needs on a dark ground.
-  It is reserved for emphasis — a highlighted mark, a target line, a sparkline
-  endpoint. `--color-critical` and `--color-warning` are status and are never
-  reused as "series 4".
-- **Use `.series-1` … `.series-5` in fixed order, never cycled.** The palette
-  was generated in OKLCH and validated: all five checks pass on both surfaces,
-  worst adjacent CVD ΔE 8.2. A sixth series folds into "Other", becomes small
-  multiples, or means the chart is the wrong form.
-- **One y-axis. Never two.** Two measures of different scale become two charts.
-- **A legend is always present from two series up**, so identity is never
-  colour alone. Direct-label up to four.
+- **The accent is never a series colour.** It measures OKLCH L 0.944, far
+  outside the band a categorical palette needs on this ground. It is reserved
+  for emphasis — a highlighted mark, a target line, a sparkline endpoint.
+  `--color-critical` and `--color-warning` are status and are never reused as a
+  series.
+- **Four series is the ceiling.** `.series-1` … `.series-4`, in fixed order,
+  never cycled. The palette clears its floors on **all** pairs — an exhaustive
+  search found no fifth colour that does so while staying clear of the accent
+  and status hues. A fifth series folds into "Other", becomes small multiples,
+  or means the chart is the wrong form.
+- **One y-axis. Never two.** Two measures of different scale become two charts,
+  small multiples, or one indexed to a common base.
+- **A legend is always present from two series up**, so identity is never colour
+  alone. Direct-label where it fits.
 - **Text wears text tokens**, never the series colour.
 - Sequential data uses `--chart-seq-*` (one hue, monotone lightness). Diverging
-  uses `--chart-div-*`, which has a neutral gray midpoint — never a hue.
+  uses `--chart-div-*`, whose midpoint is a neutral grey — never a hue.
+- Marks are square-ended. This system resets radius and every surface is
+  hard-edged.
 
-## Rules
+Add `has-tooltip` to an SVG and `data-tip` to its marks for hover and keyboard
+tooltips, when the script layer is loaded.
 
-- **Never re-derive the palette inline.** Copying hex values into a new
-  `<style>` block is the exact drift this kit exists to prevent. If a value is
-  missing, add a token to `theme.css` and regenerate.
-- Wide content scrolls in its own container; the page body never scrolls
-  sideways.
-- Give keyboard focus a visible state — the reset already does.
-- Respect `prefers-reduced-motion` — the reset already does.
-- The system is **dark only**, by policy. Do not add a light theme.
-- Zero border radius everywhere. It is a deliberate constraint, not an omission.
+**Before choosing a chart, ask whether it should be one.** A single number is a
+`.stat`. Three numbers are usually a `.spec-list`. A chart earns its space when
+the shape of the data is the point.
+
+**If you change the palette**, run `validate-palette` — it is wired into lint
+and reads the shipped values. Do not relax the thresholds.
+
+---
+
+## 6. Voice
+
+The register is a lab notebook driving an instrument panel. It is consistent
+across the system and it is most of what makes output recognisable.
+
+- **Labels and eyebrows are `SCREAMING_SNAKE_CASE`** — `RESEARCH_OBJECTIVE`,
+  `FIELD_SAMPLES`, `DEPTH_CALIBRATION`.
+- **`//` separates the parts of a label** — `AUDIT // Q3_REVIEW`.
+- **Status words come from instrumentation** — `NOMINAL`, `RENDERING`,
+  `SIGNAL_LOST`, `DEGRADED`. Not "OK", "Done", "Error".
+- **Identifiers look like readings** — `SYSTEM_ID: 0x8291`, `LAYER_01`.
+- **Back-links are drawn** — `<- HOME`.
+
+Prose itself is plain and declarative. The instrument vocabulary belongs to
+labels and chrome; **body copy is not written in it.**
+
+---
+
+## 7. Editorial rules
+
+These are what separate a document that uses the classes from one that reads.
+
+**Headings state the finding, not the topic.** "Colours are named by appearance,
+not by role" beats "Colour naming". A section head is a claim you then support.
+
+**A stat is three parts.** `.label` says what is counted, `.value` is the
+number, `.foot` qualifies it — the denominator, the caveat, the trend. A number
+without a foot invites the wrong conclusion.
+
+**A chip carries its own word.** State must never depend on colour alone.
+`DEGRADED` in orange, not an orange dot.
+
+**Tables lead with a key column.** The first column identifies the row; give it
+`class="key"`. Everything after it describes.
+
+**Structural devices must encode something true.** Numbered markers are for
+genuine sequences. Severity chips are for real severity. If a device is not
+carrying information, remove it — the system's whole argument is that every
+element earns its place.
+
+**Say what is not known.** A document that reports only what worked is not
+trustworthy. Mark what was unverified, what was assumed, what would falsify the
+conclusion. Both this kit and the system it documents were built that way.
+
+**Wide content scrolls in its own container.** The page body never scrolls
+sideways.
+
+---
+
+## 8. Hard rules
+
+- **Never re-derive the palette inline.** Copying hex values into a new `<style>`
+  block is the exact drift this kit exists to prevent. If a value is missing,
+  add a token upstream and regenerate.
+- **Never link a font, script or stylesheet from a CDN.** Inline or omit.
+- **Dark only**, by policy. Do not add a light theme.
+- **Zero border radius**, everywhere. A deliberate constraint, not an omission.
+- Give keyboard focus a visible state and respect `prefers-reduced-motion` —
+  the reset already does both; do not undo them.
+- Every `<svg>` gets `role="img"` and a meaningful `aria-label`.
