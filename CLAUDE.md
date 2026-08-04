@@ -239,6 +239,49 @@ diagram forms, the chart rules and the editorial voice.
 
 ---
 
+## Skills
+
+Three, and they are loaded at different moments. **Check here before writing a
+long prompt explaining how something in this repo works — it is probably already
+a skill.**
+
+| Skill | Lives in | Loaded |
+|---|---|---|
+| `thl-report` | `systems/human-laboratory/static/SKILL.md` | Writing any standalone HTML document |
+| `new-system` | `.claude/skills/new-system/` | Adding a system to this repo |
+| `design-direction` | personal, `~/.claude/skills/` | Deciding a system's thesis, voice and palette — **before** `new-system` |
+
+**`thl-report` is canonical in `static/`, not in `.claude/skills/`**, because it
+ships to consumers as part of the `@thl/report-kit` registry item — a project
+that adopts the system receives the instructions alongside the stylesheets.
+`.claude/skills/thl-report/SKILL.md` is a **stub that routes to it**, so the kit
+is discoverable without the vocabulary existing twice.
+
+> A symlink was tried first and **fails silently**: the loader does not follow
+> one, so the file resolved on disk while the skill stayed unregistered. If you
+> tidy that stub into a symlink, you will quietly un-register the skill.
+
+The stub duplicates exactly one line — the `description`, which the loader reads
+from the stub itself. **Change it in both places or neither.** The real fix is to
+move the canonical file into `.claude/skills/thl-report/` and point
+`registry.json` at that path, which removes the duplication; it was not done
+because `static/SKILL.md` had uncommitted edits in a parallel session.
+
+> ⚠ **The report kit's instructions are not auto-discoverable in a consuming
+> project.** The registry lands `SKILL.md` at `~/thl/SKILL.md`, which is not a
+> skills directory, so an agent there must be pointed at it by hand. The
+> cold-start test that validated the kit was run by handing the agent the file
+> explicitly — so it proved the *content* is sufficient, not that the *delivery*
+> works. Retargeting it to `~/.claude/skills/thl-report/SKILL.md` would fix this
+> and is additive, but changes a published registry item: decide it before
+> anything installs from the registry, not after.
+
+`design-direction` is deliberately outside this repo — it is stack-agnostic and
+used on projects that have nothing to do with imprint_lab. The cost is that it
+is **not version-controlled with anything**; it exists on one machine.
+
+---
+
 ## Conventions
 
 ### TypeScript
