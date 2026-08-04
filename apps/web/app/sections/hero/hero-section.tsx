@@ -1,6 +1,6 @@
-import { ImageFrame } from '@repo/ui/components/image-frame';
-import { PageShell } from '@repo/ui/components/page-shell';
-import { SectionHeader } from '@repo/ui/components/section-header';
+import { ImageFrame } from '@thl/ui/components/image-frame';
+import { PageShell } from '@thl/ui/components/page-shell';
+import { SectionHeader } from '@thl/ui/components/section-header';
 import { ArrowDownRight } from 'lucide-react';
 
 import { heroContent } from './data';

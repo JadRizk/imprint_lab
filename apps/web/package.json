@@ -11,14 +11,14 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@repo/ui": "*",
+    "@thl/ui": "*",
     "lucide-react": "^0.563.0",
     "next": "16.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@repo/tailwind-config": "*",
+    "@thl/tokens": "*",
     "@repo/typescript-config": "*",
     "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^22.15.3",

@@ -1,10 +1,10 @@
-import { coreColors, semanticColors, textTokens, tokens } from '@repo/tailwind-config/tokens';
-import { BentoCard } from '@repo/ui/components/bento-card';
-import { BentoGrid } from '@repo/ui/components/bento-grid';
-import { Button } from '@repo/ui/components/button';
-import { ImageFrame } from '@repo/ui/components/image-frame';
-import { PageShell } from '@repo/ui/components/page-shell';
-import { SectionHeader } from '@repo/ui/components/section-header';
+import { coreColors, semanticColors, textTokens, tokens } from '@thl/tokens/tokens';
+import { BentoCard } from '@thl/ui/components/bento-card';
+import { BentoGrid } from '@thl/ui/components/bento-grid';
+import { Button } from '@thl/ui/components/button';
+import { ImageFrame } from '@thl/ui/components/image-frame';
+import { PageShell } from '@thl/ui/components/page-shell';
+import { SectionHeader } from '@thl/ui/components/section-header';
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -266,10 +266,7 @@ export default function DesignSystemPage() {
               Generated at build time from{' '}
               <code className="text-lime">packages/tailwind-config/theme.css</code>. If you add a
               token there, run{' '}
-              <code className="text-lime">
-                bun run --filter=@repo/tailwind-config generate:tokens
-              </code>
-              .
+              <code className="text-lime">bun run --filter=@thl/tokens generate:tokens</code>.
             </>
           }
         >

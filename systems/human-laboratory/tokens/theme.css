@@ -86,63 +86,6 @@
   }
 }
 
-/* ── Base layer ── */
-
-@layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  html {
-    color-scheme: dark;
-  }
-
-  body {
-    background-color: var(--color-obsidian);
-    color: var(--color-text-secondary);
-    font-family: var(--font-mono);
-    cursor: crosshair;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-sans);
-  }
-
-  ::selection {
-    background-color: var(--color-lime);
-    color: var(--color-black);
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--color-obsidian);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--color-steel);
-    border-radius: 0;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-lime);
-  }
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-}
-
 /* ── Utilities ── */
 
 @utility scan-line {

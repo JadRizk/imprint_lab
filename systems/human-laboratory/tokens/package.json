@@ -1,0 +1,17 @@
+{
+  "name": "@thl/tokens",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./theme.css",
+    "./base.css": "./base.css",
+    "./tokens": "./tokens.generated.ts"
+  },
+  "scripts": {
+    "generate:tokens": "token-tools",
+    "build": "token-tools"
+  },
+  "devDependencies": {
+    "@imprint/token-tools": "*"
+  }
+}

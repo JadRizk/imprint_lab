@@ -1,6 +1,6 @@
-import { Button } from '@repo/ui/components/button';
-import { PageShell } from '@repo/ui/components/page-shell';
-import { SectionHeader } from '@repo/ui/components/section-header';
+import { Button } from '@thl/ui/components/button';
+import { PageShell } from '@thl/ui/components/page-shell';
+import { SectionHeader } from '@thl/ui/components/section-header';
 import Link from 'next/link';
 
 export default function Home() {

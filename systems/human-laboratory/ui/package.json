@@ -1,20 +1,19 @@
 {
-  "name": "@repo/ui",
+  "name": "@thl/ui",
   "version": "0.1.0",
   "private": true,
   "exports": {
-    "./components/button": "./src/components/button.tsx",
-    "./components/bento-card": "./src/components/bento-card.tsx",
-    "./components/bento-grid": "./src/components/bento-grid.tsx",
-    "./components/image-frame": "./src/components/image-frame.tsx",
-    "./components/page-shell": "./src/components/page-shell.tsx",
-    "./components/section-header": "./src/components/section-header.tsx",
-    "./lib/utils": "./src/lib/utils.ts",
-    "./styles.css": "./src/styles.css"
+    "./components/button": "./components/button.tsx",
+    "./components/bento-card": "./components/bento-card.tsx",
+    "./components/bento-grid": "./components/bento-grid.tsx",
+    "./components/image-frame": "./components/image-frame.tsx",
+    "./components/page-shell": "./components/page-shell.tsx",
+    "./components/section-header": "./components/section-header.tsx",
+    "./lib/utils": "./lib/utils.ts",
+    "./styles.css": "./styles.css"
   },
   "scripts": {
     "lint": "biome check .",
-    "generate:component": "turbo gen react-component",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
@@ -29,8 +28,8 @@
     "tailwindcss": "^4.1.0"
   },
   "devDependencies": {
-    "@repo/tailwind-config": "*",
     "@repo/typescript-config": "*",
+    "@thl/tokens": "*",
     "@types/node": "^22.15.3",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",

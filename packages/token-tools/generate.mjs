@@ -1,13 +1,18 @@
-// Parses theme.css and writes a typed token module.
-// Run: bun run --filter=@repo/tailwind-config generate:tokens
+#!/usr/bin/env node
+// Parses a system's theme.css and writes a typed token module.
+//
+// Shared across every system in imprint_lab, so paths resolve against the token
+// directory passed as argv[2] (default: cwd), not against this file.
+//
+//   token-tools [tokenDir]
+//   bun run --filter=@thl/tokens generate:tokens
 
 import { readFileSync, writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { join, resolve } from 'node:path';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const themePath = join(__dirname, '..', 'theme.css');
-const outPath = join(__dirname, '..', 'tokens.generated.ts');
+const tokenDir = resolve(process.argv[2] ?? process.cwd());
+const themePath = join(tokenDir, 'theme.css');
+const outPath = join(tokenDir, 'tokens.generated.ts');
 
 const css = readFileSync(themePath, 'utf8');
 
@@ -114,7 +119,7 @@ for (const { name, value } of declarations) {
 }
 
 const content = `// AUTO-GENERATED FROM theme.css — do not edit by hand.
-// Run: bun run --filter=@repo/tailwind-config generate:tokens
+// Run: bun run --filter=@thl/tokens generate:tokens
 
 export type TokenCategory =
   | 'color'

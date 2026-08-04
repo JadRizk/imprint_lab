@@ -1,5 +1,5 @@
 // AUTO-GENERATED FROM theme.css — do not edit by hand.
-// Run: bun run --filter=@repo/tailwind-config generate:tokens
+// Run: bun run --filter=@thl/tokens generate:tokens
 
 export type TokenCategory =
   | 'color'

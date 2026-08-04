@@ -52,7 +52,7 @@
       "!build",
       "!.worktrees",
       "!.refactor",
-      "!packages/tailwind-config"
+      "!systems/human-laboratory/tokens"
     ]
   }
 }

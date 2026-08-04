@@ -58,8 +58,13 @@ cat "$OUT"/*.css \
   | sed 's/[[:space:]]\+/ /g; s/ *$//' | sort -u > "$OUT/tokens.txt"
 
 # Class selectors: the utility surface. Disappearance means a utility stopped generating.
+#
+# CSS Module class names embed a hash of the source file's PATH, so they change
+# whenever a file moves — which is most of what this refactor does. Normalise the
+# hash away: the class names and their count are the signal, the hash is not.
 cat "$OUT"/*.css \
   | grep -ohE '\.[a-zA-Z0-9\\:_-]+' \
+  | sed -E 's/(module)__[A-Za-z0-9_-]+__/\1__HASH__/g' \
   | sort -u > "$OUT/utilities.txt"
 
 echo "  tokens: $(wc -l < "$OUT/tokens.txt" | tr -d ' ')  utilities: $(wc -l < "$OUT/utilities.txt" | tr -d ' ')"
