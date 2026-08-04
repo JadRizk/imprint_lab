@@ -16,7 +16,7 @@ export interface Token {
   value: string;
   category: TokenCategory;
   utility: string;
-  subcategory?: 'core' | 'semantic';
+  subcategory?: 'core' | 'semantic' | 'role';
 }
 
 export const tokens: Token[] = [
@@ -88,6 +88,69 @@ export const tokens: Token[] = [
     "category": "color",
     "utility": "bg-ambient · border-ambient",
     "subcategory": "semantic"
+  },
+  {
+    "name": "--color-canvas",
+    "value": "var(--color-obsidian)",
+    "category": "color",
+    "utility": "bg-canvas · text-canvas · border-canvas",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-line",
+    "value": "var(--color-steel)",
+    "category": "color",
+    "utility": "bg-line · text-line · border-line",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-ink",
+    "value": "var(--color-white)",
+    "category": "color",
+    "utility": "bg-ink · text-ink · border-ink",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-ink-muted",
+    "value": "var(--color-text-secondary)",
+    "category": "color",
+    "utility": "bg-ink-muted · text-ink-muted · border-ink-muted",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-ink-subtle",
+    "value": "var(--color-text-tertiary)",
+    "category": "color",
+    "utility": "bg-ink-subtle · text-ink-subtle · border-ink-subtle",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-accent",
+    "value": "var(--color-lime)",
+    "category": "color",
+    "utility": "bg-accent · text-accent · border-accent",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-accent-ink",
+    "value": "var(--color-black)",
+    "category": "color",
+    "utility": "bg-accent-ink · text-accent-ink · border-accent-ink",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-critical",
+    "value": "#FF4A4A",
+    "category": "color",
+    "utility": "bg-critical · text-critical · border-critical",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-warning",
+    "value": "#FF8A00",
+    "category": "color",
+    "utility": "bg-warning · text-warning · border-warning",
+    "subcategory": "role"
   },
   {
     "name": "--font-sans",
@@ -196,4 +259,5 @@ export const tokens: Token[] = [
 export const colorTokens = tokens.filter((t) => t.category === 'color');
 export const coreColors = colorTokens.filter((t) => t.subcategory === 'core');
 export const semanticColors = colorTokens.filter((t) => t.subcategory === 'semantic');
+export const roleColors = colorTokens.filter((t) => t.subcategory === 'role');
 export const textTokens = tokens.filter((t) => t.category === 'text');

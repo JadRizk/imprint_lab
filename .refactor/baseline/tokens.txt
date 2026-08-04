@@ -1,13 +1,22 @@
 --animate-scan: scan 4s linear infinite
 --blur-sm: 8px
+--color-accent-ink: var(--color-black)
+--color-accent: var(--color-lime)
 --color-ambient: #3a3a3a
 --color-black: #000
+--color-canvas: var(--color-obsidian)
+--color-critical: #ff4a4a
+--color-ink-muted: var(--color-text-secondary)
+--color-ink-subtle: var(--color-text-tertiary)
+--color-ink: var(--color-white)
 --color-lime: #dfff00
+--color-line: var(--color-steel)
 --color-obsidian: #0f0f0f
 --color-steel: #333
 --color-surface: #0a0a0a
 --color-text-secondary: #a3a3a3
 --color-text-tertiary: #7c7c7c
+--color-warning: #ff8a00
 --color-white: #fff
 --container-2xl: 42rem
 --container-3xl: 48rem
@@ -29,6 +38,7 @@
 --leading-tight: 1.25
 --lightningcss-dark: initial
 --lightningcss-light:
+--shadow-lime-glow-lg: 0 0 30px #dfff0066, 0 0 60px #dfff001a
 --shadow-lime-glow: 0 0 15px #dfff004d
 --spacing: .25rem
 --text-2xl--line-height: 2rem

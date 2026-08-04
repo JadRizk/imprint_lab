@@ -16,7 +16,10 @@ const outPath = join(tokenDir, 'tokens.generated.ts');
 
 const css = readFileSync(themePath, 'utf8');
 
-const themeMatch = css.match(/@theme\s*\{([\s\S]*?)\n\}/);
+// `@theme` may carry options — `static` keeps unused variables from being
+// tree-shaken, which this system relies on so hand-authored CSS can reference
+// any token by name.
+const themeMatch = css.match(/@theme(?:\s+[a-z]+)*\s*\{([\s\S]*?)\n\}/);
 if (!themeMatch) {
   throw new Error('generate-tokens: no @theme { ... } block found in theme.css');
 }
@@ -73,7 +76,24 @@ function utilityHint(name) {
   return '';
 }
 
+// Roles are the cross-system contract: named by job, and always defined by
+// pointing at a primitive (or, for status hues this system has no appearance
+// name for, by holding a literal). They are listed separately from the palette
+// so docs can present the two tiers as the different things they are.
+const ROLE_COLOR_NAMES = new Set([
+  '--color-canvas',
+  '--color-line',
+  '--color-ink',
+  '--color-ink-muted',
+  '--color-ink-subtle',
+  '--color-accent',
+  '--color-accent-ink',
+  '--color-critical',
+  '--color-warning'
+]);
+
 function colorSubcategory(name) {
+  if (ROLE_COLOR_NAMES.has(name)) return 'role';
   if (SEMANTIC_COLOR_NAMES.has(name)) return 'semantic';
   return 'core';
 }
@@ -136,7 +156,7 @@ export interface Token {
   value: string;
   category: TokenCategory;
   utility: string;
-  subcategory?: 'core' | 'semantic';
+  subcategory?: 'core' | 'semantic' | 'role';
 }
 
 export const tokens: Token[] = ${JSON.stringify(tokens, null, 2)};
@@ -144,6 +164,7 @@ export const tokens: Token[] = ${JSON.stringify(tokens, null, 2)};
 export const colorTokens = tokens.filter((t) => t.category === 'color');
 export const coreColors = colorTokens.filter((t) => t.subcategory === 'core');
 export const semanticColors = colorTokens.filter((t) => t.subcategory === 'semantic');
+export const roleColors = colorTokens.filter((t) => t.subcategory === 'role');
 export const textTokens = tokens.filter((t) => t.category === 'text');
 `;
 

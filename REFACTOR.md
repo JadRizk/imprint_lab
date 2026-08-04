@@ -195,16 +195,42 @@ Move everything, change nothing.
 > **Falsify it:** diff the baseline capture (§6) against the same routes afterwards. Any delta
 > means an import or token was lost. `git log --follow` must still trace every moved file.
 
-### Phase 02 — Role layer
+### Phase 02 — Role layer ✅ DONE
 
-- Layer the 11 roles above the existing primitives in `theme.css`.
-- Add `--color-critical` and `--color-warning`.
-- Declare `--radius-*` explicitly as `0`.
+Nine role tokens added; `--color-surface` and `--color-ambient` already carried role names and
+role semantics, so aliasing them to themselves would have added a second name for one idea.
+Eleven roles total. `--color-critical` and `--color-warning` hold literals rather than aliases —
+this system has no appearance-name for either hue, and one consumer does not earn a primitive.
 
-> **Claim:** roles alias primitives exactly.
-> **Falsify it:** each role must resolve to the identical computed value as the primitive it
-> points at. Nothing consumes roles yet, so the rendered output must still be unchanged — if it
-> moved, a role overwrote something.
+**Reversal: `--radius-*` was not declared.** The plan called for declaring it as `0` for the
+sake of system 02. But **zero components use `rounded-*`** — so there is nothing to restructure
+later, and five tokens with no consumers is exactly the speculative abstraction Standing Judgment
+3 exists to prevent. The first component that needs a radius is when the token gets added.
+
+**Finding: Tailwind v4 tree-shakes unused theme variables.** The first verification pass reported
+a clean diff, which looked like success and was actually vacuous — the roles had been defined but
+never emitted, because nothing referenced them. Adopting `@theme static` fixes this, and it is
+the right default for a design system rather than a workaround:
+
+- The tokens are a *contract*. Hand-authored CSS must be able to rely on a variable existing.
+- This was already a latent bug: `image-frame.module.css` reads `var(--color-ambient)` and only
+  works today because an unrelated `border-ambient` utility happens to be used elsewhere. Remove
+  that utility and the CSS module silently loses its colour.
+- Phase 05's `[data-system]` scoping needs every role present regardless of use.
+- Cost is ~1KB for 36 tokens.
+
+The tenth token to appear in the diff was `--shadow-lime-glow-lg` — defined in `theme.css` since
+before this refactor and never once delivered to a browser. That is the tree-shaking finding
+confirming itself.
+
+`@theme` may now carry options, so `token-tools` matches `@theme(\s+[a-z]+)*` rather than
+`@theme\s*` — caught by the build failing, not by inspection.
+
+> **Claim:** roles alias primitives exactly, and nothing consumes them yet.
+> **Verified:** all seven aliasing roles emit as `var(--color-<primitive>)` and each primitive
+> resolves to its expected hex. `utilities.txt` identical at 279 — no component uses a role yet.
+> `tokens.txt` +10, **zero removals or changes**. Additions-only is the correct shape for this
+> phase; a modification would mean a role had overwritten a primitive.
 
 ### Phase 03 — Pipeline
 
@@ -298,6 +324,15 @@ Routes covered: `/`, `/design-system`, `/demo`.
 
 The CSS diff is the more precise signal — it catches a lost token or a dropped utility exactly,
 where a screenshot only catches it if the loss happens to be visible. Do both.
+
+**Re-baseline after each accepted phase.** Once a phase's diff has been reviewed and accepted,
+run `./.refactor/capture.sh` (no flag) to promote the current state to the baseline, and commit
+it with that phase. Otherwise diffs accumulate across phases and the check becomes unreadable
+noise that nobody reads — which is the same as having no check.
+
+**A clean diff is not automatically a pass.** Phase 02 reported zero drift while its entire
+payload was missing, because Tailwind had tree-shaken the unused tokens. Ask what the change
+*should* have produced before accepting that it produced nothing.
 
 ---
 
