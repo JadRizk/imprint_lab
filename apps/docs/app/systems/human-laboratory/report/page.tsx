@@ -1,6 +1,6 @@
 import { PageShell } from '@thl/ui/components/page-shell';
 
-import { SystemNav } from '../system-nav';
+import { SystemPage } from '../system-page';
 
 /**
  * The report kit, shown in an iframe rather than re-implemented.
@@ -13,10 +13,8 @@ import { SystemNav } from '../system-nav';
  */
 export default function ReportPage() {
   return (
-    <div data-system="human-laboratory" className="min-h-screen w-full pt-10 pb-20">
-      <PageShell className="space-y-8">
-        <SystemNav base="/systems/human-laboratory" current="/report" />
-
+    <SystemPage system="human-laboratory" base="/systems/human-laboratory" current="/report">
+      <PageShell className="mt-10 space-y-8">
         <header className="space-y-3">
           <h1 className="text-2xl font-bold text-ink">Report kit</h1>
           <p className="max-w-2xl text-sm">
@@ -26,14 +24,31 @@ export default function ReportPage() {
             construction. Below is the live catalogue, loaded as a standalone page so it renders
             exactly as a consumer would receive it.
           </p>
-          <p className="text-micro tracking-label text-ink-subtle">
+          <p className="max-w-2xl text-sm">
+            The catalogue shows every form the kit can draw — tabs, meters, timelines, the eight
+            chart forms, the four diagram forms and the interactive table — with each modifier
+            beside its neighbours. That makes it a reference, not a model: it spends the accent far
+            past the budget a real document keeps to. The worked specimen is the honest ratio.
+          </p>
+          <p className="flex flex-wrap gap-x-6 gap-y-2 text-micro tracking-label text-ink-subtle">
             <a
               href="/thl-catalog.html"
               target="_blank"
               rel="noreferrer"
               className="hover:text-accent"
             >
-              OPEN_STANDALONE -&gt;
+              OPEN_CATALOG -&gt;
+            </a>
+            <a
+              href="/example-report.html"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-accent"
+            >
+              WORKED_SPECIMEN -&gt;
+            </a>
+            <a href="/report.html" target="_blank" rel="noreferrer" className="hover:text-accent">
+              STARTER_SKELETON -&gt;
             </a>
           </p>
         </header>
@@ -46,6 +61,6 @@ export default function ReportPage() {
           />
         </div>
       </PageShell>
-    </div>
+    </SystemPage>
   );
 }

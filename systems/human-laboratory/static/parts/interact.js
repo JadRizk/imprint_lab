@@ -11,6 +11,7 @@
  *   <div class="filter" data-filter-target="#id">   type to filter rows
  *   <tr class="has-detail"> + <tr class="detail">   click to expand
  *   <svg class="has-tooltip"> + [data-tip] on marks
+ *   <div class="tabs">                  radio tabs -> ARIA tablist + arrow keys
  *
  * Call thlInteract() after the DOM is ready, or let the auto-init at the bottom
  * do it.
@@ -184,11 +185,84 @@
     svg.addEventListener('mouseleave', hide);
   }
 
+  function tabs(root) {
+    if (done(root, 'thlTabs')) return;
+    const radios = [...root.querySelectorAll(':scope > .tab-radio')];
+    const list = root.querySelector(':scope > .tab-list');
+    const labels = list ? [...list.querySelectorAll(':scope > .tab')] : [];
+    const panels = [...root.querySelectorAll(':scope > .tab-panels > .tab-panel')];
+    // A mismatch means the positional pairing the CSS relies on is already
+    // broken. Enhancing it would add ARIA that lies about which panel a tab
+    // controls, so leave it as the plain radio group it is.
+    if (radios.length < 2 || labels.length !== radios.length) return;
+
+    list.setAttribute('role', 'tablist');
+
+    const sync = () => {
+      radios.forEach((radio, i) => {
+        labels[i].setAttribute('aria-selected', String(radio.checked));
+        // Roving tabindex: one stop for the whole strip, arrows move within it.
+        labels[i].tabIndex = radio.checked ? 0 : -1;
+      });
+    };
+
+    const select = (i) => {
+      radios[i].checked = true;
+      sync();
+      labels[i].focus();
+    };
+
+    radios.forEach((radio, i) => {
+      const label = labels[i];
+      const panel = panels[i];
+
+      if (!label.id) label.id = `${radio.id || `thl-tab-${i}`}-tab`;
+      label.setAttribute('role', 'tab');
+
+      if (panel) {
+        if (!panel.id) panel.id = `${radio.id || `thl-tab-${i}`}-panel`;
+        label.setAttribute('aria-controls', panel.id);
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', label.id);
+        // The panel can hold content taller than the viewport, so it has to be
+        // reachable and scrollable by keyboard in its own right.
+        panel.tabIndex = 0;
+      }
+
+      // The radio was the keyboard control before enhancement; the labels are
+      // now, so it leaves the tab order rather than becoming a second stop.
+      // Hiding it from the accessibility tree too, or a screen reader meets the
+      // same control twice — once as this radio group and once as the tablist
+      // built on top of it. Safe only because it is no longer focusable.
+      radio.tabIndex = -1;
+      radio.setAttribute('aria-hidden', 'true');
+      // Clicking a label checks its radio natively — nothing to intercept, only
+      // the ARIA to bring back in line.
+      radio.addEventListener('change', sync);
+
+      label.addEventListener('keydown', (e) => {
+        const last = radios.length - 1;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') select(i === last ? 0 : i + 1);
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') select(i === 0 ? last : i - 1);
+        else if (e.key === 'Home') select(0);
+        else if (e.key === 'End') select(last);
+        // A <label> is not a button: the browser activates it on click only, so
+        // the keyboard equivalent has to be written.
+        else if (e.key === 'Enter' || e.key === ' ') select(i);
+        else return;
+        e.preventDefault();
+      });
+    });
+
+    sync();
+  }
+
   function thlInteract(root = document) {
     root.querySelectorAll('table.is-sortable').forEach(sortable);
     root.querySelectorAll('table.has-detail-rows, table.is-sortable').forEach(expandable);
     root.querySelectorAll('[data-filter-target]').forEach(filterable);
     root.querySelectorAll('svg.has-tooltip').forEach(tooltips);
+    root.querySelectorAll('.tabs').forEach(tabs);
   }
 
   window.thlInteract = thlInteract;

@@ -21,11 +21,11 @@ it fails silently and the page falls back to system faces.
 
 | File | Size | When |
 |---|---|---|
-| `thl.css` | ~15KB | **Always.** Tokens, reset, ~20 primitives. |
-| `thl.fonts.css` | ~116KB | When brand fidelity beats bytes. Embeds the display face. Load **before** `thl.css`. |
-| `thl.chart.css` | ~6KB | The document carries data. |
-| `thl.diagram.css` | ~3KB | The document draws a mechanism. |
-| `thl.interact.js` | ~5KB | Sortable tables, filtering, expandable rows, chart tooltips. |
+| `thl.css` | ~28KB | **Always.** Tokens, reset, ~40 primitives. |
+| `thl.fonts.css` | ~114KB | When brand fidelity beats bytes. Embeds the display face. Load **before** `thl.css`. |
+| `thl.chart.css` | ~7KB | The document carries data. |
+| `thl.diagram.css` | ~4KB | The document draws a mechanism. |
+| `thl.interact.js` | ~10KB | Sortable tables, filtering, expandable rows, chart tooltips, arrow-key tabs. |
 
 Without the fonts bundle the page renders correctly in a system mono stack.
 That is a supported degradation, not a bug.
@@ -39,7 +39,7 @@ kit's whole value is surviving email, PDF export and stripped script.
 ## 2. Page skeleton
 
 ```
-.wrap                        ← 1440px. Use .wrap--prose (80ch) for reading-led docs.
+.wrap                        ← 1440px. Use .wrap--prose (64ch) for reading-led docs.
   header.masthead
     .eyebrow                 ← PROJECT // DOC_TYPE // DATE
     h1                       ← states the finding, not the topic
@@ -66,10 +66,15 @@ kit's whole value is surviving email, PDF export and stripped script.
 | `.callout` | A claim that needs weight. Takes the status modifiers |
 | `.spec-list` (`dl`/`dt`/`dd`) | Label→value pairs |
 | `.swatch-grid` `.swatch` | Colour specimens; `.is-absent` for proposed values |
-| `pre` `code` `.tree` | Code and directory trees |
+| `pre` `code` `kbd` `.tree` | Code, keys and directory trees |
 | `.cols` | Responsive multi-column grid |
 | `.rule` | Section divider |
 | `.scan-line` | The CRT motif; needs a positioned parent |
+| `.tabs` `.tab-list` `.tab` `.tab-panel` | Alternate **views** of one finding — see below |
+| `.accordion` + `details.disclosure` | The long tail: evidence, method, the full log |
+| `.timeline` > `.event` | A sequence where the *interval* carries meaning |
+| `.meter` `.meter-track` `.meter-fill` `.meter-mark` | One number against its ceiling |
+| `.margin-note` · `.footnotes` `.fn-ref` | A note glosses; a footnote sources |
 
 Everything is roles-only, so it reskins with the tokens. **Never hand-write a
 colour.** If you need something bespoke, use the token variables.
@@ -89,6 +94,45 @@ For expandable rows, give a row `has-detail` and follow it with a `tr.detail`.
 
 Sorting is numeric when a column's cells parse as numbers — otherwise "10"
 sorts before "9" and the table quietly lies.
+
+### Tabs
+
+Hidden radios drive the panels in pure CSS, so a tab switch costs no script.
+The script upgrades the labels to an ARIA tablist with arrow keys, but the radio
+stays the state — the enhanced and unenhanced pages cannot disagree.
+
+```
+<div class="tabs">
+  <input class="tab-radio" type="radio" name="g" id="g-1" checked>
+  <input class="tab-radio" type="radio" name="g" id="g-2">
+  <div class="tab-list"><label class="tab" for="g-1">ONE</label>…</div>
+  <div class="tab-panels"><section class="tab-panel">…</section>…</div>
+</div>
+```
+
+The pairing is **positional** — the nth radio shows the nth panel — so radios
+must be direct children of `.tabs`, labels of `.tab-list`, panels of
+`.tab-panels`. Six tabs is the ceiling; a seventh is a document that wants
+sections. Every panel is revealed when the page prints.
+
+> **Tabs hide content.** Never put a finding behind one — put the alternate
+> *view* of a finding behind one: the chart and its data table, the summary and
+> the raw log, the result and the method. If a reader must open every tab to
+> follow the section, the section wanted headings.
+
+### Disclosure, timeline, meter
+
+`details.disclosure` inside `.accordion` is native, so it opens with the script
+stripped. Use it for the long tail — evidence, method, the full log.
+
+`.timeline > .event` (`.when` + `.what` + `.detail`) is for a sequence where the
+**interval** carries meaning. If the gaps say nothing, it is a list.
+
+`.meter` is one number against its ceiling: `.meter-fill` sized with `--v`,
+`.meter-mark` placed with `--at` for the threshold. Give the track
+`role="meter"` and the aria-value attributes — the bar alone tells a screen
+reader nothing. It borrows the chart's accent-dashed target language, so a
+budget reads the same in a meter and in a chart.
 
 ---
 

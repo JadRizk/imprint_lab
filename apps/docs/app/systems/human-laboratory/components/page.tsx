@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { SystemNav } from '../system-nav';
+import { SystemPage } from '../system-page';
 
 const SPACING_STEPS = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24] as const;
 
@@ -116,16 +116,20 @@ function RoleSwatch({
 
 export default function HumanLaboratoryPage() {
   return (
-    // data-system binds this subtree to the system's scoped token block, so the
-    // page renders in its own skin. Every system's page carries its own slug.
-    <div data-system="human-laboratory" className="min-h-screen w-full pt-10 pb-20">
-      <div className="space-y-24">
-        {/* Header */}
+    <SystemPage system="human-laboratory" base="/systems/human-laboratory" current="/components">
+      <div className="mt-10 space-y-24">
+        {/* Header. The masthead no longer draws a bottom rule of its own: the
+            nav's rule sat ~20px above the h1 and this one sat below the
+            standfirst, so the title was pinched between two lines and then
+            followed by a 100px void. One rule, under the nav, like every other
+            page — the space-y-24 below is what separates the masthead from the
+            first specimen. */}
         <PageShell>
-          <header className="border-b border-steel pb-8">
-            <SystemNav base="/systems/human-laboratory" current="/components" />
-
-            <h1 className="mb-4 text-4xl font-bold text-white">
+          <header className="space-y-4">
+            {/* Responsive for the same reason as the thesis page: at 4xl the
+                title's unbreakable first word spills its box on a phone and
+                gives the document a horizontal scroll. */}
+            <h1 className="text-2xl font-bold text-white md:text-4xl">
               {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
               THE_HUMAN_LABORATORY // <span className="text-accent">@thl</span>
             </h1>
@@ -620,6 +624,6 @@ export default function HumanLaboratoryPage() {
           </div>
         </Spec>
       </div>
-    </div>
+    </SystemPage>
   );
 }

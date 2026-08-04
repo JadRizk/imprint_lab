@@ -194,9 +194,12 @@ b {
   padding-inline: 28px;
 }
 
-/* A narrower measure for prose-led documents. Running text wants ~65ch. */
+/* A narrower measure for prose-led documents. 64ch, matching PageShell's prose
+   variant — eighty columns is a terminal convention, not a reading measure, and
+   the body face here is monospaced so every glyph is as wide as an `m`. The
+   value said 80ch while the comment beside it said 65ch. */
 .wrap--prose {
-  --measure: 80ch;
+  --measure: 64ch;
 }
 
 /* ── Masthead ── */
@@ -852,11 +855,19 @@ b {
   }
 }
 
+/* A ref is an <a>, so the reset would hand it the accent. There is one per
+   claim in a sourced document, which makes them a texture rather than a signal
+   — the superscript bracket is what marks them, not the colour. */
 .fn-ref {
   font-size: 0.72em;
   vertical-align: super;
   line-height: 0;
   border-block-end: 0;
+  color: var(--color-ink-subtle);
+}
+
+.fn-ref:hover {
+  color: var(--color-ink);
 }
 
 .footnotes {
@@ -900,6 +911,7 @@ b {
 /* ── Code and trees ── */
 
 code,
+kbd,
 .code {
   font-family: var(--font-mono);
   font-size: 0.92em;

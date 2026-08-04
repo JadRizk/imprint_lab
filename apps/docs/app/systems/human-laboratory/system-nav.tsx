@@ -10,10 +10,18 @@ const TABS = [
 /**
  * The four faces of a system. Server component — `current` is passed by each
  * page rather than read from a hook, which keeps this off the client boundary.
+ *
+ * **This draws no rule and owns no spacing.** It used to carry its own
+ * `border-b … pb-3`, which held only while it was a block child filling its
+ * container. On the example page it is a flex item beside a badge, so it shrank
+ * to its content and its rule stopped dead after REPORT_KIT — inside a bar that
+ * was already drawing a full-width rule of its own. A rule belongs to the
+ * element whose width it is meant to describe, so the container draws it:
+ * `SystemHeader` for the static pages, the sticky bar on the example page.
  */
 export function SystemNav({ base, current }: { base: string; current: string }) {
   return (
-    <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-line pb-3">
+    <nav className="flex flex-wrap items-center gap-x-6 gap-y-2">
       <Link href="/" className="text-micro tracking-label text-ink-subtle hover:text-accent">
         &lt;- SYSTEMS
       </Link>
