@@ -40,8 +40,17 @@ export function categorize(name) {
   if (name.startsWith('--font-')) return 'font';
   if (name.startsWith('--text-')) return 'text';
   if (name.startsWith('--tracking-')) return 'tracking';
+  if (name.startsWith('--leading-')) return 'leading';
   if (name.startsWith('--shadow-')) return 'shadow';
   if (name.startsWith('--animate-')) return 'animate';
+  // The motion ladder. Tailwind resolves `duration-*` against
+  // --transition-duration-*, so the token names carry Tailwind's namespace
+  // rather than a shorter one of ours — a --duration-* variable emits no
+  // utility at all. --default-transition-duration is the rung a bare
+  // `transition-*` falls back to, and belongs to the same ladder.
+  if (name === '--default-transition-duration' || name.startsWith('--transition-duration-')) {
+    return 'duration';
+  }
   if (name === '--spacing' || name.startsWith('--spacing-')) return 'spacing';
   return 'other';
 }
@@ -57,11 +66,15 @@ function utilityHint(name) {
     ['--font-', 'font'],
     ['--text-', 'text'],
     ['--tracking-', 'tracking'],
+    ['--leading-', 'leading'],
     ['--shadow-', 'shadow'],
-    ['--animate-', 'animate']
+    ['--animate-', 'animate'],
+    ['--transition-duration-', 'duration']
   ]) {
     if (name.startsWith(prefix)) return `${util}-${name.slice(prefix.length)}`;
   }
+  // --default-transition-duration deliberately falls through: it is a binding,
+  // not a utility, and safelisting a class that does not exist would be noise.
   return '';
 }
 
@@ -71,22 +84,45 @@ function colorSubcategory(name) {
   return 'core';
 }
 
-/** Fold Tailwind's `--x--line-height` companions into their size row. */
+// Tailwind's font-size companions: `--text-2xl--line-height`,
+// `--text-2xl--letter-spacing`. They are not tokens in their own right — they
+// are properties OF a size, and a size is what the docs table and the safelist
+// enumerate. Left unfolded, `--text-2xl--letter-spacing` categorises as `text`,
+// takes a row of its own in the type scale, and emits `text-2xl--letter-spacing`
+// into the safelist as a class that does not exist.
+const COMPANIONS = [
+  ['--line-height', 'lineHeight'],
+  ['--letter-spacing', 'letterSpacing'],
+  // `--color-line--contrast` is the value --color-line takes under
+  // `prefers-contrast: more`. A companion rather than a token of its own: it
+  // never wants a utility (`border-line--contrast` is not a class anyone
+  // types), so it must stay out of the safelist and out of the docs tables.
+  ['--contrast', 'contrast']
+];
+
+const companionOf = (name) => COMPANIONS.find(([suffix]) => name.endsWith(suffix));
+
+/** Fold Tailwind's font-size companions into their size row. */
 export function buildTokens({ declarations, resolve, aliasOf }) {
-  const lineHeights = new Map();
+  const byCompanion = new Map(COMPANIONS.map(([, key]) => [key, new Map()]));
   for (const { name, value } of declarations) {
-    if (name.endsWith('--line-height')) {
-      lineHeights.set(name.slice(0, -'--line-height'.length), value);
-    }
+    const c = companionOf(name);
+    if (c) byCompanion.get(c[1]).set(name.slice(0, -c[0].length), value);
   }
+  const lineHeights = byCompanion.get('lineHeight');
+  const letterSpacings = byCompanion.get('letterSpacing');
 
   const tokens = [];
   for (const { name, value, note } of declarations) {
-    if (name.endsWith('--line-height')) continue;
+    if (companionOf(name)) continue;
     const paired = lineHeights.get(name);
+    const tracking = letterSpacings.get(name);
     const resolved = resolve(value);
     const token = {
       name,
+      // Only the line height folds into `value`. Tailwind spells a font size as
+      // `size / line-height`; there is no third slot in that shorthand, so
+      // tracking travels as its own field rather than being wedged in.
       value: paired ? `${value} / ${paired}` : value,
       resolved: paired ? `${resolved} / ${resolve(paired)}` : resolved,
       // Unfolded, for consumers that need the size alone. DTCG has no notion of
@@ -96,6 +132,9 @@ export function buildTokens({ declarations, resolve, aliasOf }) {
       utility: utilityHint(name)
     };
     if (paired) token.lineHeight = resolve(paired);
+    if (tracking) token.letterSpacing = resolve(tracking);
+    const contrast = byCompanion.get('contrast').get(name);
+    if (contrast) token.contrast = resolve(contrast);
     const alias = aliasOf(value);
     if (alias) token.aliasOf = alias;
     if (note) token.note = note;
@@ -121,8 +160,10 @@ export type TokenCategory =
   | 'font'
   | 'text'
   | 'tracking'
+  | 'leading'
   | 'shadow'
   | 'animate'
+  | 'duration'
   | 'spacing'
   | 'other';
 
@@ -136,6 +177,11 @@ export interface Token {
   base: string;
   /** Companion line height, for font sizes that declare one. */
   lineHeight?: string;
+  /** Companion letter spacing. Tracking is a property of the size, not a
+   * separate decision — every step of the scale declares one. */
+  letterSpacing?: string;
+  /** The value this role takes under \`prefers-contrast: more\`. */
+  contrast?: string;
   category: TokenCategory;
   utility: string;
   /** Set when this token is a pure alias of another token in this file. */
@@ -179,6 +225,36 @@ export function emitTokensCss(declarations, { selector = ':root' } = {}) {
 ${selector} {
 ${lines.join('\n')}
 }
+${emitContrastCss(declarations, selector)}`;
+}
+
+/**
+ * The `prefers-contrast: more` block, derived from `--<role>--contrast`
+ * companions. Only the REBINDING is generated — the values sit in theme.css
+ * beside the ratios they were measured against, so there is nothing here that
+ * can disagree with them.
+ *
+ * theme.css carries this block itself as well, for a consumer importing it
+ * directly. That copy and this one state the same mechanical rebinding of names
+ * a system already declared; neither holds a value, so they cannot drift apart.
+ *
+ * Returns '' when a system declares no contrast companions, which is why a
+ * scaffold without them emits nothing rather than an empty media query.
+ */
+function emitContrastCss(declarations, selector) {
+  const rebinds = declarations
+    .filter((d) => d.name.endsWith('--contrast'))
+    .map((d) => {
+      const role = d.name.slice(0, -'--contrast'.length);
+      return `    ${role}: var(${d.name});`;
+    });
+  if (rebinds.length === 0) return '';
+  return `
+@media (prefers-contrast: more) {
+  ${selector} {
+${rebinds.join('\n')}
+  }
+}
 `;
 }
 
@@ -194,14 +270,36 @@ const DTCG_GROUP = {
   color: ['color', 'color'],
   text: ['fontSize', 'dimension'],
   tracking: ['letterSpacing', 'number'],
+  // Shares the group the per-size line-height companions land in: they are the
+  // same quantity, and `prose` cannot collide with a size name.
+  leading: ['lineHeight', 'number'],
   spacing: ['spacing', 'dimension'],
   font: ['fontFamily', 'fontFamily'],
   shadow: ['shadow', 'shadow'],
-  animate: ['animation', 'duration']
+  animate: ['animation', 'duration'],
+  duration: ['duration', 'duration']
   // No `other`. DTCG's type set is closed; a category with no type in it has no
   // conformant representation, and such tokens are omitted with a warning
   // rather than emitted under an invented type.
 };
+
+/**
+ * Token name -> its leaf key inside the DTCG group.
+ *
+ * A category's prefix is usually `--<category>-`, but not always: `--spacing`
+ * has no leaf at all, and the motion ladder carries Tailwind's
+ * `--transition-duration-` namespace rather than `--duration-`. Both the value
+ * path and the ALIAS path need the same answer — computing it in one place is
+ * what keeps `{duration.state}` from being emitted as `{duration.on-duration-state}`.
+ */
+const DTCG_PREFIX = { duration: '--transition-duration-' };
+
+function dtcgLeaf(name, category) {
+  if (name === '--spacing') return 'base';
+  if (name === '--default-transition-duration') return 'default';
+  const prefix = category === 'spacing' ? '--spacing' : (DTCG_PREFIX[category] ?? `--${category}-`);
+  return name.slice(prefix.length);
+}
 
 const NS = 'com.imprintlab';
 
@@ -331,8 +429,7 @@ export function emitTokensJson(tokens, system) {
 
   for (const t of tokens) {
     const mapping = DTCG_GROUP[t.category];
-    const prefix = t.category === 'spacing' ? '--spacing' : `--${t.category}-`;
-    const leaf = t.name === '--spacing' ? 'base' : t.name.slice(prefix.length);
+    const leaf = dtcgLeaf(t.name, t.category);
 
     // A category with no DTCG type has no valid representation at all. Emitting
     // it with an invented $type is what made the previous version non-conformant.
@@ -346,7 +443,7 @@ export function emitTokensJson(tokens, system) {
     if (t.aliasOf) {
       // DTCG expresses an alias as a reference to another token's path.
       const ref = categorize(t.aliasOf);
-      entry.$value = `{${DTCG_GROUP[ref][0]}.${t.aliasOf.slice(`--${ref}-`.length)}}`;
+      entry.$value = `{${DTCG_GROUP[ref][0]}.${dtcgLeaf(t.aliasOf, ref)}}`;
     } else {
       const value = dtcgValue(t, type);
       // Unrepresentable in DTCG — `--shadow-glow: none` is the common case.
@@ -373,6 +470,25 @@ export function emitTokensJson(tokens, system) {
       out.lineHeight[leaf] = dim
         ? { $type: 'dimension', $value: dim }
         : { $type: 'number', $value: dtcgNumber(t.lineHeight) ?? 1 };
+    }
+
+    // Tracking travels the same way, and for the same reason. `em` is a
+    // multiple of the font size rather than a dimension DTCG can express, so
+    // the number is the honest representation and the CSS rides along — the
+    // rule dtcgValue already applies to --tracking-*.
+    if (t.letterSpacing) {
+      out.letterSpacing ??= { $type: 'number' };
+      const n = dtcgNumber(t.letterSpacing.replace(/em$/, ''));
+      if (n === null) {
+        skipped.push(
+          `${t.name} letter-spacing (${JSON.stringify(t.letterSpacing)} is not a number)`
+        );
+      } else {
+        out.letterSpacing[leaf] = {
+          $value: n,
+          $extensions: { [NS]: { css: t.letterSpacing } }
+        };
+      }
     }
   }
 
@@ -480,17 +596,76 @@ export function emitSafelist(tokens) {
 `;
 }
 
+/**
+ * The motion ladder, in the unit a JS animation library wants.
+ *
+ * CSS gets the rungs through `duration-*` utilities, but Framer Motion takes a
+ * number of SECONDS and cannot read a custom property. Without this the two
+ * tiers drift by construction: the CSS side moved onto the ladder while
+ * `bento-card` and `image-frame` kept 0.5, 1.5 and 2 — numbers chosen against
+ * nothing, in the same components the ladder was supposed to govern.
+ *
+ * Emitted beside `cn()` rather than imported from the tokens package, for the
+ * reason every file in `ui/lib` is: a registry consumer receives these as plain
+ * files with no workspace to resolve `@<ns>/tokens` against.
+ */
+export function emitMotion(tokens) {
+  const seconds = (css) => {
+    const m = String(css)
+      .trim()
+      .match(/^(-?[\d.]+)(ms|s)$/);
+    if (!m) return null;
+    return m[2] === 'ms' ? Number(m[1]) / 1000 : Number(m[1]);
+  };
+
+  // `t.utility` excludes --default-transition-duration: it is the binding for a
+  // bare CSS `transition-*`, not a rung anything animates against.
+  const rungs = tokens
+    .filter((t) => t.category === 'duration' && t.utility)
+    .map((t) => [t.name.slice('--transition-duration-'.length), seconds(t.resolved)])
+    .filter(([, v]) => v !== null);
+
+  const body = rungs.map(([name, value]) => `  ${name}: ${value}`).join(',\n');
+
+  return `// ${BANNER('').split('\n').join('\n// ')}
+//
+// The duration ladder in seconds, for JS animation. Pick the rung by what the
+// motion MEANS — see the Motion block in theme.css. Feedback enters at \`ack\`
+// and decays at \`state\`; \`transit\` is something entering or leaving the page;
+// \`process\` is the machine doing something, and is the one rung where the
+// duration is the content.
+
+export const duration = {
+${body}
+} as const;
+
+export type DurationRung = keyof typeof duration;
+`;
+}
+
 export function emitTwMerge(tokens) {
   const namesFor = (category, prefix) =>
     tokens
       .filter((t) => t.category === category && !t.name.endsWith('--line-height'))
       .map((t) => t.name.slice(prefix.length));
 
+  // Duration goes through classGroups, not theme. tailwind-merge's theme keys
+  // mirror Tailwind's THEME NAMESPACES, and Tailwind has no --duration-*
+  // namespace — so `theme: { duration: [...] }` is accepted and silently
+  // ignored, which looks like it works. Extending the class group directly is
+  // what actually makes `duration-500` override `duration-state`.
+  const utilitiesFor = (category) =>
+    tokens.filter((t) => t.category === category && t.utility).map((t) => t.utility);
+
   const config = {
     extend: {
       theme: {
         text: namesFor('text', '--text-'),
-        tracking: namesFor('tracking', '--tracking-')
+        tracking: namesFor('tracking', '--tracking-'),
+        leading: namesFor('leading', '--leading-')
+      },
+      classGroups: {
+        duration: utilitiesFor('duration')
       }
     }
   };

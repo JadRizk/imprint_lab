@@ -42,3 +42,13 @@ public/r/
 public/*.css
 public/*-catalog.html
 public/report.html
+
+# Brand assets are staged from systems/*/brand at build time.
+public/brand/
+
+# The route-segment favicon, written by scripts/sync-static.mjs from that
+# system's brand/favicon.svg. Next resolves app/<segment>/icon.svg by file
+# convention, so unlike everything else here the generated file has to live
+# inside app/ — a symlink fails the build with "Cannot find module for page".
+# It is no more hand-authored for sitting there.
+app/systems/*/icon.svg

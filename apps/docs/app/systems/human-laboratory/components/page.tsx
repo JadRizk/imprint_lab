@@ -204,6 +204,11 @@ export default function HumanLaboratoryPage() {
                   >
                     <span className="w-24 shrink-0 text-xs text-ink">{utility}</span>
                     <span className="w-32 shrink-0 text-xs text-text-tertiary">{token.value}</span>
+                    {/* Tracking is a property of the size, so it belongs in the
+                        row rather than in a table of its own. */}
+                    <span className="w-16 shrink-0 text-xs text-text-tertiary">
+                      {token.letterSpacing}
+                    </span>
                     <span className={`${utility} text-white`}>The quick brown fox</span>
                   </div>
                 );

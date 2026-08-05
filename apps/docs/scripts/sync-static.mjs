@@ -75,10 +75,17 @@ for (const system of readdirSync(systemsDir)) {
     }
 
     // The route-segment favicon. Next resolves app/<segment>/icon.svg by file
-    // convention, so it has to be a real file inside app/ — a symlink to the
-    // source fails the build with "Cannot find module for page", and a
-    // hand-kept copy is the drift this script exists to prevent. So it is
-    // generated, like everything else here.
+    // convention, so it has to be a real file inside app/ — and a hand-kept
+    // copy is the drift this script exists to prevent. So it is generated, like
+    // everything else here.
+    //
+    // A symlink does NOT work, and the way it fails is the reason this comment
+    // is specific. It does not error: the build succeeds, `icon.svg` simply
+    // vanishes from the route list, nothing is written to out/, and no
+    // `<link rel="icon">` is emitted. Measured, not assumed — an earlier version
+    // of this comment claimed "Cannot find module for page", which is not what
+    // happens. If you are tempted to tidy this copy into a link, the only
+    // symptom will be a missing favicon.
     //
     // The house has no mark, so this is scoped to the system's own segment
     // rather than app/icon.svg; `/` stays unbranded on purpose.

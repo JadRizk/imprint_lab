@@ -1,10 +1,17 @@
 # Builds apps/docs as a static export and publishes it to GitHub Pages.
 #
-# The site is a project site, so it is served from a subpath. NEXT_PUBLIC_BASE_PATH
-# is the single place that subpath is declared — next.config.js reads it into
-# `basePath`, and lib/base-path.ts reads it in app code for the raw anchors and
-# iframes Next does not rewrite. Moving to a custom domain means setting it to
-# '' here and adding a CNAME; nothing else changes.
+# NEXT_PUBLIC_SITE_URL below is the single place the published location is
+# declared. Three things derive from it and none of them repeat it:
+#
+#   next.config.js            splits off `basePath` from the URL's pathname
+#   lib/base-path.ts          re-exports both; app/layout.tsx builds metadataBase
+#   scripts/build-registries  stamps `homepage` into the built registry index
+#
+# Moving to a custom domain is setting the value here and adding a CNAME.
+# Nothing else changes — and unlike the version of this comment that preceded
+# it, that is now true. It was four independent literals, so a repo rename
+# would have fixed the deploy and left the OG card and the registry homepage
+# pointing at an origin that no longer existed, with nothing failing.
 name: Deploy docs to GitHub Pages
 
 on:
@@ -20,17 +27,26 @@ on:
 permissions:
   contents: read
 
-# Let an in-flight deploy finish rather than cancelling it half-published, but
-# collapse queued runs so main always converges on its newest commit.
+# Only the deploys share a lane. A pull request builds and verifies but never
+# publishes, so putting it in the `pages` group made it queue behind an
+# in-flight deploy — and behind every other open PR — for a resource it was
+# never going to touch. Each PR now gets its own group keyed on the ref, and
+# a new push to that PR cancels the run it superseded.
+#
+# For deploys the pair is the other way round: let an in-flight publish finish
+# rather than cancelling it half-written, and collapse what is queued behind it
+# so main converges on its newest commit.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.ref) || 'pages-deploy' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_BASE_PATH: /imprint_lab
+      # Origin and subpath together. See the header — everything derives from
+      # this one value, so a custom domain is `https://example.com` here.
+      NEXT_PUBLIC_SITE_URL: https://jadrizk.github.io/imprint_lab
     steps:
       - uses: actions/checkout@v7
 
@@ -39,6 +55,29 @@ jobs:
           bun-version: 1.2.17
 
       - run: bun install --frozen-lockfile
+
+      # The gates, before the build that would publish past them.
+      #
+      # A green build proves the site compiles, and nothing else. This repo's
+      # contracts — roles-only components, the chart palette's separation
+      # floors, the 4.5:1 text floor — are enforced by `check-roles` and
+      # `validate-palette`, which run under `lint`. Without these steps a pull
+      # request could rename a role, break every consumer of the registry, and
+      # merge green.
+      - run: bun run lint
+      - run: bun run check-types
+
+      # `test` covers the token parser and, via .refactor/self-test.sh, asserts
+      # that capture.sh still detects each class of CSS mutation. An enforcement
+      # tool that has stopped enforcing reports success exactly like one that
+      # works.
+      - run: bun run test
+
+      # Proves every registry item is installable — complete manifest, declared
+      # dependencies, and files that survive transport byte for byte. The
+      # registry is the published interface; a broken item is the one thing here
+      # that is hard to walk back once someone has installed it.
+      - run: bun run smoke
 
       # turbo build, not `next build` — it regenerates every token artifact
       # first. Building the app alone would publish whatever generated/ happened

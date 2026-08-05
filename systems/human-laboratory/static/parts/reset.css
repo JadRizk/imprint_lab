@@ -27,12 +27,17 @@ body {
   color: var(--color-ink-muted);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  line-height: 1.65;
+  line-height: var(--leading-prose);
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Tracking is set per LEVEL, not once for the group. These rules set font-size
+ * through var(--text-*) rather than through Tailwind's utility, so the scale's
+ * --text-*--letter-spacing companions never reach them — the static tier has to
+ * name its own rung. It previously ran one -0.02em from h1 down to h6, which is
+ * display tracking applied to 14px body-sized headings. */
 h1,
 h2,
 h3,
@@ -42,16 +47,18 @@ h6 {
   font-family: var(--font-sans);
   color: var(--color-ink);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-normal);
   line-height: 1.15;
   text-wrap: balance;
 }
 
 h1 {
   font-size: var(--text-4xl);
+  letter-spacing: var(--tracking-display);
 }
 h2 {
   font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
 }
 h3 {
   font-size: var(--text-lg);
@@ -99,7 +106,26 @@ b {
 }
 
 /* A reduced-motion override has to beat any animation a report author writes,
- * including inline styles — which is the one case !important is correct for. */
+ * including inline styles — which is the one case !important is correct for.
+ *
+ * Reduced motion does NOT mean no feedback. The preference is about vestibular
+ * triggers — things that travel, scale, parallax or spin — and a colour change
+ * triggers nothing. This block used to flatten `transition-duration` to 0.01ms
+ * across the board, which took every hover, focus and press response with it:
+ * the one signal telling these users a control had answered them was removed by
+ * a rule aimed at motion sickness.
+ *
+ * So restrict WHAT may transition rather than how long it may take. Anything
+ * positional — transform, translate, scale, rotate, and the geometry properties
+ * an author might animate — is simply not in the list, so it lands instantly.
+ * Colour, outline, shadow and opacity survive at their normal duration.
+ *
+ * Animation stays flattened outright: a keyframe sequence is the vestibular
+ * case this preference exists for, and the scan line is exactly that.
+ *
+ * `outline-color` is absent deliberately. The focus ring still appears the
+ * instant it is focused — only its fade is dropped, and the ring is the
+ * affordance, not the fade. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -108,7 +134,7 @@ b {
     animation-duration: 0.01ms !important;
     /* biome-ignore lint/complexity/noImportantStyles: must beat author animation */
     animation-iteration-count: 1 !important;
-    /* biome-ignore lint/complexity/noImportantStyles: must beat author animation */
-    transition-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must beat author transitions */
+    transition-property: color, background-color, border-color, box-shadow, opacity !important;
   }
 }

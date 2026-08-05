@@ -9,16 +9,19 @@
 // catchable statically. It does NOT exercise the shadcn CLI, which is not our
 // code, nor a real Next.js build — see REFACTOR.md §9 for what that leaves open.
 //
-// Two checks:
+// Four checks:
 //   1. Materialise every item into a temp project and typecheck it. Catches a
 //      missing file, a broken relative import, a type error only visible once
 //      the files are laid out at their target paths.
 //   2. Assert every bare import in a shipped file is declared in that item's
 //      `dependencies` (transitively, through registryDependencies). Catches the
 //      classic: component ships, forgets to say it needs framer-motion.
+//   3. Assert every relative import resolves to a file the registry ships.
+//   4. Assert every shipped file is byte-identical to its source on disk.
 
 import { execFileSync } from 'node:child_process';
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readdirSync,
@@ -105,6 +108,39 @@ for (const [name, item] of items) {
       if (!CANDIDATES.some((ext) => shipped.has(target + ext))) {
         failures.push(`${name}: ${from} imports "${m[1]}" but no registry item ships it`);
       }
+    }
+  }
+}
+
+// ── check 4: every shipped file survives the trip byte for byte ──
+//
+// A registry file is transported as a JSON string, so `shadcn build` reads it
+// as UTF-8. Anything that is not valid UTF-8 is replaced with U+FFFD, which is
+// lossy and irreversible: a PNG's leading 0x89 became `ef bf bd`, and the file
+// arrived 53% larger and unopenable. Nothing above catches it — check 1
+// typechecks TypeScript, and a corrupt binary is not TypeScript. The registry
+// built, the smoke test passed, and `shadcn add @thl/brand` delivered two files
+// that were not images.
+//
+// Byte equality is the honest test, and it costs nothing: text files round-trip
+// exactly, so this only ever fires on something that had no business being
+// declared as a registry file in the first place.
+for (const [name, item] of items) {
+  for (const file of item.files ?? []) {
+    if (!file.path) continue;
+    const source = join(repoRoot, file.path);
+    if (!existsSync(source)) {
+      failures.push(`${name}: declares ${file.path}, which does not exist`);
+      continue;
+    }
+    const onDisk = readFileSync(source);
+    const transported = Buffer.from(file.content ?? '', 'utf8');
+    if (!onDisk.equals(transported)) {
+      failures.push(
+        `${name}: ${file.path} does not survive the registry as UTF-8 ` +
+          `(${onDisk.length} B on disk, ${transported.length} B transported). ` +
+          'A registry file must be text — ship the vector source, not a binary.'
+      );
     }
   }
 }

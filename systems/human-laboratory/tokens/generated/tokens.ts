@@ -6,8 +6,10 @@ export type TokenCategory =
   | 'font'
   | 'text'
   | 'tracking'
+  | 'leading'
   | 'shadow'
   | 'animate'
+  | 'duration'
   | 'spacing'
   | 'other';
 
@@ -21,6 +23,11 @@ export interface Token {
   base: string;
   /** Companion line height, for font sizes that declare one. */
   lineHeight?: string;
+  /** Companion letter spacing. Tracking is a property of the size, not a
+   * separate decision — every step of the scale declares one. */
+  letterSpacing?: string;
+  /** The value this role takes under `prefers-contrast: more`. */
+  contrast?: string;
   category: TokenCategory;
   utility: string;
   /** Set when this token is a pure alias of another token in this file. */
@@ -132,6 +139,7 @@ export const tokens: Token[] = [
     "base": "#242424",
     "category": "color",
     "utility": "bg-ambient · border-ambient",
+    "contrast": "#585858",
     "aliasOf": "--color-slate",
     "subcategory": "role"
   },
@@ -202,6 +210,7 @@ export const tokens: Token[] = [
     "base": "#3A3A3A",
     "category": "color",
     "utility": "bg-line · text-line · border-line",
+    "contrast": "#7c7c7c",
     "aliasOf": "--color-steel",
     "subcategory": "role"
   },
@@ -212,6 +221,7 @@ export const tokens: Token[] = [
     "base": "#585858",
     "category": "color",
     "utility": "bg-line-strong · text-line-strong · border-line-strong",
+    "contrast": "#a3a3a3",
     "aliasOf": "--color-graphite",
     "subcategory": "role"
   },
@@ -258,7 +268,8 @@ export const tokens: Token[] = [
     "base": "0.625rem",
     "category": "text",
     "utility": "text-micro",
-    "lineHeight": "1rem"
+    "lineHeight": "1rem",
+    "letterSpacing": "0em"
   },
   {
     "name": "--text-xs",
@@ -267,7 +278,8 @@ export const tokens: Token[] = [
     "base": "0.75rem",
     "category": "text",
     "utility": "text-xs",
-    "lineHeight": "1rem"
+    "lineHeight": "1rem",
+    "letterSpacing": "0em"
   },
   {
     "name": "--text-sm",
@@ -276,7 +288,8 @@ export const tokens: Token[] = [
     "base": "0.875rem",
     "category": "text",
     "utility": "text-sm",
-    "lineHeight": "1.25rem"
+    "lineHeight": "1.25rem",
+    "letterSpacing": "0em"
   },
   {
     "name": "--text-base",
@@ -285,7 +298,8 @@ export const tokens: Token[] = [
     "base": "1rem",
     "category": "text",
     "utility": "text-base",
-    "lineHeight": "1.5rem"
+    "lineHeight": "1.5rem",
+    "letterSpacing": "0em"
   },
   {
     "name": "--text-lg",
@@ -294,7 +308,8 @@ export const tokens: Token[] = [
     "base": "1.125rem",
     "category": "text",
     "utility": "text-lg",
-    "lineHeight": "1.75rem"
+    "lineHeight": "1.75rem",
+    "letterSpacing": "0em"
   },
   {
     "name": "--text-xl",
@@ -303,7 +318,8 @@ export const tokens: Token[] = [
     "base": "1.25rem",
     "category": "text",
     "utility": "text-xl",
-    "lineHeight": "1.75rem"
+    "lineHeight": "1.75rem",
+    "letterSpacing": "0em"
   },
   {
     "name": "--text-2xl",
@@ -312,7 +328,8 @@ export const tokens: Token[] = [
     "base": "1.5rem",
     "category": "text",
     "utility": "text-2xl",
-    "lineHeight": "2rem"
+    "lineHeight": "2rem",
+    "letterSpacing": "-0.01em"
   },
   {
     "name": "--text-3xl",
@@ -321,7 +338,8 @@ export const tokens: Token[] = [
     "base": "1.875rem",
     "category": "text",
     "utility": "text-3xl",
-    "lineHeight": "2.25rem"
+    "lineHeight": "2.25rem",
+    "letterSpacing": "-0.01em"
   },
   {
     "name": "--text-4xl",
@@ -330,7 +348,8 @@ export const tokens: Token[] = [
     "base": "2.25rem",
     "category": "text",
     "utility": "text-4xl",
-    "lineHeight": "2.5rem"
+    "lineHeight": "2.5rem",
+    "letterSpacing": "-0.02em"
   },
   {
     "name": "--text-5xl",
@@ -339,7 +358,8 @@ export const tokens: Token[] = [
     "base": "3rem",
     "category": "text",
     "utility": "text-5xl",
-    "lineHeight": "1"
+    "lineHeight": "1",
+    "letterSpacing": "-0.02em"
   },
   {
     "name": "--text-6xl",
@@ -348,7 +368,32 @@ export const tokens: Token[] = [
     "base": "3.75rem",
     "category": "text",
     "utility": "text-6xl",
-    "lineHeight": "1"
+    "lineHeight": "1",
+    "letterSpacing": "-0.02em"
+  },
+  {
+    "name": "--tracking-display",
+    "value": "-0.02em",
+    "resolved": "-0.02em",
+    "base": "-0.02em",
+    "category": "tracking",
+    "utility": "tracking-display"
+  },
+  {
+    "name": "--tracking-tight",
+    "value": "-0.01em",
+    "resolved": "-0.01em",
+    "base": "-0.01em",
+    "category": "tracking",
+    "utility": "tracking-tight"
+  },
+  {
+    "name": "--tracking-normal",
+    "value": "0em",
+    "resolved": "0em",
+    "base": "0em",
+    "category": "tracking",
+    "utility": "tracking-normal"
   },
   {
     "name": "--tracking-label",
@@ -357,6 +402,22 @@ export const tokens: Token[] = [
     "base": "0.2em",
     "category": "tracking",
     "utility": "tracking-label"
+  },
+  {
+    "name": "--tracking-label-dense",
+    "value": "0.12em",
+    "resolved": "0.12em",
+    "base": "0.12em",
+    "category": "tracking",
+    "utility": "tracking-label-dense"
+  },
+  {
+    "name": "--leading-prose",
+    "value": "1.65",
+    "resolved": "1.65",
+    "base": "1.65",
+    "category": "leading",
+    "utility": "leading-prose"
   },
   {
     "name": "--shadow-lime-glow",
@@ -391,6 +452,47 @@ export const tokens: Token[] = [
     "category": "shadow",
     "utility": "shadow-glow-strong",
     "aliasOf": "--shadow-lime-glow-lg"
+  },
+  {
+    "name": "--transition-duration-ack",
+    "value": "0ms",
+    "resolved": "0ms",
+    "base": "0ms",
+    "category": "duration",
+    "utility": "duration-ack"
+  },
+  {
+    "name": "--transition-duration-state",
+    "value": "120ms",
+    "resolved": "120ms",
+    "base": "120ms",
+    "category": "duration",
+    "utility": "duration-state"
+  },
+  {
+    "name": "--transition-duration-transit",
+    "value": "320ms",
+    "resolved": "320ms",
+    "base": "320ms",
+    "category": "duration",
+    "utility": "duration-transit"
+  },
+  {
+    "name": "--transition-duration-process",
+    "value": "1200ms",
+    "resolved": "1200ms",
+    "base": "1200ms",
+    "category": "duration",
+    "utility": "duration-process"
+  },
+  {
+    "name": "--default-transition-duration",
+    "value": "var(--transition-duration-state)",
+    "resolved": "120ms",
+    "base": "120ms",
+    "category": "duration",
+    "utility": "",
+    "aliasOf": "--transition-duration-state"
   },
   {
     "name": "--animate-scan",

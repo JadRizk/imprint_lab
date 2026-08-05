@@ -5,6 +5,15 @@
   --shadow-*: initial;
   --font-*: initial;
   --text-*: initial;
+  /* Tracking and leading are reset for the same reason --text-* is: a scale
+   * left open is a scale nobody chose. Tailwind's defaults were live here, and
+   * the largest type on the site reached through the gap for them — the example
+   * hero set `tracking-tighter leading-tight`, two values from Tailwind that
+   * this system never sanctioned, on the one element a landing page is built
+   * around. -0.05em is roughly 2.5x what display type wants, and it was applied
+   * unchanged across three responsive steps from 30px to 60px. */
+  --tracking-*: initial;
+  --leading-*: initial;
 
   /* ── Spacing base ── */
   --spacing: 0.25rem;
@@ -83,6 +92,37 @@
   --color-line: var(--color-steel);
   --color-line-strong: var(--color-graphite);
 
+  /* The same ladder for `prefers-contrast: more`.
+   *
+   * This system draws every boundary with line and nothing else, so a user who
+   * asks for more contrast is asking about the only structure there is. At rest
+   * the ladder runs 1.23 / 1.69 / 2.69 against the canvas — at or below the
+   * threshold of visible for exactly the people who set that preference. The
+   * text contract does not cover this: 4.5:1 governs TEXT, while WCAG 1.4.11
+   * asks 3:1 of the visual boundary of a control, and --color-line at 1.69:1 is
+   * what bounds an input.
+   *
+   * Each rung climbs, and the ORDER is preserved — the tiers are relative to
+   * each other, and ambient outranking line is the inversion this ladder exists
+   * to prevent. Promoting all three keeps every "outranks" relationship intact.
+   *
+   * These are the two greys the text roles already use. They are measured, and
+   * high contrast is precisely the case where structure should read as strongly
+   * as secondary text does. Held as literals for the same reason --color-critical
+   * is: this system has no appearance-name for them, and one consumer does not
+   * earn a primitive.
+   *
+   * They must reference PRIMITIVES, never a role that is itself reassigned
+   * below — `var(--color-line-strong)` inside the media block would resolve to
+   * the promoted value, and the ladder would collapse onto one grey.
+   *
+   * Text is deliberately untouched: it already clears 4.5:1 by contract, and
+   * promoting --color-ink-subtle to --color-ink-muted's ratio would merge two
+   * roles into one and cost the hierarchy that carries meaning. */
+  --color-ambient--contrast: var(--color-graphite); /* 1.23:1 -> 2.69:1 */
+  --color-line--contrast: #7c7c7c; /* 1.69:1 -> 4.59:1, clears the 3:1 floor */
+  --color-line-strong--contrast: #a3a3a3; /* 2.69:1 -> 7.62:1 */
+
   /* Status roles. Held as literals rather than aliased, because this system has
    * no appearance-name for either hue and one consumer does not earn a primitive.
    *
@@ -117,32 +157,83 @@
    */
   --text-micro: 0.625rem;
   --text-micro--line-height: 1rem;
+  --text-micro--letter-spacing: var(--tracking-normal);
   --text-xs: 0.75rem;
   --text-xs--line-height: 1rem;
+  --text-xs--letter-spacing: var(--tracking-normal);
   --text-sm: 0.875rem;
   --text-sm--line-height: 1.25rem;
+  --text-sm--letter-spacing: var(--tracking-normal);
   --text-base: 1rem;
   --text-base--line-height: 1.5rem;
+  --text-base--letter-spacing: var(--tracking-normal);
   --text-lg: 1.125rem;
   --text-lg--line-height: 1.75rem;
+  --text-lg--letter-spacing: var(--tracking-normal);
   --text-xl: 1.25rem;
   --text-xl--line-height: 1.75rem;
+  --text-xl--letter-spacing: var(--tracking-normal);
   --text-2xl: 1.5rem;
   --text-2xl--line-height: 2rem;
+  --text-2xl--letter-spacing: var(--tracking-tight);
   --text-3xl: 1.875rem;
   --text-3xl--line-height: 2.25rem;
+  --text-3xl--letter-spacing: var(--tracking-tight);
   --text-4xl: 2.25rem;
   --text-4xl--line-height: 2.5rem;
+  --text-4xl--letter-spacing: var(--tracking-display);
   --text-5xl: 3rem;
   --text-5xl--line-height: 1;
+  --text-5xl--letter-spacing: var(--tracking-display);
   --text-6xl: 3.75rem;
   --text-6xl--line-height: 1;
+  --text-6xl--letter-spacing: var(--tracking-display);
 
   /* ── Letter spacing ──
-   * One eyebrow/label tracking, so labels stop drifting between
-   * 0.1em and 0.2em across pages.
+   * A ladder, like line and like time. Tracking is SIZE-SPECIFIC: letters read
+   * too far apart as type grows and too close as it shrinks, so one value
+   * cannot be right everywhere — a fixed letter-spacing is wrong somewhere by
+   * construction.
+   *
+   * The rungs are bound to the type scale below rather than applied by hand, so
+   * `text-6xl` arrives already tracked and nobody has to remember. That is what
+   * makes this a property of the size instead of a decision at the call site —
+   * and it is why the responsive hero, which crosses three steps, could never
+   * have been correct with the single value it carried.
+   *
+   *   display  4xl-6xl. Display type, always the sans face in practice.
+   *   tight    2xl-3xl.
+   *   normal   micro-xl. Body, small text, and the default.
+   *   label    Uppercase instrument labels and eyebrows.
+   *   label-dense  The same job where 0.2em will not fit: a chip, a cell in an
+   *                SVG diagram. Two consumers, both in the report kit.
+   *
+   * `normal` is declared rather than left absent on purpose. letter-spacing
+   * INHERITS, so a step with no value of its own takes the tracking of whatever
+   * encloses it — a `text-sm` caption inside a `text-6xl` block would quietly
+   * render at display tracking.
+   *
+   * ⚠ Closing the namespace deletes Tailwind's own rungs: `tracking-tighter`,
+   * `tracking-wide`, `leading-snug` and the rest now generate nothing. That is
+   * the same trade the closed `--text-*` scale makes — the scale cannot be
+   * silently fallen back to, at the cost of a stray class doing nothing rather
+   * than erroring. `tracking-tight` survives as a NAME but is this system's
+   * rung, -0.01em, not Tailwind's -0.025em.
    */
+  --tracking-display: -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0em;
   --tracking-label: 0.2em;
+  --tracking-label-dense: 0.12em;
+
+  /* ── Leading ──
+   * The scale carries a line height per step, so this is only the rung the
+   * scale cannot express: prose, which wants more air than its size implies.
+   * 1.65 rather than Tailwind's 1.625 because the report kit's body already
+   * measured 1.65 — the two tiers were a hair apart, and one of them was a
+   * number this system never picked.
+   */
+  --leading-prose: 1.65;
 
   /* ── Emission ──
    * Not drop shadows. A drop shadow is a claim about depth — an offset, a soft
@@ -170,8 +261,69 @@
   --shadow-glow: var(--shadow-lime-glow);
   --shadow-glow-strong: var(--shadow-lime-glow-lg);
 
+  /* ── Motion ──
+   * A ladder, like line. Time is a dimension of this system like any other, and
+   * until this existed it was the only one left to taste: `duration-300` typed
+   * by hand in two components, beside 500, 1500 and 2000 in the motion layer,
+   * none of them chosen against the others.
+   *
+   * Pick the rung by what the motion MEANS, never by how it feels:
+   *
+   *   ack      the machine acknowledging input. Zero, because any delay here is
+   *            the delay the whole system is judged by — a press that arrives
+   *            late reads as a press that was missed.
+   *   state    a state settling: hover decaying, focus releasing, a press
+   *            letting go. Short enough to read as a consequence of the input
+   *            rather than as an animation that followed it.
+   *   transit  something entering or leaving the page.
+   *   process  the machine DOING something — a reveal, a scan, a readout
+   *            filling. The one rung where the duration IS the content.
+   *
+   * Feedback ENTERS at `ack` and DECAYS at `state`. Symmetric timing is what
+   * makes an interface feel like it is animating at you; asymmetric timing is
+   * what makes it feel like it is answering you. 300ms in both directions,
+   * which is what shipped, is slow enough that the pointer arrives before the
+   * colour does.
+   *
+   * No easing tokens yet. Over 120ms a colour cross-fade cannot show a curve,
+   * and every rung this ladder currently drives is a colour or a shadow. Easing
+   * earns its place when something travels — add the pair then, mirrored, so an
+   * outbound path and its return are inverses.
+   *
+   * ⚠ The namespace is Tailwind's, not ours. The `duration-*` utility resolves
+   * --transition-duration-*; a --duration-* variable generates NO utility, and
+   * because this block is `@theme static` the variable would still be emitted —
+   * so the failure mode is a class name that silently does nothing, not an
+   * error. Verified against tailwindcss 4.3.3 rather than assumed.
+   */
+  --transition-duration-ack: 0ms;
+  --transition-duration-state: 120ms;
+  --transition-duration-transit: 320ms;
+  --transition-duration-process: 1200ms;
+
+  /* The rung a bare `transition-*` lands on. Declared so that a call site which
+   * names no duration still gets one off the ladder — without it Tailwind's own
+   * 150ms applies, which is a value this system never chose. */
+  --default-transition-duration: var(--transition-duration-state);
+
   /* ── Animation ── */
   --animate-scan: scan 4s linear infinite;
+}
+
+/* Rebind the line ladder for `prefers-contrast: more`. The VALUES live in
+ * @theme above, beside the ratios they were measured against; this only points
+ * the roles at them, so there is nothing here to keep in sync.
+ *
+ * It sits outside @theme because a media query is not a token declaration.
+ * token-tools emits the same rebinding into tokens.css and theme.scoped.css, so
+ * the report kit and a multi-system page both get it — this copy is what reaches
+ * a registry consumer importing theme.css directly through ui/styles.css. */
+@media (prefers-contrast: more) {
+  :root {
+    --color-ambient: var(--color-ambient--contrast);
+    --color-line: var(--color-line--contrast);
+    --color-line-strong: var(--color-line-strong--contrast);
+  }
 }
 
 @keyframes scan {

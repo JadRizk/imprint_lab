@@ -1,16 +1,29 @@
 // The docs site is a static export served by GitHub Pages.
 //
-// Pages serves a project site from a subpath — https://jadrizk.github.io/imprint_lab/
-// — so the whole app has to know it lives under one. `basePath` comes from the
-// environment rather than a literal, for two reasons: `bun run dev` keeps
-// serving at `/` with no subpath to type, and moving the site to a custom
-// domain (or a renamed repo) becomes one edit in the workflow instead of a
-// search across the tree.
+// NEXT_PUBLIC_SITE_URL is the ONE place the published location is declared —
+// set in .github/workflows/deploy-docs.yml, nowhere else. Everything that needs
+// to know where the site lives derives from it:
 //
-// Read the same value in app code via `lib/base-path.ts` — Next rewrites
+//   basePath            here — the subpath Pages serves a project site from
+//   metadataBase        app/layout.tsx, via lib/base-path.ts — the OG card
+//   registry homepage   scripts/build-registries.mjs stamps the built registry
+//
+// That list used to be four independent literals, and the comment that stood
+// here claimed otherwise. Moving to a custom domain is now genuinely one edit
+// plus a CNAME; before, it was one edit and three silent 404s.
+//
+// Unset under `bun run dev`, where basePath collapses to '' and the site serves
+// at `/` with no subpath to type.
+//
+// Read the same values in app code via `lib/base-path.ts` — Next rewrites
 // `<Link>` and its own asset URLs automatically, but NOT a raw `<a href>` or
 // `<iframe src>` pointing into public/. Those need prefixing by hand.
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? '';
+
+// `new URL().pathname` is '/' for an origin with no subpath, and the trailing
+// slash has to go: Next rejects a basePath that ends in one, and '/' itself
+// must normalise to '' rather than staying a lone slash.
+const basePath = siteUrl ? new URL(siteUrl).pathname.replace(/\/+$/, '') : '';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -30,9 +43,11 @@ const nextConfig = {
   // than in CI.
   images: { unoptimized: true },
 
-  // Normalises the value to '' when unset, so client bundles never inline
-  // `undefined` and build a "/undefined/..." URL.
-  env: { NEXT_PUBLIC_BASE_PATH: basePath }
+  // Both are normalised to '' when unset, so a client bundle never inlines
+  // `undefined` and builds a "/undefined/..." URL. basePath is re-exported
+  // rather than re-derived in app code, because `new URL()` on an empty string
+  // throws and every consumer would need the same guard.
+  env: { NEXT_PUBLIC_BASE_PATH: basePath, NEXT_PUBLIC_SITE_URL: siteUrl }
 };
 
 export default nextConfig;

@@ -4,6 +4,7 @@ import { motion, useInView, useReducedMotion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { duration } from '../lib/motion.generated';
 import { cn, focusRing } from '../lib/utils';
 import styles from './image-frame.module.css';
 
@@ -63,7 +64,13 @@ export function ImageFrame({
       <motion.div
         initial={{ height: '0%' }}
         animate={{ height: shouldReveal ? '100%' : '0%' }}
-        transition={{ duration: prefersReducedMotion ? 0 : 1.5, ease: 'circInOut' }}
+        // `process` — the machine doing something. This reveal is the one case
+        // the rung is named for: the duration IS the content, not a delay in
+        // front of it.
+        transition={{
+          duration: prefersReducedMotion ? duration.ack : duration.process,
+          ease: 'circInOut'
+        }}
         onAnimationComplete={() => {
           if (shouldReveal) setRevealed(true);
         }}
@@ -111,8 +118,14 @@ export function ImageFrame({
                 ? { opacity: 0.5 }
                 : { opacity: [0, 1, 0] }
           }
+          // Leaving the page at `transit`; pulsing on a period that is not a
+          // ladder rung. The ladder measures how long a change takes, and a
+          // loop has no such length — the 2s here is a cadence, and inventing a
+          // rung for one idle animation would be naming a value nobody reuses.
           transition={
-            revealed || prefersReducedMotion ? { duration: 0.3 } : { duration: 2, repeat: Infinity }
+            revealed || prefersReducedMotion
+              ? { duration: duration.transit }
+              : { duration: 2, repeat: Infinity }
           }
         />
       </motion.div>

@@ -15,12 +15,17 @@ export function HeroSection() {
             <div>
               <SectionHeader label={heroContent.badge} className="mb-6" />
 
-              <h1 className="mb-8 text-3xl font-bold leading-tight tracking-tighter text-white md:text-5xl lg:text-6xl">
+              {/* No tracking or leading of its own. This heading crosses three
+                  steps of the scale — 3xl to 6xl — so one fixed pair could not
+                  be right at all of them, which is exactly what it carried:
+                  Tailwind's tracking-tighter (-0.05em) and leading-tight, both
+                  from outside the token model. Each step now brings its own. */}
+              <h1 className="mb-8 text-3xl font-bold text-white md:text-5xl lg:text-6xl">
                 {heroContent.heading}
                 <span className="text-lime">{heroContent.headingAccent}</span>
               </h1>
 
-              <p className="max-w-md border-l-2 border-steel pl-4 text-sm leading-relaxed text-text-secondary md:text-base">
+              <p className="max-w-md border-l-2 border-steel pl-4 text-sm leading-prose text-text-secondary md:text-base">
                 {heroContent.description}
               </p>
             </div>

@@ -96,3 +96,12 @@ vector, which is a materially easier test.
 
 Regenerate them if `favicon.svg` changes. They are committed so a checkout
 without a build still has them.
+
+**The rasters are not in the registry, and cannot be.** A registry file travels
+as a JSON string, so `shadcn build` reads it as UTF-8 and every byte that is not
+valid UTF-8 becomes U+FFFD — a PNG's leading `0x89` arrives as `ef bf bd`, the
+file grows by half, and nothing can open it. `@thl/brand` therefore ships the
+three SVGs and this document; a project that adopts the system runs
+`bun run brand:raster` against `favicon.svg` to get its own. `smoke-install`
+asserts byte equality on every shipped file, so a binary added to a manifest
+fails the build rather than shipping broken.

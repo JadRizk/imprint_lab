@@ -22,7 +22,22 @@ export const twMergeConfig = {
         "6xl"
       ],
       "tracking": [
-        "label"
+        "display",
+        "tight",
+        "normal",
+        "label",
+        "label-dense"
+      ],
+      "leading": [
+        "prose"
+      ]
+    },
+    "classGroups": {
+      "duration": [
+        "duration-ack",
+        "duration-state",
+        "duration-transit",
+        "duration-process"
       ]
     }
   }

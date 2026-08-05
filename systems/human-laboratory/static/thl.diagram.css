@@ -40,7 +40,9 @@
   min-inline-size: 640px;
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.12em;
+  /* Dense rather than the full label rung: 0.2em pushes SVG text past the cells
+     it is positioned inside, and diagram coordinates are fixed. */
+  letter-spacing: var(--tracking-label-dense);
 }
 
 .diagram > figcaption {

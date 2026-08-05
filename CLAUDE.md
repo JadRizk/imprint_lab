@@ -150,6 +150,37 @@ brighter than the frame around it.
 > borders were the same 1px at 1.52:1 — nothing outranked anything, and whole
 > sections vanished.
 
+**The ladder answers `prefers-contrast: more`.** At rest it runs 1.23 / 1.69 /
+2.69 against the canvas — at or below the threshold of visible for exactly the
+people who set that preference, in a system where line is the *only* structure.
+The text contract does not cover this: 4.5:1 governs text, while WCAG 1.4.11 asks
+3:1 of the visual boundary of a control, and `--color-line` at 1.69:1 is what
+bounds an input.
+
+| Role | Rest | `contrast: more` |
+|---|---|---|
+| `--color-ambient` | 1.23:1 | 2.69:1 |
+| `--color-line` | 1.69:1 | **4.59:1** — clears the 3:1 floor |
+| `--color-line-strong` | 2.69:1 | 7.62:1 |
+
+All three are promoted so every "outranks" relationship survives — the tiers are
+relative to each other, and ambient outranking line is the inversion the ladder
+exists to prevent. **Text is deliberately untouched**: it already clears 4.5:1 by
+contract, and promoting `ink-subtle` to `ink-muted`'s ratio would merge two roles
+and cost the hierarchy that carries the meaning.
+
+The values live in `theme.css` as `--<role>--contrast` companions, beside the
+ratios they were measured against. `token-tools` generates the rebinding into
+`tokens.css` and `theme.scoped.css` so the report kit and a multi-system page
+both get it; `theme.css` carries the same block for a consumer importing it
+directly through `ui/styles.css`. Neither copy holds a value, so they cannot
+drift. **A contrast companion must reference a primitive**, never a role that is
+itself reassigned — `var(--color-line-strong)` inside the media block resolves to
+the *promoted* value and collapses the ladder onto one grey.
+
+> This could not live in `base.css`: contract 4 requires that file to bind to
+> roles only, and the high-contrast greys are system-specific values.
+
 **The accent is a signal with a budget**, not a texture — a handful of events per
 screen. It is not for uniform table columns, scale bars, inline code, card
 labels, or hover. If every row is lime, lime distinguishes nothing.
@@ -157,11 +188,97 @@ labels, or hover. If every row is lime, lime distinguishes nothing.
 carrying the finding. Hover climbs the line ladder instead: hover is a state of
 the pointer, not of the machine.
 
+**Floating chrome earns its rule.** A divider separates chrome from the content
+it overlaps, so a sticky bar sitting at the top of the page has nothing to
+divide — it is simply the first region of the document. Once content is passing
+underneath it stops being a region and becomes chrome floating over content,
+which is a boundary that outranks its neighbours: `line-strong` at 2px, settling
+at `duration-state`. This is the one idea worth taking from Apple's scroll-edge
+effects; the rest of that pattern is a translucent blurred bar, which is the
+vocabulary this system exists to reject. The bar stays opaque and only the line
+reacts. See [`example/sticky-nav.tsx`](apps/docs/app/systems/human-laboratory/example/sticky-nav.tsx).
+
+> The border box is present at 2px in **both** states and only changes colour.
+> Growing a real border on stick changes the bar's height in flow and nudges the
+> page at the exact moment of sticking — the same reason `Button` carries an
+> invisible border box so heights match across a row.
+
 **Glow is emission, not a drop shadow.** A drop shadow claims depth — offset,
 soft spread, imaginary sun — and is the vocabulary this system rejects. Glow
 claims *energy*: this element is on. Zero offset, bright tight core, thin
 falloff. It belongs on focus, the active item, a live readout and a growing
 edge. Never on hover.
+
+### 6. Feedback is instant, and time comes off a ladder
+
+Motion is tokenized for the same reason line is: one duration doing every job means motion
+carries no information. Four rungs, picked by what the motion **means**:
+
+| Role | Value | Job |
+|---|---|---|
+| `--transition-duration-ack` | `0ms` | The machine acknowledging input. Any delay here is the delay the whole system is judged by |
+| `--transition-duration-state` | `120ms` | A state settling — hover decaying, focus releasing, a press letting go |
+| `--transition-duration-transit` | `320ms` | Something entering or leaving the page |
+| `--transition-duration-process` | `1200ms` | The machine *doing* something — a reveal, a scan. The one rung where the duration is the content |
+
+**Feedback enters at `ack` and decays at `state`.** Symmetric timing reads as the interface
+animating at you; asymmetric timing reads as it answering you.
+
+**Every interactive surface answers on pointer-down**, and the answer is uniform: an accent edge
+plus `--shadow-glow`. `:active` is the one state that is unambiguously *live*, which is what
+emission is for — so a press costs no new colour. It must differ from **both** rest and hover:
+touch has no hover, and before this a button on a phone gave no feedback at all between the tap
+and the result.
+
+> ⚠ **The namespace is Tailwind's, not ours.** `duration-*` resolves `--transition-duration-*`.
+> A `--duration-*` variable generates **no utility**, and because `@theme static` emits the
+> variable anyway, the failure is a class name that silently does nothing. Likewise
+> tailwind-merge takes this group through `classGroups`, not `theme` — Tailwind has no
+> `--duration-*` namespace, so `theme: { duration: [...] }` is accepted and silently ignored,
+> and `duration-500` would stop overriding `duration-state` with nothing reporting it. Both were
+> verified against tailwindcss 4.3.3 and tailwind-merge 3.4.0 rather than assumed.
+
+**Reduced motion silences travel, not feedback.** The preference is about
+vestibular triggers — things that move, scale or spin — and a colour change is
+not one. The report kit's reset used to flatten `transition-duration` to 0.01ms
+across `*`, which took every hover, focus and press response with it: the one
+signal telling those users a control had answered was removed by a rule aimed at
+motion sickness. It now restricts **what may transition** — `color`,
+`background-color`, `border-color`, `outline-color`, `box-shadow`, `opacity` —
+so anything positional lands instantly while feedback survives at full duration.
+Keyframe `animation` stays flattened outright; the scan line is the vestibular
+case this preference exists for.
+
+Springs are deliberately absent — overshoot is a claim about mass, the same vocabulary drop
+shadows make. Continuity is worth taking from gesture-driven design; bounce is not.
+
+**The ladder reaches JS too.** Framer Motion takes a number of seconds and cannot read a custom
+property, so `token-tools` emits [`ui/lib/motion.generated.ts`](systems/human-laboratory/ui/lib/motion.generated.ts)
+beside `cn()` — same reason `tw-merge.generated.ts` lives there, since a registry consumer gets
+these as plain files with no workspace to resolve `@thl/tokens` against. It ships in the `style`
+registry item; a component importing it without that entry would install broken.
+
+Two values stay literal on purpose. `BentoGrid`'s **stagger interval** (0.1s) and `ImageFrame`'s
+**pulse period** (2s) are not durations: every rung answers *how long a change takes*, while these
+answer *how far apart things start* and *how often a loop repeats*. Inventing rungs for them would
+name quantities the ladder does not measure.
+
+### The entrance
+
+An instrument does not grow into place; it switches on. Two beats, and neither is a transform:
+
+1. **Opacity 0 → 1 at `transit`**, staggered by `BentoGrid`.
+2. **The edge climbs `ambient` → `line` at `state`**, once the fade has landed.
+
+The second beat is the line ladder used as motion — the card arrives as a dormant outline and only
+then takes its place in the hierarchy. It deliberately spends **no accent**: `ImageFrame` can put
+lime on its growing edge because there are few frames and the reveal *is* the content, but six
+cards each firing lime is the accent becoming texture.
+
+> ⚠ The entrance used to run `scale: 0.95 → 1` — the exact thing hover is forbidden to do, four
+> lines away in the same file. A fractional transform lands a hard 1px border off the pixel grid
+> and the edge shimmers; at 5% over half a second, on every card, on first view. Verified after the
+> change by sampling 171 frames over CDP: `transform` is `none` for the entire entrance.
 
 ---
 
@@ -200,7 +317,46 @@ so it cannot drift — **never hand-keep a safelist.**
 
 `--text-*` is reset, so the scale is **closed**: `micro` through `6xl` are the
 only sizes that exist. `text-micro` (10px) is the instrument-label step — reach
-for it instead of `text-[10px]`. Label tracking is `tracking-label` (0.2em).
+for it instead of `text-[10px]`.
+
+**`--tracking-*` and `--leading-*` are reset too**, and tracking is declared *per
+size step* via Tailwind's `--text-<n>--letter-spacing` companion rather than
+applied by hand. So `text-6xl` arrives already tracked, and tracking cannot be
+picked by eye at a call site:
+
+| Rung | Value | Steps |
+|---|---|---|
+| `tracking-display` | `-0.02em` | 4xl · 5xl · 6xl |
+| `tracking-tight` | `-0.01em` | 2xl · 3xl |
+| `tracking-normal` | `0em` | micro → xl. Declared, not omitted — letter-spacing **inherits**, so a step without one takes the tracking of whatever encloses it |
+| `tracking-label` | `0.2em` | uppercase eyebrows and instrument labels |
+| `tracking-label-dense` | `0.12em` | the same job where 0.2em will not fit — a chip, an SVG diagram cell |
+
+`--leading-prose` (1.65) is the one leading rung the scale cannot express. It is
+1.65 rather than Tailwind's 1.625 because the report kit's body already measured
+1.65 — the two tiers disagreed, and one of them was a number nobody picked.
+
+This closed the last open typographic scale. The example hero — the largest type
+on the site — carried `tracking-tighter leading-tight`, both Tailwind defaults,
+unchanged across three responsive steps from 30px to 60px. `-0.05em` is roughly
+2.5x what display type wants and was visibly cramped at every one of them.
+
+> ⚠ **Closing a namespace deletes Tailwind's rungs.** `tracking-tighter`,
+> `tracking-wide`, `leading-snug` and the rest now generate **nothing** — the
+> same trade `--text-*` already makes, and the same silent-failure shape. A
+> reset and the call sites it breaks must land in one commit.
+> `tracking-tight` survives as a *name* but is this system's `-0.01em`, not
+> Tailwind's `-0.025em`.
+>
+> The companions are **folded** by `token-tools`. Left unfolded,
+> `--text-2xl--letter-spacing` categorises as a font size, takes a row of its own
+> in the docs type scale, and emits `text-2xl--letter-spacing` into the safelist
+> as a class that does not exist.
+
+The static tier has to name its own rung: `reset.css` sets sizes through
+`var(--text-*)` rather than through a utility, so the companions never reach it.
+It previously ran one `-0.02em` from `h1` down to `h6` — display tracking on
+14px headings.
 
 Adding a scale value needs no manual step: `tw-merge.generated.ts` is emitted
 from the tokens, so registration is automatic. Without it, `tailwind-merge`
@@ -414,8 +570,23 @@ belong in this app** — it is a documentation site and a registry host.
 
 ### The subpath is the sharp edge
 
-Pages serves a project site from `/imprint_lab`, so `basePath` is set from
-`NEXT_PUBLIC_BASE_PATH`, declared once in the workflow. It is empty in `dev`.
+Pages serves a project site from `/imprint_lab`. **`NEXT_PUBLIC_SITE_URL` — the
+full published URL, origin and subpath together — is the only place that is
+declared**, and it is declared in the workflow. Three things derive from it and
+none of them repeats it:
+
+| Derived | Where |
+|---|---|
+| `basePath` | `next.config.js`, split off the URL's pathname |
+| `metadataBase` | `app/layout.tsx`, via `lib/base-path.ts`'s `siteUrl` |
+| registry `homepage` | `scripts/build-registries.mjs`, stamped into the built index |
+
+It is unset in `dev`, where `basePath` collapses to `''` and `siteUrl` falls
+back to `http://localhost:3001`. Moving to a custom domain is one edit here plus
+a CNAME. This was four independent literals until August 2026, and the comment
+in the workflow claimed otherwise — a repo rename would have fixed the deploy
+and left the OG card and the registry homepage pointing at a dead origin, with
+nothing failing.
 
 Next rewrites `<Link href>`, `next/image` and its own `_next/*` URLs. It does
 **not** rewrite a raw `<a href="/thl-catalog.html">`, an `<iframe src>`, or a
@@ -428,11 +599,16 @@ hand-written `<link>`/`<script>` pointing into `public/`. Those need
 > looking at `dev`:
 >
 > ```bash
-> NEXT_PUBLIC_BASE_PATH=/imprint_lab bun run build
+> NEXT_PUBLIC_SITE_URL=https://jadrizk.github.io/imprint_lab bun run build
 > mkdir -p /tmp/pages && ln -sfn "$PWD/apps/docs/out" /tmp/pages/imprint_lab
 > python3 -m http.server 4321 --directory /tmp/pages
 > # then open http://localhost:4321/imprint_lab/
 > ```
+>
+> Set the **whole URL**, not a bare path. `NEXT_PUBLIC_BASE_PATH` is an output of
+> `next.config.js`, not an input — exporting it does nothing, and the build it
+> produces has no basePath at all. That is a verification step that reports
+> success while measuring the wrong artifact, which is worse than not running it.
 
 Do not use `asset()` on a `<Link href>` — Next prefixes those already, and doing
 it twice yields `/imprint_lab/imprint_lab/…`.
@@ -441,7 +617,9 @@ it twice yields `/imprint_lab/imprint_lab/…`.
 metadata URLs, so an origin-only `https://jadrizk.github.io` emits an `og:image`
 at `/systems/…` rather than `/imprint_lab/systems/…`. It is the worst member of
 this family to catch: nothing renders wrong and nothing 404s in a page you look
-at — the card is simply never shown when a link is shared.
+at — the card is simply never shown when a link is shared. This is why it reads
+`siteUrl` rather than composing an origin with `basePath`: the URL that already
+carries both cannot disagree with itself.
 
 ---
 
@@ -461,10 +639,18 @@ at — the card is simply never shown when a link is shared.
 | Chart series | Four, validated on all pairs | No fifth colour clears the floors while staying clear of the accent and status hues; a fifth category folds into the neutral `--chart-other` |
 | Elevation | None — no surface fill | A 1.03:1 step is not subtle, it is absent; line carries every boundary instead |
 | Line weight | Four tiers: ambient / line / line-strong / accent | One hairline doing every job is why pages dissolved at squint distance |
-| Glow | Emission, not shadow | Zero offset, tight core; follows current (focus, live, growing edge), never hover |
+| Glow | Emission, not shadow | Zero offset, tight core; follows current (focus, live, growing edge, **press**), never hover |
+| Sticky chrome | The rule appears only once content is beneath | A divider separates chrome from what it overlaps; at the top of the page it overlaps nothing |
+| High contrast | Promote the whole line ladder, leave text | Line is the only structure here, so `prefers-contrast` is about all of it; promoting text would merge two roles and cost the hierarchy |
+| Reduced motion | Restrict *what* transitions, not how long | A colour change is not vestibular, and it was the only feedback these users had |
+| Motion | Four-rung duration ladder, no springs | Time was the last dimension left to taste; overshoot is a claim about mass, which is the vocabulary drop shadows make |
+| Entrance | Fade, then the edge firms — never a scale | A fractional transform shimmers a hard 1px border for the whole animation; the argument that banned it on hover is stronger at 5% |
+| Press feedback | Instant in, decayed out; accent edge + emission | Hover is not feedback — touch has none, so a tap gave nothing between input and result |
 | Font weights | 300/500/600/700 have assigned jobs | Only 400 and 700 ever rendered, so the interface read flat even where it was dense |
 | Text contrast | 4.5:1 floor, enforced by token | Splitting decoration into `--color-ambient` keeps the mood without sacrificing legibility |
 | Type scale | Closed and tokenized, incl. `micro` | `--text-*` is reset so it cannot silently fall back to Tailwind's defaults |
+| Tracking | A property of the size, declared per step | A fixed letter-spacing is wrong somewhere by construction; the hero crossed three steps on one value |
+| Leading | Per step, plus one `prose` rung | The scale carries the rest; prose is the only job the size cannot imply |
 | Page measure | `PageShell`, not `container` | Tailwind's `container` is breakpoint-dependent |
 | Prose measure | `64ch`, not a pixel width | The body face is monospaced; every glyph is an `m`, so the comfortable line is 60–72 characters |
 | Theming | Dark only | Deferred, not forgotten; the role layer makes adding light mode small |
@@ -499,11 +685,33 @@ The GitHub repo has been renamed to `imprint_lab`. One thing still carries the
 old name and **cannot be changed from inside the repo**: the working directory is
 `the_human_laboratory`.
 
-Vercel was never used. The `imprint-lab.vercel.app` host was aspirational and
-nothing was ever deployed to it; it has been dropped. **The site is published to
-GitHub Pages** at `https://jadrizk.github.io/imprint_lab/` by
-[`.github/workflows/deploy-docs.yml`](.github/workflows/deploy-docs.yml), and the
-registry resolves at `https://jadrizk.github.io/imprint_lab/r/thl/{name}.json`.
+**Vercel was connected, but `imprint-lab.vercel.app` never existed.** An earlier
+version of this section said Vercel "was never used" — that was wrong, and the
+correction matters because it is the difference between a name nobody claimed and
+a live integration nobody noticed.
+
+A Vercel project called **`the-human-laboratory-web`** was installed on this repo
+through the Vercel GitHub App and built it on push. It has been deleted. The
+aspirational-hostname claim still holds, though: that project would have served
+`the-human-laboratory-web.vercel.app`, so `imprint-lab.vercel.app` was only ever
+a name in this repo's documentation.
+
+**The site is published to GitHub Pages** at `https://jadrizk.github.io/imprint_lab/`
+by [`.github/workflows/deploy-docs.yml`](.github/workflows/deploy-docs.yml), and
+the registry resolves at `https://jadrizk.github.io/imprint_lab/r/thl/{name}.json`.
+
+> ⚠ **Deleting a Vercel project does not remove its failures from a PR.** It
+> posted a `Vercel` **commit status** (the legacy Statuses API, not a check run),
+> and a status is immutable once written — GitHub exposes no way to retract one.
+> It stays on the SHA it was posted against for good, so a PR keeps showing red
+> until its head commit changes. Push any new commit and the check list comes back
+> clean.
+>
+> Deleting the project also does **not** uninstall the GitHub App, which keeps
+> repo access and can post again the moment another project is linked. Remove the
+> repo from the app's access list to stop it for good. Verified on PR #1: the
+> failing status was the only Vercel status across the preceding eight commits, so
+> the integration was dormant rather than routinely green.
 
 **The underscore is the brand, and the hyphen was a hostname constraint.**
 `imprint-lab` only ever appeared in `imprint-lab.vercel.app` because DNS
@@ -538,6 +746,21 @@ anything changing what a rule *does* passes them silently — `cursor: crosshair
 was deleted from the served CSS and both reported "identical". **Do not trust a
 "verified" claim citing only the first two**, and run
 `./.refactor/self-test.sh`, which asserts each mutation class is still caught.
+
+> ⚠ **Client-component behaviour cannot be verified against `dev`.** Measured in
+> headless Chrome over CDP: on the dev server **nothing hydrates** — the sticky
+> nav, `ImageFrame` and the page's first div all lack React fibers despite 54
+> scripts loading, and the console carries `Failed to fetch RSC payload`. The
+> same page from `apps/docs/out` hydrates completely. So anything that depends on
+> state, effects or events — a scroll reaction, an entrance animation, a press —
+> reads as inert in `dev` and proves nothing. **Build the export and serve it.**
+> This is the same shape as the basePath trap: a verification step that reports
+> a result while measuring the wrong artifact.
+>
+> Note also that `window.scrollTo()` does not dispatch scroll events in every
+> automation context. Use CDP's `Input.synthesizeScrollGesture` for a real one —
+> a listener added by hand counted zero events after a `scrollTo` that moved
+> `scrollY` to 800.
 
 **CSS diffs are not a substitute for looking.** Headless Chrome needs no
 extension:

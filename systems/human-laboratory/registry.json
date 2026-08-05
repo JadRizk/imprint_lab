@@ -30,6 +30,11 @@
           "path": "systems/human-laboratory/ui/lib/tw-merge.generated.ts",
           "type": "registry:file",
           "target": "~/thl/lib/tw-merge.generated.ts"
+        },
+        {
+          "path": "systems/human-laboratory/ui/lib/motion.generated.ts",
+          "type": "registry:file",
+          "target": "~/thl/lib/motion.generated.ts"
         }
       ]
     },
@@ -158,7 +163,7 @@
       "name": "brand",
       "type": "registry:file",
       "title": "Brand assets",
-      "description": "Mark, monochrome mark, favicon and raster icons, plus the rules that govern them. The brand belongs to the system, not to imprint_lab — adopting @thl means adopting its identity.",
+      "description": "Mark, monochrome mark, favicon and the rules that govern them — the vector sources only, since a registry file travels as UTF-8 text; run brand:raster for the PNGs. The brand belongs to the system, not to imprint_lab — adopting @thl means adopting its identity.",
       "files": [
         {
           "path": "systems/human-laboratory/brand/mark.svg",
@@ -174,16 +179,6 @@
           "path": "systems/human-laboratory/brand/favicon.svg",
           "type": "registry:file",
           "target": "~/thl/brand/favicon.svg"
-        },
-        {
-          "path": "systems/human-laboratory/brand/favicon-32.png",
-          "type": "registry:file",
-          "target": "~/thl/brand/favicon-32.png"
-        },
-        {
-          "path": "systems/human-laboratory/brand/apple-icon-180.png",
-          "type": "registry:file",
-          "target": "~/thl/brand/apple-icon-180.png"
         },
         {
           "path": "systems/human-laboratory/brand/README.md",

@@ -6,20 +6,28 @@
 //
 // One registry per namespace, because that is the unit a consumer subscribes to:
 //
-//   { "registries": { "@thl": "https://jadrizk.github.io/imprint_lab/r/thl/{name}.json" } }
+//   { "registries": { "@thl": "<site>/r/thl/{name}.json" } }
 //
 // `shadcn build` takes a single registry file, so this loops rather than globs —
 // passing a glob silently becomes "too many arguments" the moment a second
 // system exists.
+//
+// `homepage` in the BUILT index is stamped from NEXT_PUBLIC_SITE_URL, the same
+// variable next.config.js derives basePath from — see the comment there. The
+// value committed in systems/*/registry.json is the local default, which is what
+// `bun run smoke` and a bare `registry:build` use. Without this the published
+// registry advertised a homepage that agreed with the deploy only by
+// coincidence, and a repo rename broke it silently.
 
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, existsSync, readdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const docsRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const repoRoot = resolve(docsRoot, '..', '..');
 const systemsDir = join(repoRoot, 'systems');
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? '';
 
 const built = [];
 for (const slug of readdirSync(systemsDir).sort()) {
@@ -33,6 +41,17 @@ for (const slug of readdirSync(systemsDir).sort()) {
     cwd: repoRoot,
     stdio: 'inherit'
   });
+
+  // Stamped after the build rather than before: shadcn reads the source file,
+  // so rewriting it in place would dirty the working tree on every build.
+  // `homepage` lands only in the index, not in the per-item JSON.
+  if (siteUrl) {
+    const index = join(out, 'registry.json');
+    const parsed = JSON.parse(readFileSync(index, 'utf8'));
+    parsed.homepage = siteUrl;
+    writeFileSync(index, `${JSON.stringify(parsed, null, 2)}\n`);
+  }
+
   built.push(`@${name} -> public/r/${name}`);
 }
 

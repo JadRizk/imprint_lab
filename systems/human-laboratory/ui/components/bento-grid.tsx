@@ -29,6 +29,9 @@ interface BentoGridProps extends Omit<HTMLAttributes<HTMLElement>, MotionConflic
   dense?: boolean;
 }
 
+// The stagger interval is deliberately not a ladder rung. Every rung answers
+// "how long does this change take"; an interval answers "how far apart do they
+// start", which is a different quantity — and one this system uses exactly once.
 const containerVariants = {
   hidden: {},
   visible: {

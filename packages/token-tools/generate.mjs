@@ -12,6 +12,7 @@ import { basename, dirname, join, resolve as resolvePath } from 'node:path';
 
 import {
   buildTokens,
+  emitMotion,
   emitSafelist,
   emitThemeScopedCss,
   emitTokensCss,
@@ -58,9 +59,12 @@ for (const [file, contents] of Object.entries(artifacts)) {
 // The tailwind-merge config also lands beside cn(), because a registry consumer
 // receives ui/lib/ as plain files with no workspace to resolve @<ns>/tokens
 // against. A relative import is the only one that works in both places.
+// motion.generated.ts is there for the same reason: Framer Motion takes seconds
+// and cannot read a custom property, so the ladder has to reach JS as values.
 const uiLib = join(dirname(tokenDir), 'ui', 'lib');
 if (existsSync(uiLib)) {
   writeFileSync(join(uiLib, 'tw-merge.generated.ts'), artifacts['tw-merge.ts']);
+  writeFileSync(join(uiLib, 'motion.generated.ts'), emitMotion(tokens));
 }
 
 // ── Static tier ────────────────────────────────────────────────────────────

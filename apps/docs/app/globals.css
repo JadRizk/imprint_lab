@@ -57,7 +57,9 @@
   font-size: var(--text-2xl);
   line-height: var(--text-2xl--line-height);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  /* The 2xl rung, not display: this sets its size through var(--text-2xl)
+     rather than the utility, so the scale's companion never reaches it. */
+  letter-spacing: var(--text-2xl--letter-spacing);
   color: var(--color-ink);
   /* Space above a heading belongs to the heading, not to the paragraph that
      happens to precede it — otherwise the section break reads as a paragraph

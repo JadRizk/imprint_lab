@@ -7,6 +7,7 @@ import { ArrowDownRight } from 'lucide-react';
 import { SystemNav } from '../system-nav';
 
 import { HeroSection } from './hero-section';
+import { StickyNav } from './sticky-nav';
 
 const SAMPLES = [
   {
@@ -40,8 +41,9 @@ export default function DemoPage() {
     // measured 102px, and its bottom rule cut 6px into the first eyebrow.
     <div className="min-h-screen w-full">
       {/* Navigation Bar — opaque. A translucent, blurred bar is glassmorphism,
-          which is precisely the vocabulary this system exists to reject. */}
-      <nav className="sticky top-0 z-50 w-full border-b border-line bg-canvas">
+          which is precisely the vocabulary this system exists to reject.
+          Its rule is earned rather than permanent; see StickyNav. */}
+      <StickyNav>
         <PageShell className="flex items-center justify-between py-3">
           <SystemNav base="/systems/human-laboratory" current="/example" />
           <span className="text-micro tracking-label text-ink-subtle">
@@ -49,7 +51,7 @@ export default function DemoPage() {
             EXAMPLE // <span className="text-accent">FULL_PAGE</span>
           </span>
         </PageShell>
-      </nav>
+      </StickyNav>
 
       {/* Hero Section — full composition */}
       <HeroSection />
@@ -103,7 +105,7 @@ export default function DemoPage() {
       <section className="relative w-full overflow-hidden border-b border-steel py-24">
         <PageShell className="relative z-10">
           <SectionHeader label="DEPTH_CALIBRATION" className="mb-8" />
-          <p className="mb-12 max-w-lg border-l-2 border-line-strong pl-4 text-sm leading-relaxed">
+          <p className="mb-12 max-w-lg border-l-2 border-line-strong pl-4 text-sm leading-prose">
             Static layer readout. Scroll-driven parallax is not implemented yet — these coefficients
             are the placeholder for that work, not a live measurement.
           </p>
@@ -130,7 +132,7 @@ export default function DemoPage() {
       <section className="w-full border-b border-steel py-24">
         <PageShell>
           <SectionHeader label="AMBIENT_ANALYSIS" className="mb-8" />
-          <p className="mb-8 max-w-lg text-sm leading-relaxed">
+          <p className="mb-8 max-w-lg text-sm leading-prose">
             Placeholder readouts. These tiles report a fixed value — they are not yet wired to
             anything that measures.
           </p>

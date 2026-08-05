@@ -52,7 +52,7 @@ export default function ThesisPage() {
           clears it on one line. Below `md` the column is ~537px and the title
           wraps, which is the correct outcome on a phone.
         */}
-        <div className="mx-auto max-w-[64ch] space-y-10 text-sm leading-relaxed md:text-base">
+        <div className="mx-auto max-w-[64ch] space-y-10 text-sm leading-prose md:text-base">
           <header className="space-y-5">
             {/* The mark sits ABOVE the title rather than beside it. Inline would
                 make the header a flex row and eat horizontal space the h1 has
