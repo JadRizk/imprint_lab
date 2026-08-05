@@ -5,6 +5,21 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      // NEXT_PUBLIC_SITE_URL must be in the cache key. It is the one place the
+      // published location is declared, and basePath, metadataBase and the
+      // registry homepage are all derived from it — so it changes the CONTENTS of
+      // out/, not just how it is served. Undeclared, turbo hashes two different
+      // sites to the same key and replays whichever built first: a local
+      // no-basePath build restores over a subpath build, every asset URL loses
+      // its prefix, and the task still reports success.
+      //
+      // Measured, not assumed: `turbo build` after `rm -rf out/` returned "cache
+      // hit, replaying logs" and produced an icon href of
+      // /systems/human-laboratory/icon.svg where the same source built with
+      // --force gives /imprint_lab/systems/human-laboratory/icon.svg. Harmless in
+      // CI today because the cache starts cold, and a live publishing bug the day
+      // remote caching is switched on.
+      "env": ["NEXT_PUBLIC_SITE_URL"],
       "outputs": [".next/**", "!.next/cache/**", "out/**", "generated/**", "public/r/**"]
     },
     "lint": {
