@@ -1,0 +1,22 @@
+{
+  "name": "@thl/tokens",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./theme.css",
+    "./base.css": "./base.css",
+    "./tokens": "./generated/tokens.ts",
+    "./tokens.css": "./generated/tokens.css",
+    "./theme.scoped.css": "./generated/theme.scoped.css",
+    "./tokens.json": "./generated/tokens.json",
+    "./safelist.css": "./generated/safelist.css"
+  },
+  "scripts": {
+    "generate:tokens": "token-tools",
+    "build": "token-tools",
+    "lint": "node ../../../packages/token-tools/validate-palette.mjs"
+  },
+  "devDependencies": {
+    "@imprint/token-tools": "*"
+  }
+}

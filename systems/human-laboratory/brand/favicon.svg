@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" role="img" aria-label="The Human Laboratory">
+  <!-- The favicon is a different drawing, not an export of mark.svg.
+
+       Two reasons, both measured. A 1px stroke in role color-line is 1.69:1
+       against the canvas and stops rendering below about 24px, so the frame
+       contributes noise rather than structure at 16px and is dropped entirely.
+       And a transparent mark disappears against chrome this system does not
+       control, so the tile is part of the artwork.
+
+       The accent is spent for MASS here rather than as signal. That is a
+       deliberate exception to the accent budget, justified the same way
+       warning being darker than critical is: on this ground, legibility
+       outranks the general rule. Lime is 16.83:1 and the only value in the
+       palette that survives at this size.
+
+       Role names omit their leading double hyphen: XML forbids it in a comment.
+       See mark.svg. -->
+  <rect width="32" height="32" fill="#0F0F0F"/>
+  <path d="M7 20 L7 7 L20 7" stroke="#DFFF00" stroke-width="6" stroke-linecap="butt" stroke-linejoin="miter"/>
+</svg>

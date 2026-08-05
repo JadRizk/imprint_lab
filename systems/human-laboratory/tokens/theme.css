@@ -1,0 +1,375 @@
+@theme static {
+  /* ── Reset defaults (brutalist clean slate) ── */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  /* Tracking and leading are reset for the same reason --text-* is: a scale
+   * left open is a scale nobody chose. Tailwind's defaults were live here, and
+   * the largest type on the site reached through the gap for them — the example
+   * hero set `tracking-tighter leading-tight`, two values from Tailwind that
+   * this system never sanctioned, on the one element a landing page is built
+   * around. -0.05em is roughly 2.5x what display type wants, and it was applied
+   * unchanged across three responsive steps from 30px to 60px. */
+  --tracking-*: initial;
+  --leading-*: initial;
+
+  /* ── Spacing base ── */
+  --spacing: 0.25rem;
+
+  /* ── Core palette ──
+   * The three greys are a LINE ladder, not an elevation ramp. There is no
+   * surface fill in this system: a panel is defined by its edge, never by a
+   * background step. See the note on --color-line-strong below.
+   */
+  --color-obsidian: #0F0F0F;
+  --color-lime: #DFFF00;
+  --color-slate: #242424; /* 1.23:1 — the quietest drawn line */
+  --color-steel: #3A3A3A; /* 1.69:1 — the default drawn line */
+  --color-graphite: #585858; /* 2.69:1 — the loud drawn line */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* ── Semantic palette ──
+   * Contrast ratios are measured against --color-obsidian (#0F0F0F).
+   * Any token used for text must clear 4.5:1 (WCAG AA, normal text).
+   */
+  --color-text-secondary: #A3A3A3; /* 7.62:1 — body copy (the body default) */
+  --color-text-tertiary: #7C7C7C; /* 4.59:1 — labels, metadata, tags */
+
+  /* Decoration only. Never place text in this color — it does not meet
+   * contrast minimums. Grid overlays, table rules, idle brackets.
+   *
+   * It is DARKER than --color-line on purpose. Decoration that outranks the
+   * structure containing it is the inversion this token used to ship with:
+   * ambient was #3A3A3A against a #333333 line, so an ImageFrame's grid
+   * overlay drew brighter than the frame around it. */
+  --color-ambient: var(--color-slate);
+
+  /* ── Roles ──
+   * Named by job, not appearance. These names are the contract shared by every
+   * system in imprint_lab: components reference only these, so a component can
+   * move to another system unchanged. The palette above is this system's private
+   * vocabulary — app code may use it freely, components may not.
+   *
+   * Test: if you cannot name what a token DOES without naming how it LOOKS, it
+   * is a primitive. --color-accent names a job; --shadow-lime-glow does not, and
+   * so stays a primitive.
+   *
+   * --color-ambient is absent here because it already carries a role name and
+   * role semantics; aliasing it to itself would add a second name for one idea.
+   *
+   * There is deliberately no --color-surface. On this ground a panel fill
+   * cannot be seen: #0A0A0A measured 1.03:1 against the canvas, and pure black
+   * only reaches 1.14:1, so the sunken-panel step never rendered. Making it
+   * visible means making it a lighter grey box, which is elevation — the thing
+   * BRAND.md rules out. Panels are bounded by line. That is the whole system.
+   */
+  --color-canvas: var(--color-obsidian);
+  --color-ink: var(--color-white);
+  --color-ink-muted: var(--color-text-secondary);
+  --color-ink-subtle: var(--color-text-tertiary);
+  --color-accent: var(--color-lime);
+  --color-accent-ink: var(--color-black);
+
+  /* The line ladder. This system draws structure with line and nothing else,
+   * so line needs the range that elevation would otherwise carry. Four tiers,
+   * each with a job — pick by what the boundary MEANS, never by taste:
+   *
+   *   --color-ambient   1px   subdivision INSIDE a panel. Table rules, grid
+   *                           overlays, internal splits. Not meant to be noticed.
+   *   --color-line      1px   the edge OF a thing. Card, panel, frame, input,
+   *                           button. The default; when in doubt, this one.
+   *   --color-line-strong 2px a boundary that outranks its neighbours. Section
+   *                           divisions, a selected edge, the one panel that
+   *                           carries the finding.
+   *   --color-accent    2px   live state. Focus, the growing edge, the finding.
+   *
+   * Before this ladder existed the whole system was one hairline: 392 borders
+   * on the components page, every one of them 1px at 1.52:1, so nothing could
+   * outrank anything and the page dissolved at squint distance. */
+  --color-line: var(--color-steel);
+  --color-line-strong: var(--color-graphite);
+
+  /* The same ladder for `prefers-contrast: more`.
+   *
+   * This system draws every boundary with line and nothing else, so a user who
+   * asks for more contrast is asking about the only structure there is. At rest
+   * the ladder runs 1.23 / 1.69 / 2.69 against the canvas — at or below the
+   * threshold of visible for exactly the people who set that preference. The
+   * text contract does not cover this: 4.5:1 governs TEXT, while WCAG 1.4.11
+   * asks 3:1 of the visual boundary of a control, and --color-line at 1.69:1 is
+   * what bounds an input.
+   *
+   * Each rung climbs, and the ORDER is preserved — the tiers are relative to
+   * each other, and ambient outranking line is the inversion this ladder exists
+   * to prevent. Promoting all three keeps every "outranks" relationship intact.
+   *
+   * These are the two greys the text roles already use. They are measured, and
+   * high contrast is precisely the case where structure should read as strongly
+   * as secondary text does. Held as literals for the same reason --color-critical
+   * is: this system has no appearance-name for them, and one consumer does not
+   * earn a primitive.
+   *
+   * They must reference PRIMITIVES, never a role that is itself reassigned
+   * below — `var(--color-line-strong)` inside the media block would resolve to
+   * the promoted value, and the ladder would collapse onto one grey.
+   *
+   * Text is deliberately untouched: it already clears 4.5:1 by contract, and
+   * promoting --color-ink-subtle to --color-ink-muted's ratio would merge two
+   * roles into one and cost the hierarchy that carries meaning. */
+  --color-ambient--contrast: var(--color-graphite); /* 1.23:1 -> 2.69:1 */
+  --color-line--contrast: #7c7c7c; /* 1.69:1 -> 4.59:1, clears the 3:1 floor */
+  --color-line-strong--contrast: #a3a3a3; /* 2.69:1 -> 7.62:1 */
+
+  /* Status roles. Held as literals rather than aliased, because this system has
+   * no appearance-name for either hue and one consumer does not earn a primitive.
+   *
+   * Success is deliberately absent: NOMINAL, RENDERING and IMG_SRC_LOADED already
+   * render in lime, so success IS the accent here. A separate green would both
+   * duplicate that and collide with it.
+   *
+   * Warning is orange rather than amber: amber sits too close to lime's
+   * yellow-green on this ground and reads as the accent. Permanent constraint of
+   * a lime-accented system, not a preference.
+   *
+   * Warning must stay DARKER than critical. On a near-black ground luminance is
+   * urgency, so a brighter warning inverts severity — which is what shipped:
+   * #FF8A00 measured 8.11:1 against a 5.78:1 critical, and shouted 1.4x louder
+   * than the colour meaning "this is worse". If you retune either, keep the
+   * order and keep both above the 4.5:1 text floor.
+   */
+  --color-critical: #FF4A4A; /* 5.78:1 — errors, destructive actions */
+  --color-warning: #C86A00; /* 5.04:1 — warnings, degraded states */
+
+  /* ── Typography ──
+   * Consumer must define --font-sans-face and --font-mono-face
+   * (typically via next/font). Falls back to system fonts if absent.
+   */
+  --font-sans: var(--font-sans-face, sans-serif);
+  --font-mono: var(--font-mono-face, monospace);
+
+  /* ── Type scale ──
+   * Explicit and closed: --text-* is reset above, so these are the only
+   * sizes that exist. `micro` is the instrument-label step (10px) that
+   * the interface leans on for metadata and eyebrows.
+   */
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 1rem;
+  --text-micro--letter-spacing: var(--tracking-normal);
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-xs--letter-spacing: var(--tracking-normal);
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-sm--letter-spacing: var(--tracking-normal);
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-base--letter-spacing: var(--tracking-normal);
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-lg--letter-spacing: var(--tracking-normal);
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-xl--letter-spacing: var(--tracking-normal);
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-2xl--letter-spacing: var(--tracking-tight);
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-3xl--letter-spacing: var(--tracking-tight);
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+  --text-4xl--letter-spacing: var(--tracking-display);
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 1;
+  --text-5xl--letter-spacing: var(--tracking-display);
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 1;
+  --text-6xl--letter-spacing: var(--tracking-display);
+
+  /* ── Letter spacing ──
+   * A ladder, like line and like time. Tracking is SIZE-SPECIFIC: letters read
+   * too far apart as type grows and too close as it shrinks, so one value
+   * cannot be right everywhere — a fixed letter-spacing is wrong somewhere by
+   * construction.
+   *
+   * The rungs are bound to the type scale below rather than applied by hand, so
+   * `text-6xl` arrives already tracked and nobody has to remember. That is what
+   * makes this a property of the size instead of a decision at the call site —
+   * and it is why the responsive hero, which crosses three steps, could never
+   * have been correct with the single value it carried.
+   *
+   *   display  4xl-6xl. Display type, always the sans face in practice.
+   *   tight    2xl-3xl.
+   *   normal   micro-xl. Body, small text, and the default.
+   *   label    Uppercase instrument labels and eyebrows.
+   *   label-dense  The same job where 0.2em will not fit: a chip, a cell in an
+   *                SVG diagram. Two consumers, both in the report kit.
+   *
+   * `normal` is declared rather than left absent on purpose. letter-spacing
+   * INHERITS, so a step with no value of its own takes the tracking of whatever
+   * encloses it — a `text-sm` caption inside a `text-6xl` block would quietly
+   * render at display tracking.
+   *
+   * ⚠ Closing the namespace deletes Tailwind's own rungs: `tracking-tighter`,
+   * `tracking-wide`, `leading-snug` and the rest now generate nothing. That is
+   * the same trade the closed `--text-*` scale makes — the scale cannot be
+   * silently fallen back to, at the cost of a stray class doing nothing rather
+   * than erroring. `tracking-tight` survives as a NAME but is this system's
+   * rung, -0.01em, not Tailwind's -0.025em.
+   */
+  --tracking-display: -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0em;
+  --tracking-label: 0.2em;
+  --tracking-label-dense: 0.12em;
+
+  /* ── Leading ──
+   * The scale carries a line height per step, so this is only the rung the
+   * scale cannot express: prose, which wants more air than its size implies.
+   * 1.65 rather than Tailwind's 1.625 because the report kit's body already
+   * measured 1.65 — the two tiers were a hair apart, and one of them was a
+   * number this system never picked.
+   */
+  --leading-prose: 1.65;
+
+  /* ── Emission ──
+   * Not drop shadows. A drop shadow is a claim about depth — an offset, a soft
+   * spread, an imaginary sun — and this system rejects that vocabulary. These
+   * have ZERO offset and are a claim about energy: the element is on.
+   *
+   * Shape matters. The old values were all falloff and no core (a flat 15px at
+   * 0.3) and read as haze rather than light. Real emission is a bright, tight
+   * core with a long thin falloff — the same profile a phosphor produces, where
+   * diffusion through the glass and halation into neighbouring dark areas both
+   * scale with emitted energy. Keep the core; lengthen the tail if you must.
+   */
+  --shadow-lime-glow: 0 0 4px rgba(223, 255, 0, 0.45), 0 0 14px rgba(223, 255, 0, 0.22);
+  --shadow-lime-glow-lg: 0 0 6px rgba(223, 255, 0, 0.55), 0 0 22px rgba(223, 255, 0, 0.28),
+    0 0 60px rgba(223, 255, 0, 0.08);
+
+  /* Two shadow roles. --shadow-lime-glow names an appearance and stays a
+   * primitive, but the job it does — "this is on" — is something another system
+   * would express differently, or set to `none`.
+   *
+   * Emission follows CURRENT, not geometry. It belongs on focus, on an active
+   * item, on a live readout, on a growing edge. It does NOT belong on hover:
+   * hover is a state of the pointer, not of the machine. A glow on every card
+   * is decoration, and decoration is what this token must never become. */
+  --shadow-glow: var(--shadow-lime-glow);
+  --shadow-glow-strong: var(--shadow-lime-glow-lg);
+
+  /* ── Motion ──
+   * A ladder, like line. Time is a dimension of this system like any other, and
+   * until this existed it was the only one left to taste: `duration-300` typed
+   * by hand in two components, beside 500, 1500 and 2000 in the motion layer,
+   * none of them chosen against the others.
+   *
+   * Pick the rung by what the motion MEANS, never by how it feels:
+   *
+   *   ack      the machine acknowledging input. Zero, because any delay here is
+   *            the delay the whole system is judged by — a press that arrives
+   *            late reads as a press that was missed.
+   *   state    a state settling: hover decaying, focus releasing, a press
+   *            letting go. Short enough to read as a consequence of the input
+   *            rather than as an animation that followed it.
+   *   transit  something entering or leaving the page.
+   *   process  the machine DOING something — a reveal, a scan, a readout
+   *            filling. The one rung where the duration IS the content.
+   *
+   * Feedback ENTERS at `ack` and DECAYS at `state`. Symmetric timing is what
+   * makes an interface feel like it is animating at you; asymmetric timing is
+   * what makes it feel like it is answering you. 300ms in both directions,
+   * which is what shipped, is slow enough that the pointer arrives before the
+   * colour does.
+   *
+   * No easing tokens yet. Over 120ms a colour cross-fade cannot show a curve,
+   * and every rung this ladder currently drives is a colour or a shadow. Easing
+   * earns its place when something travels — add the pair then, mirrored, so an
+   * outbound path and its return are inverses.
+   *
+   * ⚠ The namespace is Tailwind's, not ours. The `duration-*` utility resolves
+   * --transition-duration-*; a --duration-* variable generates NO utility, and
+   * because this block is `@theme static` the variable would still be emitted —
+   * so the failure mode is a class name that silently does nothing, not an
+   * error. Verified against tailwindcss 4.3.3 rather than assumed.
+   */
+  --transition-duration-ack: 0ms;
+  --transition-duration-state: 120ms;
+  --transition-duration-transit: 320ms;
+  --transition-duration-process: 1200ms;
+
+  /* The rung a bare `transition-*` lands on. Declared so that a call site which
+   * names no duration still gets one off the ladder — without it Tailwind's own
+   * 150ms applies, which is a value this system never chose. */
+  --default-transition-duration: var(--transition-duration-state);
+
+  /* ── Animation ── */
+  --animate-scan: scan 4s linear infinite;
+}
+
+/* Rebind the line ladder for `prefers-contrast: more`. The VALUES live in
+ * @theme above, beside the ratios they were measured against; this only points
+ * the roles at them, so there is nothing here to keep in sync.
+ *
+ * It sits outside @theme because a media query is not a token declaration.
+ * token-tools emits the same rebinding into tokens.css and theme.scoped.css, so
+ * the report kit and a multi-system page both get it — this copy is what reaches
+ * a registry consumer importing theme.css directly through ui/styles.css. */
+@media (prefers-contrast: more) {
+  :root {
+    --color-ambient: var(--color-ambient--contrast);
+    --color-line: var(--color-line--contrast);
+    --color-line-strong: var(--color-line-strong--contrast);
+  }
+}
+
+@keyframes scan {
+  0% {
+    top: -2px;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* ── Utilities ── */
+
+@utility scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background-color: var(--color-lime);
+  box-shadow:
+    0 0 8px rgba(223, 255, 0, 0.6),
+    0 0 20px rgba(223, 255, 0, 0.4),
+    0 0 40px rgba(223, 255, 0, 0.2),
+    0 0 80px rgba(223, 255, 0, 0.1);
+  animation: var(--animate-scan);
+  pointer-events: none;
+  z-index: 50;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 40px;
+    background: linear-gradient(
+      to bottom,
+      rgba(223, 255, 0, 0.12),
+      rgba(223, 255, 0, 0.04) 40%,
+      transparent
+    );
+    pointer-events: none;
+  }
+}

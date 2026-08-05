@@ -1,0 +1,41 @@
+{
+  "name": "@thl/ui",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./components/button": "./components/button.tsx",
+    "./components/bento-card": "./components/bento-card.tsx",
+    "./components/bento-grid": "./components/bento-grid.tsx",
+    "./components/image-frame": "./components/image-frame.tsx",
+    "./components/mark": "./components/mark.tsx",
+    "./components/page-shell": "./components/page-shell.tsx",
+    "./components/section-header": "./components/section-header.tsx",
+    "./components/wordmark": "./components/wordmark.tsx",
+    "./lib/utils": "./lib/utils.ts",
+    "./styles.css": "./styles.css"
+  },
+  "scripts": {
+    "lint": "check-roles .. && biome check .",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.29.2",
+    "lucide-react": "^0.563.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss": "^4.1.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@thl/tokens": "*",
+    "@types/node": "^22.15.3",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "typescript": "5.9.2",
+    "@imprint/token-tools": "*"
+  }
+}

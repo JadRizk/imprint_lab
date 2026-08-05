@@ -1,0 +1,1166 @@
+/* human-laboratory — report kit: tokens + reset + primitives
+ * AUTO-GENERATED. Edit static/parts/ and re-run:
+ *   bun run --filter=@thl/tokens generate:tokens
+ */
+
+/* AUTO-GENERATED FROM theme.css — do not edit by hand.
+   Run: bun run --filter=@thl/tokens generate:tokens */
+
+:root {
+  --spacing:                     0.25rem;
+  --color-obsidian:              #0F0F0F;
+  --color-lime:                  #DFFF00;
+  --color-slate:                 #242424; /* 1.23:1 — the quietest drawn line */
+  --color-steel:                 #3A3A3A; /* 1.69:1 — the default drawn line */
+  --color-graphite:              #585858; /* 2.69:1 — the loud drawn line */
+  --color-white:                 #FFFFFF;
+  --color-black:                 #000000;
+  --color-text-secondary:        #A3A3A3; /* 7.62:1 — body copy (the body default) */
+  --color-text-tertiary:         #7C7C7C; /* 4.59:1 — labels, metadata, tags */
+  --color-ambient:               var(--color-slate);
+  --color-canvas:                var(--color-obsidian);
+  --color-ink:                   var(--color-white);
+  --color-ink-muted:             var(--color-text-secondary);
+  --color-ink-subtle:            var(--color-text-tertiary);
+  --color-accent:                var(--color-lime);
+  --color-accent-ink:            var(--color-black);
+  --color-line:                  var(--color-steel);
+  --color-line-strong:           var(--color-graphite);
+  --color-ambient--contrast:     var(--color-graphite); /* 1.23:1 -> 2.69:1 */
+  --color-line--contrast:        #7c7c7c; /* 1.69:1 -> 4.59:1, clears the 3:1 floor */
+  --color-line-strong--contrast: #a3a3a3; /* 2.69:1 -> 7.62:1 */
+  --color-critical:              #FF4A4A; /* 5.78:1 — errors, destructive actions */
+  --color-warning:               #C86A00; /* 5.04:1 — warnings, degraded states */
+  --font-sans:                   var(--font-sans-face, sans-serif);
+  --font-mono:                   var(--font-mono-face, monospace);
+  --text-micro:                  0.625rem;
+  --text-micro--line-height:     1rem;
+  --text-micro--letter-spacing:  var(--tracking-normal);
+  --text-xs:                     0.75rem;
+  --text-xs--line-height:        1rem;
+  --text-xs--letter-spacing:     var(--tracking-normal);
+  --text-sm:                     0.875rem;
+  --text-sm--line-height:        1.25rem;
+  --text-sm--letter-spacing:     var(--tracking-normal);
+  --text-base:                   1rem;
+  --text-base--line-height:      1.5rem;
+  --text-base--letter-spacing:   var(--tracking-normal);
+  --text-lg:                     1.125rem;
+  --text-lg--line-height:        1.75rem;
+  --text-lg--letter-spacing:     var(--tracking-normal);
+  --text-xl:                     1.25rem;
+  --text-xl--line-height:        1.75rem;
+  --text-xl--letter-spacing:     var(--tracking-normal);
+  --text-2xl:                    1.5rem;
+  --text-2xl--line-height:       2rem;
+  --text-2xl--letter-spacing:    var(--tracking-tight);
+  --text-3xl:                    1.875rem;
+  --text-3xl--line-height:       2.25rem;
+  --text-3xl--letter-spacing:    var(--tracking-tight);
+  --text-4xl:                    2.25rem;
+  --text-4xl--line-height:       2.5rem;
+  --text-4xl--letter-spacing:    var(--tracking-display);
+  --text-5xl:                    3rem;
+  --text-5xl--line-height:       1;
+  --text-5xl--letter-spacing:    var(--tracking-display);
+  --text-6xl:                    3.75rem;
+  --text-6xl--line-height:       1;
+  --text-6xl--letter-spacing:    var(--tracking-display);
+  --tracking-display:            -0.02em;
+  --tracking-tight:              -0.01em;
+  --tracking-normal:             0em;
+  --tracking-label:              0.2em;
+  --tracking-label-dense:        0.12em;
+  --leading-prose:               1.65;
+  --shadow-lime-glow:            0 0 4px rgba(223, 255, 0, 0.45), 0 0 14px rgba(223, 255, 0, 0.22);
+  --shadow-lime-glow-lg:         0 0 6px rgba(223, 255, 0, 0.55), 0 0 22px rgba(223, 255, 0, 0.28), 0 0 60px rgba(223, 255, 0, 0.08);
+  --shadow-glow:                 var(--shadow-lime-glow);
+  --shadow-glow-strong:          var(--shadow-lime-glow-lg);
+  --transition-duration-ack:     0ms;
+  --transition-duration-state:   120ms;
+  --transition-duration-transit: 320ms;
+  --transition-duration-process: 1200ms;
+  --default-transition-duration: var(--transition-duration-state);
+  --animate-scan:                scan 4s linear infinite;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-ambient: var(--color-ambient--contrast);
+    --color-line: var(--color-line--contrast);
+    --color-line-strong: var(--color-line-strong--contrast);
+  }
+}
+
+/* ── Reset + base ──────────────────────────────────────────────────────────
+ *
+ * Roles only. Every declaration below reads a role token, never a primitive, so
+ * pointing the tokens at a different system reskins every report that uses this
+ * file. Same contract as systems/<system>/ui/, enforced there by check-roles.
+ *
+ * Fonts are declared as stacks that degrade to system faces. A strict CSP —
+ * which is the normal case for a standalone report — blocks font CDNs outright,
+ * so the design system has to ship the file or accept the fallback. Load
+ * thl.fonts.css alongside this when brand fidelity matters more than bytes.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tracking is set per LEVEL, not once for the group. These rules set font-size
+ * through var(--text-*) rather than through Tailwind's utility, so the scale's
+ * --text-*--letter-spacing companions never reach them — the static tier has to
+ * name its own rung. It previously ran one -0.02em from h1 down to h6, which is
+ * display tracking applied to 14px body-sized headings. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  font-weight: 700;
+  letter-spacing: var(--tracking-normal);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-4xl);
+  letter-spacing: var(--tracking-display);
+}
+h2 {
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+}
+h3 {
+  font-size: var(--text-lg);
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-line);
+}
+
+a:hover {
+  border-bottom-color: var(--color-accent);
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+strong,
+b {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* A reduced-motion override has to beat any animation a report author writes,
+ * including inline styles — which is the one case !important is correct for.
+ *
+ * Reduced motion does NOT mean no feedback. The preference is about vestibular
+ * triggers — things that travel, scale, parallax or spin — and a colour change
+ * triggers nothing. This block used to flatten `transition-duration` to 0.01ms
+ * across the board, which took every hover, focus and press response with it:
+ * the one signal telling these users a control had answered them was removed by
+ * a rule aimed at motion sickness.
+ *
+ * So restrict WHAT may transition rather than how long it may take. Anything
+ * positional — transform, translate, scale, rotate, and the geometry properties
+ * an author might animate — is simply not in the list, so it lands instantly.
+ * Colour, outline, shadow and opacity survive at their normal duration.
+ *
+ * Animation stays flattened outright: a keyframe sequence is the vestibular
+ * case this preference exists for, and the scan line is exactly that.
+ *
+ * `outline-color` is absent deliberately. The focus ring still appears the
+ * instant it is focused — only its fade is dropped, and the ring is the
+ * affordance, not the fade. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat author animation */
+    animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must beat author animation */
+    animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must beat author transitions */
+    transition-property: color, background-color, border-color, box-shadow, opacity !important;
+  }
+}
+
+/* ── Report primitives ─────────────────────────────────────────────────────
+ *
+ * The set a document actually needs — derived from real reports, not invented.
+ * This is deliberately NOT a mirror of systems/<system>/ui/: reports need section
+ * heads, stat tiles, tables and callouts; apps need buttons, inputs and
+ * dialogs. The overlap is about a third, and most of what is here has no React
+ * twin to drift from.
+ *
+ * Roles only, so swapping the token block reskins every report.
+ */
+
+/* ── Page frame ── */
+
+.wrap {
+  max-width: var(--measure, 1440px);
+  margin-inline: auto;
+  padding-inline: 28px;
+}
+
+/* A narrower measure for prose-led documents. 64ch, matching PageShell's prose
+   variant — eighty columns is a terminal convention, not a reading measure, and
+   the body face here is monospaced so every glyph is as wide as an `m`. The
+   value said 80ch while the comment beside it said 65ch. */
+.wrap--prose {
+  --measure: 64ch;
+}
+
+/* ── Masthead ── */
+
+.masthead {
+  border-bottom: 1px solid var(--color-line);
+  padding-block: 56px 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.eyebrow {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* The lime square. Same eyebrow mark the app-side SectionHeader draws. */
+.eyebrow::before {
+  content: "";
+  inline-size: 8px;
+  block-size: 8px;
+  background: var(--color-accent);
+  flex: none;
+}
+
+.standfirst {
+  max-width: 76ch;
+  font-size: var(--text-base);
+}
+
+/* ── Sections ── */
+
+.section {
+  padding-block-start: 64px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid var(--color-line);
+  padding-block-end: 10px;
+  margin-block-end: 24px;
+}
+
+.section-head > h2 {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/* Right-aligned gloss on a section head. Drops out on narrow viewports. */
+.section-head > .note {
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+.lede {
+  max-width: 90ch;
+  margin-block-end: 24px;
+}
+
+/* ── Stat tiles ──
+ * A row of headline numbers. Encode state in the label or a chip, never in the
+ * number alone — a figure that is only red is invisible to a third of readers.
+ */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  border: 1px solid var(--color-line);
+}
+
+.stat {
+  padding: 18px 20px;
+  border-inline-end: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat:last-child {
+  border-inline-end: 0;
+}
+
+.stat > .label {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+.stat > .value {
+  font-family: var(--font-sans);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1.05;
+  /* A large bold numeral reads as display type even at 3xl, so it takes the
+     display rung rather than 3xl's own. It was -0.03em, tighter than anything
+     else in the system and chosen against nothing. */
+  letter-spacing: var(--tracking-display);
+  color: var(--color-ink);
+}
+
+.stat > .value.is-accent {
+  color: var(--color-accent);
+}
+.stat > .value.is-critical {
+  color: var(--color-critical);
+}
+.stat > .value.is-warning {
+  color: var(--color-warning);
+}
+
+.stat > .foot {
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+/* ── Tables ──
+ * Wide content scrolls inside its own container so the page body never scrolls
+ * sideways.
+ */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+}
+
+.table-wrap > table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-xs);
+  min-inline-size: 640px;
+}
+
+.table-wrap thead th {
+  text-align: start;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  font-weight: 700;
+  padding: 12px 16px;
+  /* The header/body boundary outranks the row rules beneath it, so it takes the
+     emphatic tier. This is the line ladder doing what a fill used to fake. */
+  border-bottom: 2px solid var(--color-line-strong);
+  white-space: nowrap;
+}
+
+.table-wrap tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--color-ambient);
+  vertical-align: top;
+}
+
+.table-wrap tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Hover is drawn, not filled. A fill step is not available on this ground —
+   the old one measured 1.03:1 — so the row brightens its ink and grows an
+   emphatic edge instead. */
+.table-wrap tbody tr:hover td {
+  color: var(--color-ink);
+}
+
+.table-wrap tbody tr:hover td:first-child {
+  box-shadow: inset 2px 0 0 var(--color-line-strong);
+}
+
+/* Emphasise the identifying column. */
+.table-wrap td.key {
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+/* ── Chips ──
+ * State reads at a glance from form as well as colour, so a chip always carries
+ * its own word.
+ */
+
+.chip {
+  display: inline-block;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label-dense);
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-subtle);
+  white-space: nowrap;
+  line-height: 1.7;
+}
+
+.chip.is-accent {
+  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-line));
+}
+.chip.is-critical {
+  color: var(--color-critical);
+  border-color: color-mix(in srgb, var(--color-critical) 45%, var(--color-line));
+}
+.chip.is-warning {
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-line));
+}
+
+/* ── Panels ── */
+
+.panel {
+  border: 1px solid var(--color-line);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Corner brackets. The motif the app-side BentoCard draws with four elements —
+ * here it costs two pseudo-elements and no markup. */
+.panel.has-brackets {
+  position: relative;
+}
+
+.panel.has-brackets::before,
+.panel.has-brackets::after {
+  content: "";
+  position: absolute;
+  inline-size: 9px;
+  block-size: 9px;
+  border-color: var(--color-ambient);
+  pointer-events: none;
+}
+
+.panel.has-brackets::before {
+  inset-block-start: -1px;
+  inset-inline-start: -1px;
+  border-block-start: 2px solid;
+  border-inline-start: 2px solid;
+}
+
+.panel.has-brackets::after {
+  inset-block-end: -1px;
+  inset-inline-end: -1px;
+  border-block-end: 2px solid;
+  border-inline-end: 2px solid;
+}
+
+/* ── Callout ──
+ * A claim that needs weight. The rule carries the severity; the word carries
+ * the meaning.
+ */
+
+.callout {
+  border-inline-start: 2px solid var(--color-accent);
+  padding: 4px 0 4px 16px;
+  color: var(--color-ink-muted);
+}
+
+.callout.is-critical {
+  border-inline-start-color: var(--color-critical);
+}
+.callout.is-warning {
+  border-inline-start-color: var(--color-warning);
+}
+
+/* ── Spec list ── */
+
+.spec-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+  font-size: var(--text-xs);
+  margin: 0;
+}
+
+.spec-list dt {
+  color: var(--color-ink-subtle);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-size: var(--text-micro);
+  padding-block-start: 2px;
+}
+
+.spec-list dd {
+  color: var(--color-ink);
+  margin: 0;
+}
+
+/* ── Swatch grid ── */
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.swatch > .chip-color {
+  block-size: 60px;
+  border: 1px solid var(--color-line);
+}
+
+.swatch > .meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--text-xs);
+  padding-block-start: 7px;
+}
+
+.swatch > .meta > .v {
+  color: var(--color-ink);
+}
+
+/* Absent / proposed value. */
+.swatch.is-absent > .chip-color {
+  border-style: dashed;
+  border-color: var(--color-ink-subtle);
+  opacity: 0.55;
+}
+
+/* ── Tabs ──
+ * Radio-driven, so switching a panel costs no script: the checked input *is*
+ * the state and CSS does the showing. interact.js upgrades the labels into a
+ * real ARIA tablist with arrow-key navigation, but it only moves focus and
+ * syncs attributes — the radio stays the single source of truth for which
+ * panel is visible, so the enhanced and unenhanced pages cannot disagree.
+ *
+ *   <div class="tabs">
+ *     <input class="tab-radio" type="radio" name="g" id="g-1" checked>
+ *     <input class="tab-radio" type="radio" name="g" id="g-2">
+ *     <div class="tab-list"><label class="tab" for="g-1">ONE</label>…</div>
+ *     <div class="tab-panels"><section class="tab-panel">…</section>…</div>
+ *   </div>
+ *
+ * The pairing is positional — the nth radio shows the nth panel — which is why
+ * the rules below are enumerated rather than expressed once. Six is the
+ * ceiling: a seventh tab is a document that wants sections, not tabs.
+ *
+ * Tabs hide content. Never put a finding behind one; put the alternate *view*
+ * of a finding behind one — the chart and its data table, the summary and the
+ * raw log.
+ */
+
+.tabs {
+  position: relative;
+}
+
+/* Visually gone, still focusable. display:none would take the input out of the
+   tab order and leave the unscripted page keyboard-inoperable. */
+.tabs > .tab-radio {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 4px;
+  border-block-end: 1px solid var(--color-line);
+}
+
+.tab {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+  padding: 9px 14px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  /* The active marker is always occupying its space, so selecting a tab does
+     not shift the row by 2px. */
+  border-block-end: 2px solid transparent;
+  margin-block-end: -1px;
+}
+
+.tab:hover {
+  color: var(--color-ink);
+}
+
+.tab-panel {
+  display: none;
+  padding-block-start: 22px;
+}
+
+.tabs > .tab-radio:nth-of-type(1):checked ~ .tab-list > .tab:nth-child(1),
+.tabs > .tab-radio:nth-of-type(2):checked ~ .tab-list > .tab:nth-child(2),
+.tabs > .tab-radio:nth-of-type(3):checked ~ .tab-list > .tab:nth-child(3),
+.tabs > .tab-radio:nth-of-type(4):checked ~ .tab-list > .tab:nth-child(4),
+.tabs > .tab-radio:nth-of-type(5):checked ~ .tab-list > .tab:nth-child(5),
+.tabs > .tab-radio:nth-of-type(6):checked ~ .tab-list > .tab:nth-child(6) {
+  color: var(--color-accent);
+  border-block-end-color: var(--color-accent);
+}
+
+.tabs > .tab-radio:nth-of-type(1):checked ~ .tab-panels > .tab-panel:nth-child(1),
+.tabs > .tab-radio:nth-of-type(2):checked ~ .tab-panels > .tab-panel:nth-child(2),
+.tabs > .tab-radio:nth-of-type(3):checked ~ .tab-panels > .tab-panel:nth-child(3),
+.tabs > .tab-radio:nth-of-type(4):checked ~ .tab-panels > .tab-panel:nth-child(4),
+.tabs > .tab-radio:nth-of-type(5):checked ~ .tab-panels > .tab-panel:nth-child(5),
+.tabs > .tab-radio:nth-of-type(6):checked ~ .tab-panels > .tab-panel:nth-child(6) {
+  display: block;
+}
+
+/* Without script the focused control is the hidden radio, so the ring has to be
+   drawn on the label it belongs to. */
+.tabs > .tab-radio:nth-of-type(1):focus-visible ~ .tab-list > .tab:nth-child(1),
+.tabs > .tab-radio:nth-of-type(2):focus-visible ~ .tab-list > .tab:nth-child(2),
+.tabs > .tab-radio:nth-of-type(3):focus-visible ~ .tab-list > .tab:nth-child(3),
+.tabs > .tab-radio:nth-of-type(4):focus-visible ~ .tab-list > .tab:nth-child(4),
+.tabs > .tab-radio:nth-of-type(5):focus-visible ~ .tab-list > .tab:nth-child(5),
+.tabs > .tab-radio:nth-of-type(6):focus-visible ~ .tab-list > .tab:nth-child(6) {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* Paper has no tabs. Every panel prints, labelled, in document order. */
+@media print {
+  .tabs > .tab-panels > .tab-panel {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat the :checked rule */
+    display: block !important;
+    border-block-start: 1px solid var(--color-ambient);
+  }
+  .tab {
+    color: var(--color-ink);
+  }
+}
+
+/* ── Disclosure ──
+ * Native <details>, so it opens with the script stripped and its state is the
+ * browser's, not ours. Use for the long tail of a document — evidence, method,
+ * the full log — where the summary line is genuinely enough for most readers.
+ */
+
+.accordion {
+  border: 1px solid var(--color-line);
+}
+
+.accordion > .disclosure + .disclosure {
+  border-block-start: 1px solid var(--color-ambient);
+}
+
+.disclosure > summary {
+  padding: 12px 16px;
+  cursor: pointer;
+  list-style: none;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure > summary::before {
+  content: "▸ ";
+  color: var(--color-ink-subtle);
+}
+
+.disclosure[open] > summary::before {
+  content: "▾ ";
+  color: var(--color-accent);
+}
+
+/* Ink, not accent — matching .tab:hover a few rules above. Hover is a state of
+   the pointer, not of the machine; the accent marks what is open, not what the
+   cursor happens to be over. */
+.disclosure > summary:hover {
+  color: var(--color-ink);
+}
+
+/* summary is focusable but is neither a link, a button, nor [tabindex], so the
+   reset's focus rule does not reach it. */
+.disclosure > summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.disclosure > .disclosure-body {
+  padding: 0 16px 16px;
+  font-size: var(--text-xs);
+}
+
+/* Best effort: a closed disclosure has no rendered content to print, and this
+   is the only lever CSS has on it. */
+@media print {
+  .disclosure:not([open]) > *:not(summary) {
+    display: block;
+  }
+}
+
+/* ── Timeline ──
+ * A sequence where the interval matters. If the gaps between entries carry no
+ * meaning, this is a list — use one.
+ */
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline > .event {
+  position: relative;
+  border-inline-start: 1px solid var(--color-ambient);
+  padding: 0 0 22px 22px;
+}
+
+/* The spine stops at the last mark rather than running off the end. The border
+   stays, so the entry keeps its indent. */
+.timeline > .event:last-child {
+  border-inline-start-color: transparent;
+  padding-block-end: 0;
+}
+
+.timeline > .event::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -4px;
+  inset-block-start: 6px;
+  inline-size: 7px;
+  block-size: 7px;
+  background: var(--color-line-strong);
+}
+
+.timeline > .event.is-accent::before {
+  background: var(--color-accent);
+}
+.timeline > .event.is-critical::before {
+  background: var(--color-critical);
+}
+.timeline > .event.is-warning::before {
+  background: var(--color-warning);
+}
+
+.timeline > .event > .when {
+  display: block;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+.timeline > .event > .what {
+  display: block;
+  color: var(--color-ink);
+  font-size: var(--text-xs);
+}
+
+.timeline > .event > .detail {
+  display: block;
+  font-size: var(--text-xs);
+  max-inline-size: 78ch;
+}
+
+/* ── Meter ──
+ * One number against its ceiling. Drawn, not filled with a gradient — the fill
+ * is the measurement and the mark is the threshold it is being read against.
+ *
+ *   <div class="meter is-warning">
+ *     <div class="meter-head"><span>P99_LATENCY</span><span class="v">412ms</span></div>
+ *     <div class="meter-track" role="meter" aria-valuenow="412" …>
+ *       <div class="meter-fill" style="--v: 82%"></div>
+ *       <div class="meter-mark" style="--at: 80%"></div>
+ *     </div>
+ *   </div>
+ */
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.meter-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+.meter-head > .v {
+  color: var(--color-ink);
+  /* The reading itself is not a label, so it drops out of label tracking. */
+  letter-spacing: var(--tracking-normal);
+}
+
+.meter-track {
+  position: relative;
+  block-size: 10px;
+  border: 1px solid var(--color-line);
+}
+
+.meter-fill {
+  block-size: 100%;
+  inline-size: var(--v, 0%);
+  background: var(--color-line-strong);
+}
+
+.meter.is-accent > .meter-track > .meter-fill {
+  background: var(--color-accent);
+}
+.meter.is-warning > .meter-track > .meter-fill {
+  background: var(--color-warning);
+}
+.meter.is-critical > .meter-track > .meter-fill {
+  background: var(--color-critical);
+}
+
+/* The threshold. Dashed and accented, the same language the target line uses in
+   a chart, so a budget reads the same in both. */
+.meter-mark {
+  position: absolute;
+  inset-block: -3px;
+  inset-inline-start: var(--at, 100%);
+  inline-size: 0;
+  border-inline-start: 1px dashed var(--color-accent);
+}
+
+/* ── Notes and footnotes ──
+ * A margin note glosses; a footnote sources. Keeping them different shapes
+ * keeps the difference readable.
+ */
+
+.margin-note {
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+  border-inline-start: 1px solid var(--color-ambient);
+  padding-inline-start: 12px;
+  margin-block: 12px;
+  max-inline-size: 34ch;
+}
+
+/* Only once there is a gutter to put it in. Below this it stays in the flow as
+   an indented block, which is a fine second state. */
+@media (min-width: 1180px) {
+  .margin-note {
+    float: inline-end;
+    inline-size: 26ch;
+    margin-inline-start: 32px;
+    margin-block-start: 4px;
+  }
+}
+
+/* A ref is an <a>, so the reset would hand it the accent. There is one per
+   claim in a sourced document, which makes them a texture rather than a signal
+   — the superscript bracket is what marks them, not the colour. */
+.fn-ref {
+  font-size: 0.72em;
+  vertical-align: super;
+  line-height: 0;
+  border-block-end: 0;
+  color: var(--color-ink-subtle);
+}
+
+.fn-ref:hover {
+  color: var(--color-ink);
+}
+
+.footnotes {
+  margin-block-start: 44px;
+  border-block-start: 1px solid var(--color-line);
+  padding-block-start: 16px;
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+.footnotes > ol {
+  list-style: none;
+  counter-reset: fn;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footnotes > ol > li {
+  counter-increment: fn;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  scroll-margin-block-start: 40px;
+}
+
+.footnotes > ol > li::before {
+  content: "[" counter(fn) "]";
+  color: var(--color-ink-subtle);
+}
+
+/* The note you were sent to. Without this the jump lands you in a grey block
+   with no indication of which line was the destination. */
+.footnotes > ol > li:target {
+  color: var(--color-ink-muted);
+}
+
+.footnotes > ol > li:target::before {
+  color: var(--color-accent);
+}
+
+/* ── Code and trees ── */
+
+code,
+kbd,
+.code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  /* Code is a register, not a signal. The mono family and the rule carry it;
+     spending the accent here is what made lime the page's texture. */
+  color: var(--color-ink);
+  border: 1px solid var(--color-ambient);
+  padding: 0.05em 0.35em;
+  white-space: nowrap;
+}
+
+pre {
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  padding: 20px 22px;
+  font-size: var(--text-xs);
+  line-height: 1.8;
+  color: var(--color-ink-muted);
+}
+
+pre code,
+pre.tree {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  white-space: pre;
+}
+
+.tree b {
+  color: var(--color-ink);
+  font-weight: 400;
+}
+.tree i {
+  color: var(--color-accent);
+  font-style: normal;
+}
+.tree u {
+  color: var(--color-ink-subtle);
+  text-decoration: none;
+}
+
+/* ── Layout helpers ── */
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 14px;
+}
+
+.rule {
+  border: 0;
+  border-block-start: 1px solid var(--color-line);
+  margin-block: 32px;
+}
+
+.report-footer {
+  margin-block-start: 72px;
+  border-block-start: 1px solid var(--color-line);
+  padding-block-start: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+/* ── Scan line ──
+ * The CRT motif. Decorative, so it is hidden from assistive technology by being
+ * an empty element, and it stops moving under reduced-motion.
+ */
+
+.scan-line {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 2px;
+  background-color: var(--color-accent);
+  box-shadow: var(--shadow-glow);
+  animation: thl-scan 4s linear infinite;
+  pointer-events: none;
+  z-index: 50;
+}
+
+@keyframes thl-scan {
+  from {
+    inset-block-start: -2px;
+  }
+  to {
+    inset-block-start: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .section-head > .note {
+    display: none;
+  }
+  .stat {
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--color-line);
+  }
+}
+
+/* ── Interactive affordances ──
+ * Styled here, driven by the optional interact.js. Everything degrades: with no
+ * script the table is a table, detail rows stay open, the filter is inert.
+ */
+
+.table-wrap table.is-sortable thead th[role="button"] {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Ink on hover; the accent is reserved for the column actually sorted, which
+   is the state that carries information. */
+.table-wrap table.is-sortable thead th[role="button"]:hover {
+  color: var(--color-ink);
+}
+
+/* The indicator has to be present in all three states or the column heads jump
+ * as you sort. Idle is a dim glyph, not an absent one — which is why it wears a
+ * TEXT token. --color-ambient is a line colour at 1.23:1 and would render this
+ * glyph invisible, breaking the rule that decoration tokens never carry text. */
+.table-wrap table.is-sortable thead th[role="button"]::after {
+  content: " ↕";
+  color: var(--color-ink-subtle);
+}
+.table-wrap table.is-sortable thead th[aria-sort="ascending"]::after {
+  content: " ↑";
+  color: var(--color-accent);
+}
+.table-wrap table.is-sortable thead th[aria-sort="descending"]::after {
+  content: " ↓";
+  color: var(--color-accent);
+}
+
+.table-wrap tr.has-detail {
+  cursor: pointer;
+}
+.table-wrap tr.has-detail > td:first-child::before {
+  content: "▸ ";
+  color: var(--color-ink-subtle);
+}
+.table-wrap tr.has-detail.is-open > td:first-child::before {
+  content: "▾ ";
+  color: var(--color-accent);
+}
+.table-wrap tr.detail > td {
+  background: var(--color-canvas);
+  color: var(--color-ink-muted);
+  padding-block: 14px;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block-end: 12px;
+}
+
+.filter-bar input {
+  flex: 1 1 220px;
+  min-inline-size: 0;
+  /* Explicitly transparent, not merely unset — a form control carries a UA
+     default background (light, in every engine) that survives removing the
+     declaration, so the field renders as a pale bar on an obsidian page. */
+  background: transparent;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: var(--text-xs);
+  padding: 8px 12px;
+}
+
+.filter-bar input::placeholder {
+  color: var(--color-ink-subtle);
+}
+
+.filter-bar input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.filter-bar .count {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-ink-subtle);
+}

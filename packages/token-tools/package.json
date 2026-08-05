@@ -1,0 +1,16 @@
+{
+  "name": "@imprint/token-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared token pipeline. Parses a system's theme.css and emits typed/derived artifacts.",
+  "bin": {
+    "token-tools": "./generate.mjs",
+    "check-roles": "./check-roles.mjs",
+    "smoke-install": "./smoke-install.mjs",
+    "validate-palette": "./validate-palette.mjs"
+  },
+  "exports": {
+    ".": "./generate.mjs"
+  }
+}

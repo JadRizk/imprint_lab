@@ -1,0 +1,1265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>THE_HUMAN_LABORATORY // Report kit catalog</title>
+    <link rel="stylesheet" href="./thl.fonts.css" />
+    <link rel="stylesheet" href="./thl.css" />
+    <link rel="stylesheet" href="./thl.chart.css" />
+    <link rel="stylesheet" href="./thl.diagram.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="masthead">
+        <div class="eyebrow">THE_HUMAN_LABORATORY &nbsp;//&nbsp; REPORT_KIT &nbsp;//&nbsp; CATALOG</div>
+        <h1>Every form the kit can draw, rendered from the same eleven roles</h1>
+        <p class="standfirst">
+          Copy the markup, not the styling. Everything here is roles-only, so pointing the tokens
+          at another system reskins the whole document. If a value you need is missing, add a token
+          to <code>theme.css</code> and regenerate — never write a hex inline.
+        </p>
+        <p class="standfirst">
+          <strong>A catalogue is not a specimen.</strong> It shows every modifier at once, which
+          means it spends the accent far past the budget a real document should keep to.
+          <a href="./example-report.html">example-report.html</a> is the honest ratio — one worked
+          report, lime twice.
+        </p>
+
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="label">Base bundle</span>
+            <span class="value">28<span style="font-size: var(--text-lg)">KB</span></span>
+            <span class="foot">tokens + reset + primitives — the only required file</span>
+          </div>
+          <div class="stat">
+            <span class="label">Chart forms</span>
+            <span class="value">8</span>
+            <span class="foot">on a 4-series ceiling · +7KB</span>
+          </div>
+          <div class="stat">
+            <span class="label">Diagram forms</span>
+            <span class="value">4</span>
+            <span class="foot">flow · anatomy · graph · field · +4KB</span>
+          </div>
+          <div class="stat">
+            <span class="label">Script required</span>
+            <span class="value">0<span style="font-size: var(--text-lg)">KB</span></span>
+            <span class="foot">10KB optional — nothing on this page depends on it</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ═══ STRUCTURE ═══════════════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Structure is drawn with line, never with fill</h2>
+          <span class="note">.panel · .callout · .cols · .rule</span>
+        </div>
+        <p class="lede">
+          There is no surface token. A panel is defined by its edge, because a fill measured 1.03:1
+          against this canvas and never rendered. Which line tier a boundary takes is decided by
+          what the boundary <em>means</em>, not by taste.
+        </p>
+
+        <div class="cols">
+          <div class="panel has-brackets">
+            <h3>With corner brackets</h3>
+            <p>
+              The motif the app-side BentoCard draws with four elements. Here it costs two
+              pseudo-elements and no markup.
+            </p>
+          </div>
+          <div class="panel">
+            <h3>Plain panel</h3>
+            <p>Bounded by its edge. Use for grouped prose or a sub-finding.</p>
+          </div>
+        </div>
+
+        <div class="table-wrap" style="margin-block-start: 24px">
+          <table>
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Weight</th>
+                <th>The boundary it draws</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="key">--color-ambient</td>
+                <td>1px</td>
+                <td>Subdivision <em>inside</em> a block — table rules, grid overlays</td>
+              </tr>
+              <tr>
+                <td class="key">--color-line</td>
+                <td>1px</td>
+                <td>The edge <em>of</em> a thing — panel, figure, input. The default</td>
+              </tr>
+              <tr>
+                <td class="key">--color-line-strong</td>
+                <td>2px</td>
+                <td>A boundary that outranks its neighbours</td>
+              </tr>
+              <tr>
+                <td class="key">--color-accent</td>
+                <td>2px</td>
+                <td>Live state, or the one mark the document is making</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="rule"></p>
+
+        <p class="callout">
+          A claim that needs weight. The rule carries severity; the words carry meaning.
+        </p>
+        <p class="callout is-warning" style="margin-block-start: 12px">
+          Amber sits too close to lime on this ground, which is why warning is orange.
+        </p>
+        <p class="callout is-critical" style="margin-block-start: 12px">
+          Never re-derive the palette inline — that is the drift this kit exists to prevent.
+        </p>
+      </section>
+
+      <!-- ═══ STATS · CHIPS · METERS ══════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>A number states the reading; a chip states the state</h2>
+          <span class="note">.stat · .chip · .meter</span>
+        </div>
+        <p class="lede">
+          A stat is three parts — <code>.label</code> says what is counted,
+          <code>.value</code> is the number, <code>.foot</code> qualifies it. A number without a
+          foot invites the wrong conclusion. A chip always carries its own word, so state never
+          depends on colour alone.
+        </p>
+
+        <p>
+          <span class="chip">DEFAULT</span> <span class="chip is-accent">NOMINAL</span>
+          <span class="chip is-warning">DEGRADED</span>
+          <span class="chip is-critical">SIGNAL_LOST</span>
+        </p>
+
+        <p class="lede" style="margin-block-start: 32px">
+          A meter is one number against its ceiling — the fill is the measurement, the dashed mark
+          is the threshold it is being read against. It uses the same accent-dashed language a
+          chart's target line does, so a budget reads identically in both.
+        </p>
+
+        <div class="cols">
+          <div class="meter">
+            <div class="meter-head"><span>Token coverage</span><span class="v">40 / 40</span></div>
+            <div
+              class="meter-track"
+              role="meter"
+              aria-valuenow="40"
+              aria-valuemin="0"
+              aria-valuemax="40"
+              aria-label="Token coverage: 40 of 40"
+            >
+              <div class="meter-fill" style="--v: 100%"></div>
+            </div>
+          </div>
+          <div class="meter is-warning">
+            <div class="meter-head"><span>p99 latency</span><span class="v">412ms</span></div>
+            <div
+              class="meter-track"
+              role="meter"
+              aria-valuenow="412"
+              aria-valuemin="0"
+              aria-valuemax="500"
+              aria-label="p99 latency 412 milliseconds against a 400 millisecond budget"
+            >
+              <div class="meter-fill" style="--v: 82%"></div>
+              <div class="meter-mark" style="--at: 80%"></div>
+            </div>
+          </div>
+          <div class="meter is-critical">
+            <div class="meter-head"><span>Error budget</span><span class="v">118% spent</span></div>
+            <div
+              class="meter-track"
+              role="meter"
+              aria-valuenow="118"
+              aria-valuemin="0"
+              aria-valuemax="118"
+              aria-label="Error budget 118 percent spent against a 100 percent ceiling"
+            >
+              <div class="meter-fill" style="--v: 100%"></div>
+              <div class="meter-mark" style="--at: 85%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ TABS ════════════════════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Tabs work with the script stripped, because a radio is the state</h2>
+          <span class="note">.tabs · .tab-list · .tab-panel</span>
+        </div>
+        <p class="lede">
+          Hidden radio inputs drive panel visibility in pure CSS. <code>thl.interact.js</code>
+          upgrades the labels to a real ARIA tablist with arrow-key navigation, but it only moves
+          focus and syncs attributes — the radio stays the single source of truth, so the enhanced
+          and unenhanced pages cannot disagree. Six tabs is the ceiling; a seventh is a document
+          that wants sections.
+        </p>
+
+        <div class="tabs">
+          <input class="tab-radio" type="radio" name="cat-tabs" id="cat-tabs-1" checked />
+          <input class="tab-radio" type="radio" name="cat-tabs" id="cat-tabs-2" />
+          <input class="tab-radio" type="radio" name="cat-tabs" id="cat-tabs-3" />
+          <div class="tab-list">
+            <label class="tab" for="cat-tabs-1">WHAT_IT_COSTS</label>
+            <label class="tab" for="cat-tabs-2">WHEN_TO_USE</label>
+            <label class="tab" for="cat-tabs-3">MARKUP</label>
+          </div>
+          <div class="tab-panels">
+            <section class="tab-panel">
+              <p>
+                No script, no library, no build step — the whole mechanism is one radio group and
+                six enumerated CSS rules. With <code>thl.interact.js</code> loaded the strip also
+                answers to <kbd>←</kbd> <kbd>→</kbd> <kbd>Home</kbd> <kbd>End</kbd> and reports
+                itself to a screen reader as a tablist. Without it, the strip is a radio group,
+                which is a worse experience but a working one.
+              </p>
+              <p style="margin-block-start: 12px">
+                In print every panel is revealed and separated by a rule. Paper has no tabs, and a
+                document that loses two thirds of its content on the way to a PDF is a document
+                that failed.
+              </p>
+            </section>
+            <section class="tab-panel">
+              <p>
+                <strong>Tabs hide content.</strong> Never put a finding behind one. Put the
+                alternate <em>view</em> of a finding behind one — the chart and the data table
+                underneath it, the summary and the raw log, the result and the method.
+              </p>
+              <p style="margin-block-start: 12px">
+                If a reader has to open all the tabs to understand the section, the section wanted
+                headings.
+              </p>
+            </section>
+            <section class="tab-panel">
+              <pre><code>&lt;div class="tabs"&gt;
+  &lt;input class="tab-radio" type="radio" name="g" id="g-1" checked&gt;
+  &lt;input class="tab-radio" type="radio" name="g" id="g-2"&gt;
+  &lt;div class="tab-list"&gt;
+    &lt;label class="tab" for="g-1"&gt;ONE&lt;/label&gt;
+    &lt;label class="tab" for="g-2"&gt;TWO&lt;/label&gt;
+  &lt;/div&gt;
+  &lt;div class="tab-panels"&gt;
+    &lt;section class="tab-panel"&gt;…&lt;/section&gt;
+    &lt;section class="tab-panel"&gt;…&lt;/section&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+              <p style="margin-block-start: 12px">
+                The pairing is positional: the nth radio shows the nth panel. Radios are direct
+                children of <code>.tabs</code>, labels of <code>.tab-list</code>, panels of
+                <code>.tab-panels</code> — the sibling selectors depend on it.
+              </p>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ DISCLOSURE · TIMELINE ═══════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>The long tail folds away; the sequence stays open</h2>
+          <span class="note">.accordion · .disclosure · .timeline</span>
+        </div>
+
+        <div class="cols">
+          <div>
+            <p class="lede">
+              A disclosure is native <code>&lt;details&gt;</code> — it opens with the script
+              stripped and its state belongs to the browser, not to us. Use it for evidence,
+              method, and the full log: the material a reader needs to be able to reach but
+              mostly will not.
+            </p>
+            <div class="accordion">
+              <details class="disclosure">
+                <summary>METHOD // how the palette was validated</summary>
+                <div class="disclosure-body">
+                  Every pair of series colours was measured, not just adjacent ones — adjacency in
+                  a token list is arbitrary and any two series can share a legend. Worst all-pairs
+                  CVD separation ΔE 9.8 under tritanopia; worst normal-vision ΔE 17.4.
+                </div>
+              </details>
+              <details class="disclosure">
+                <summary>EVIDENCE // why there is no fifth series</summary>
+                <div class="disclosure-body">
+                  An exhaustive search over the usable hue range found no five-colour set that
+                  clears the floors while staying clear of the accent, warning and critical hues. A
+                  fifth category folds into the neutral <code>--chart-other</code>.
+                </div>
+              </details>
+              <details class="disclosure">
+                <summary>UNVERIFIED // what this catalogue does not prove</summary>
+                <div class="disclosure-body">
+                  That the kit survives a real email client, and that the fonts bundle degrades
+                  cleanly on Windows. Both are asserted from the CSS, neither is measured.
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div>
+            <p class="lede">
+              A timeline is for a sequence where the interval carries meaning. If the gaps between
+              entries say nothing, this is a list — use one.
+            </p>
+            <div class="timeline">
+              <div class="event">
+                <span class="when">2026-08-04 · 21:08</span>
+                <span class="what">Report kit shipped with a five-series legend</span>
+                <span class="detail">
+                  <code>--chart-5</code> was never defined; the fifth bar rendered as a hole.
+                </span>
+              </div>
+              <div class="event is-warning">
+                <span class="when">2026-08-05 · 00:30</span>
+                <span class="what">Fold-in slot added</span>
+                <span class="detail">
+                  <code>--chart-other</code> resolves to a neutral, so "everything else" stops
+                  looking like a peer of the four.
+                </span>
+              </div>
+              <div class="event is-accent">
+                <span class="when">2026-08-05 · 00:31</span>
+                <span class="what">Line ladder and accent budget written down</span>
+                <span class="detail">
+                  Four line tiers replace elevation entirely. The accent becomes a signal with a
+                  budget rather than a texture.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ TABLES ══════════════════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Sortable, filterable, expandable — and still a table without script</h2>
+          <span class="note">.filter-bar · is-sortable · has-detail</span>
+        </div>
+        <p class="lede">
+          Type to filter, click a header to sort, click a row to expand it. Sorting is numeric
+          when a column's cells parse as numbers — otherwise "10" sorts before "9" and the table
+          quietly lies. With the script absent every row reads, every detail stays visible, and
+          the filter input is inert rather than broken.
+        </p>
+
+        <div class="filter-bar">
+          <input
+            type="search"
+            placeholder="Filter classes…"
+            aria-label="Filter classes"
+            data-filter-target="#classes"
+            data-filter-count="#class-count"
+          />
+          <span class="count"><span id="class-count">7</span> SHOWN</span>
+        </div>
+
+        <div class="table-wrap">
+          <table id="classes" class="is-sortable">
+            <thead>
+              <tr>
+                <th style="width: 150px">Class</th>
+                <th style="width: 110px">Layer</th>
+                <th style="width: 110px">Bytes</th>
+                <th style="width: 110px">Needs script</th>
+                <th>What it is for</th>
+                <th style="width: 120px" data-nosort>State</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="has-detail">
+                <td class="key">.tabs</td>
+                <td>base</td>
+                <td>1840</td>
+                <td>No</td>
+                <td>Alternate views of one finding</td>
+                <td><span class="chip is-accent">NEW</span></td>
+              </tr>
+              <tr class="detail">
+                <td colspan="6">
+                  Radio-driven. The script adds arrow keys and a real tablist role; it does not
+                  add the switching, which is why the panel still changes with JavaScript off.
+                </td>
+              </tr>
+
+              <tr class="has-detail">
+                <td class="key">.timeline</td>
+                <td>base</td>
+                <td>720</td>
+                <td>No</td>
+                <td>A sequence where the interval matters</td>
+                <td><span class="chip is-accent">NEW</span></td>
+              </tr>
+              <tr class="detail">
+                <td colspan="6">
+                  The spine is a left border on each event, transparent on the last one so it stops
+                  at the final mark instead of running off the end.
+                </td>
+              </tr>
+
+              <tr class="has-detail">
+                <td class="key">.meter</td>
+                <td>base</td>
+                <td>640</td>
+                <td>No</td>
+                <td>One number against its ceiling</td>
+                <td><span class="chip is-accent">NEW</span></td>
+              </tr>
+              <tr class="detail">
+                <td colspan="6">
+                  Takes <code>role="meter"</code> and the aria-value attributes. The threshold mark
+                  is positioned with <code>--at</code>, the fill sized with <code>--v</code>.
+                </td>
+              </tr>
+
+              <tr>
+                <td class="key">.table-wrap</td>
+                <td>base</td>
+                <td>980</td>
+                <td>No</td>
+                <td>Any tabular data — the wrapper is what scrolls</td>
+                <td><span class="chip">STABLE</span></td>
+              </tr>
+              <tr>
+                <td class="key">.chart</td>
+                <td>chart</td>
+                <td>7200</td>
+                <td>No</td>
+                <td>Data figures; tooltips are the opt-in part</td>
+                <td><span class="chip">STABLE</span></td>
+              </tr>
+              <tr>
+                <td class="key">.diagram</td>
+                <td>diagram</td>
+                <td>3900</td>
+                <td>No</td>
+                <td>Mechanism — four forms, no more</td>
+                <td><span class="chip">STABLE</span></td>
+              </tr>
+              <tr>
+                <td class="key">.scan-line</td>
+                <td>base</td>
+                <td>310</td>
+                <td>No</td>
+                <td>The CRT motif; decorative only</td>
+                <td><span class="chip is-warning">SPARING</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="callout is-warning" style="margin-block-start: 18px">
+          <strong>Bytes</strong> sorts numerically and <strong>State</strong> does not sort at all
+          — it carries <code>data-nosort</code>, because its order is severity, not alphabet.
+        </p>
+      </section>
+
+      <!-- ═══ CHARTS ══════════════════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Four series is the ceiling, and the accent is never one of them</h2>
+          <span class="note">thl.chart.css · opt-in · +7KB</span>
+        </div>
+        <p class="lede">
+          The accent measures OKLCH L 0.944 — far outside the band a categorical palette needs on a
+          dark ground — so it would dominate any chart it entered. It stays reserved for emphasis:
+          a highlighted mark, a target line, a sparkline endpoint. A fifth category folds into the
+          neutral <code>--chart-other</code>, which reads as "everything else" rather than as a
+          peer. All figures below are synthetic.
+        </p>
+
+        <!-- Tabs: the canonical use — a figure and the numbers under it -->
+        <div class="tabs">
+          <input class="tab-radio" type="radio" name="fig-tabs" id="fig-tabs-1" checked />
+          <input class="tab-radio" type="radio" name="fig-tabs" id="fig-tabs-2" />
+          <input class="tab-radio" type="radio" name="fig-tabs" id="fig-tabs-3" />
+          <div class="tab-list">
+            <label class="tab" for="fig-tabs-1">CHART</label>
+            <label class="tab" for="fig-tabs-2">DATA</label>
+            <label class="tab" for="fig-tabs-3">NOTES</label>
+          </div>
+          <div class="tab-panels">
+            <section class="tab-panel">
+              <figure class="chart">
+                <figcaption class="chart-title">Adoption by artifact — share of consumers</figcaption>
+                <div class="chart-legend">
+                  <span class="legend-item"
+                    ><span class="swatch-dot" style="background: var(--chart-1)"></span>Tokens</span
+                  >
+                  <span class="legend-item"
+                    ><span class="swatch-dot" style="background: var(--chart-2)"></span
+                    >Components</span
+                  >
+                  <span class="legend-item"
+                    ><span class="swatch-dot" style="background: var(--chart-3)"></span>Report
+                    kit</span
+                  >
+                  <span class="legend-item"
+                    ><span class="swatch-dot" style="background: var(--chart-4)"></span>Brand</span
+                  >
+                  <span class="legend-item"
+                    ><span class="swatch-dot" style="background: var(--chart-other)"></span
+                    >Other</span
+                  >
+                </div>
+                <svg
+                  viewBox="0 0 520 200"
+                  class="has-tooltip"
+                  role="img"
+                  aria-label="Bar chart of adoption share: tokens 92, report kit 74, components 61, brand 38, everything else 22 — only tokens clears the 80 percent target"
+                >
+                  <g class="grid">
+                    <line x1="44" y1="30" x2="510" y2="30" />
+                    <line x1="44" y1="65" x2="510" y2="65" />
+                    <line x1="44" y1="100" x2="510" y2="100" />
+                    <line x1="44" y1="135" x2="510" y2="135" />
+                  </g>
+                  <g class="axis">
+                    <text x="10" y="34">100</text>
+                    <text x="16" y="69">75</text>
+                    <text x="16" y="104">50</text>
+                    <text x="16" y="139">25</text>
+                    <text x="22" y="174">0</text>
+                  </g>
+                  <rect
+                    class="bar series-1"
+                    x="60"
+                    y="41"
+                    width="72"
+                    height="129"
+                    data-tip="<span class='k'>Tokens</span> <span class='v'>92%</span>"
+                  />
+                  <rect
+                    class="bar series-3"
+                    x="148"
+                    y="66"
+                    width="72"
+                    height="104"
+                    data-tip="<span class='k'>Report kit</span> <span class='v'>74%</span>"
+                  />
+                  <rect
+                    class="bar series-2"
+                    x="236"
+                    y="85"
+                    width="72"
+                    height="85"
+                    data-tip="<span class='k'>Components</span> <span class='v'>61%</span>"
+                  />
+                  <rect
+                    class="bar series-4"
+                    x="324"
+                    y="117"
+                    width="72"
+                    height="53"
+                    data-tip="<span class='k'>Brand</span> <span class='v'>38%</span>"
+                  />
+                  <rect
+                    class="bar series-other"
+                    x="412"
+                    y="139"
+                    width="72"
+                    height="31"
+                    data-tip="<span class='k'>Other</span> <span class='v'>22%</span>"
+                  />
+                  <line class="target-line" x1="44" y1="58" x2="510" y2="58" />
+                  <!-- Right-hand side, where the short bars are. Parked on the
+                       left it sat on top of the tallest bar — the exact
+                       collision the caption claims the placement avoids.
+                       Inside .axis so it takes chart.css's text rules and does
+                       not depend on the diagram layer being loaded. -->
+                  <g class="axis">
+                    <text x="404" y="52" style="fill: var(--color-accent)">TARGET 80</text>
+                  </g>
+                  <g class="axis">
+                    <line x1="44" y1="170" x2="510" y2="170" />
+                    <text x="72" y="190">TOKENS</text>
+                    <text x="158" y="190">KIT</text>
+                    <text x="240" y="190">COMPON</text>
+                    <text x="336" y="190">BRAND</text>
+                    <text x="428" y="190">OTHER</text>
+                  </g>
+                </svg>
+                <figcaption>
+                  The target sits where the data is not, so its label cannot collide with a bar.
+                  One dashed accent line is the whole accent spend in this figure.
+                </figcaption>
+              </figure>
+            </section>
+
+            <section class="tab-panel">
+              <div class="table-wrap">
+                <table class="is-sortable">
+                  <thead>
+                    <tr>
+                      <th>Artifact</th>
+                      <th>Share</th>
+                      <th>Against target</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="key">Tokens</td>
+                      <td>92</td>
+                      <td><span class="chip is-accent">+12</span></td>
+                    </tr>
+                    <tr>
+                      <td class="key">Report kit</td>
+                      <td>74</td>
+                      <td><span class="chip is-warning">−6</span></td>
+                    </tr>
+                    <tr>
+                      <td class="key">Components</td>
+                      <td>61</td>
+                      <td><span class="chip is-warning">−19</span></td>
+                    </tr>
+                    <tr>
+                      <td class="key">Brand</td>
+                      <td>38</td>
+                      <td><span class="chip is-critical">−42</span></td>
+                    </tr>
+                    <tr>
+                      <td class="key">Other</td>
+                      <td>22</td>
+                      <td><span class="chip">n/a</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style="margin-block-start: 14px">
+                This is what a tab is for. The figure shows the shape; the table gives the values
+                to anyone who needs them — including a screen-reader user, for whom the
+                <code>aria-label</code> alone would be a summary rather than the data.
+              </p>
+            </section>
+
+            <section class="tab-panel">
+              <p>
+                <strong>Label the gridlines.</strong> A chart without a value axis is a picture of
+                a trend, not a measurement.
+              </p>
+              <p style="margin-block-start: 12px">
+                <strong>Put the threshold where the data is not.</strong> A target label parked
+                next to the final point collides with it at the one moment it matters.
+              </p>
+              <p style="margin-block-start: 12px">
+                <strong>Order bars by value, not by category name</strong>, unless the category
+                order is itself the argument. The fold-in slot always sits last.
+              </p>
+            </section>
+          </div>
+        </div>
+
+        <!-- Stacked + line -->
+        <div class="cols" style="margin-block-start: 40px">
+          <figure class="chart">
+            <figcaption class="chart-title">Requests by tier — monthly, billions</figcaption>
+            <div class="chart-legend">
+              <span class="legend-item"
+                ><span class="swatch-dot" style="background: var(--chart-1)"></span>Edge</span
+              >
+              <span class="legend-item"
+                ><span class="swatch-dot" style="background: var(--chart-2)"></span>API</span
+              >
+              <span class="legend-item"
+                ><span class="swatch-dot" style="background: var(--chart-3)"></span>Batch</span
+              >
+              <span class="legend-item"
+                ><span class="swatch-dot" style="background: var(--chart-4)"></span>Internal</span
+              >
+            </div>
+            <svg
+              viewBox="0 0 520 200"
+              class="has-tooltip"
+              role="img"
+              aria-label="Stacked bars of monthly requests by tier across July, August and September; the total rises from 0.94 to 1.05 billion and every tier grows"
+            >
+              <g class="grid">
+                <line x1="44" y1="30" x2="510" y2="30" />
+                <line x1="44" y1="100" x2="510" y2="100" />
+              </g>
+              <g class="axis">
+                <text x="16" y="34">100</text>
+                <text x="22" y="104">50</text>
+                <text x="28" y="174">0</text>
+              </g>
+              <!-- One <g class="stack"> PER COLUMN. That is what applies the 2px
+                   ground-coloured gap between fills; one group around every
+                   segment looks identical and silently loses the separation. -->
+              <g class="stack">
+                <rect class="series-1" x="80" y="114" width="72" height="56" data-tip="<span class='k'>JUL Edge</span> <span class='v'>40</span>" />
+                <rect class="series-2" x="80" y="78" width="72" height="36" data-tip="<span class='k'>JUL API</span> <span class='v'>26</span>" />
+                <rect class="series-3" x="80" y="53" width="72" height="25" data-tip="<span class='k'>JUL Batch</span> <span class='v'>18</span>" />
+                <rect class="series-4" x="80" y="39" width="72" height="14" data-tip="<span class='k'>JUL Internal</span> <span class='v'>10</span>" />
+              </g>
+              <g class="stack">
+                <rect class="series-1" x="224" y="111" width="72" height="59" data-tip="<span class='k'>AUG Edge</span> <span class='v'>42</span>" />
+                <rect class="series-2" x="224" y="72" width="72" height="39" data-tip="<span class='k'>AUG API</span> <span class='v'>28</span>" />
+                <rect class="series-3" x="224" y="47" width="72" height="25" data-tip="<span class='k'>AUG Batch</span> <span class='v'>18</span>" />
+                <rect class="series-4" x="224" y="32" width="72" height="15" data-tip="<span class='k'>AUG Internal</span> <span class='v'>11</span>" />
+              </g>
+              <g class="stack">
+                <rect class="series-1" x="368" y="107" width="72" height="63" data-tip="<span class='k'>SEP Edge</span> <span class='v'>45</span>" />
+                <rect class="series-2" x="368" y="65" width="72" height="42" data-tip="<span class='k'>SEP API</span> <span class='v'>30</span>" />
+                <rect class="series-3" x="368" y="38" width="72" height="27" data-tip="<span class='k'>SEP Batch</span> <span class='v'>19</span>" />
+                <rect class="series-4" x="368" y="23" width="72" height="15" data-tip="<span class='k'>SEP Internal</span> <span class='v'>11</span>" />
+              </g>
+              <g class="axis">
+                <line x1="44" y1="170" x2="510" y2="170" />
+                <text x="98" y="190">JUL</text>
+                <text x="242" y="190">AUG</text>
+                <text x="386" y="190">SEP</text>
+              </g>
+            </svg>
+            <figcaption>Stacked — the total is the point and the parts explain it.</figcaption>
+          </figure>
+
+          <figure class="chart">
+            <figcaption class="chart-title">p99 latency against budget — weekly, ms</figcaption>
+            <svg
+              viewBox="0 0 520 200"
+              class="has-tooltip"
+              role="img"
+              aria-label="Line chart of weekly p99 latency rising from 340 to 412 milliseconds and crossing the 400 millisecond budget in the final two weeks"
+            >
+              <g class="grid">
+                <line x1="44" y1="50" x2="510" y2="50" />
+                <line x1="44" y1="140" x2="510" y2="140" />
+              </g>
+              <g class="axis">
+                <text x="10" y="54">450</text>
+                <text x="10" y="94">400</text>
+                <text x="10" y="144">350</text>
+              </g>
+              <polygon
+                class="area series-2"
+                points="70,150 128,146 186,138 244,128 302,112 360,102 418,86 476,78 476,170 70,170"
+              />
+              <polyline
+                class="line series-2"
+                points="70,150 128,146 186,138 244,128 302,112 360,102 418,86 476,78"
+              />
+              <line class="target-line" x1="44" y1="90" x2="510" y2="90" />
+              <g class="axis">
+                <text x="52" y="84" style="fill: var(--color-accent)">BUDGET 400</text>
+              </g>
+              <line class="chart-crosshair" x1="476" y1="30" x2="476" y2="170" />
+              <g class="series-2">
+                <circle class="dot" cx="70" cy="150" data-tip="<span class='k'>W1</span> <span class='v'>340ms</span>" />
+                <circle class="dot" cx="186" cy="138" data-tip="<span class='k'>W3</span> <span class='v'>352ms</span>" />
+                <circle class="dot" cx="302" cy="112" data-tip="<span class='k'>W5</span> <span class='v'>378ms</span>" />
+                <circle class="dot" cx="418" cy="86" data-tip="<span class='k'>W7</span> <span class='v'>404ms</span>" />
+              </g>
+              <circle
+                class="dot is-emphasis"
+                cx="476"
+                cy="78"
+                data-tip="<span class='k'>W8</span> <span class='v'>412ms — over budget</span>"
+              />
+              <g class="axis">
+                <line x1="44" y1="170" x2="510" y2="170" />
+                <text x="60" y="190">W1</text>
+                <text x="292" y="190">W5</text>
+                <text x="466" y="190">W8</text>
+              </g>
+            </svg>
+            <figcaption>
+              One series needs no legend — the title names it. Line, area and a crosshair on the
+              value being read. The accent appears exactly twice: the budget, and the breach.
+            </figcaption>
+          </figure>
+        </div>
+
+        <!-- Grouped + textured -->
+        <div class="cols" style="margin-block-start: 40px">
+          <figure class="chart">
+            <figcaption class="chart-title">Before and after, by layer — build seconds</figcaption>
+            <div class="chart-legend">
+              <span class="legend-item"
+                ><span class="swatch-dot" style="background: var(--chart-1)"></span>Before</span
+              >
+              <span class="legend-item"
+                ><span class="swatch-dot" style="background: var(--chart-2)"></span>After</span
+              >
+            </div>
+            <svg
+              viewBox="0 0 520 200"
+              role="img"
+              aria-label="Grouped bars comparing build seconds before and after by layer; three of four layers improved, components regressed"
+            >
+              <g class="grid">
+                <line x1="44" y1="30" x2="510" y2="30" />
+                <line x1="44" y1="100" x2="510" y2="100" />
+              </g>
+              <g class="axis">
+                <text x="22" y="34">100</text>
+                <text x="28" y="104">50</text>
+                <text x="34" y="174">0</text>
+              </g>
+              <rect class="bar series-1" x="70" y="83" width="44" height="87" />
+              <rect class="bar series-2" x="118" y="103" width="44" height="67" />
+              <rect class="bar series-1" x="180" y="93" width="44" height="77" />
+              <rect class="bar series-2" x="228" y="99" width="44" height="71" />
+              <rect class="bar series-1" x="290" y="71" width="44" height="99" />
+              <rect class="bar series-2" x="338" y="114" width="44" height="56" />
+              <rect class="bar series-1" x="400" y="108" width="44" height="62" />
+              <rect class="bar series-2" x="448" y="89" width="44" height="81" />
+              <g class="axis">
+                <line x1="44" y1="170" x2="510" y2="170" />
+                <text x="76" y="190">TOKENS</text>
+                <text x="192" y="190">DOCS</text>
+                <text x="296" y="190">REGISTRY</text>
+                <text x="400" y="190">COMPON</text>
+              </g>
+            </svg>
+            <figcaption>
+              Grouped — the comparison within each category is the point. The 2px gap between
+              adjacent fills is cut in the ground colour, so it reads as a gap rather than a rule.
+            </figcaption>
+          </figure>
+
+          <figure class="chart">
+            <figcaption class="chart-title">The same two series, textured</figcaption>
+            <svg
+              viewBox="0 0 520 200"
+              role="img"
+              aria-label="The same grouped bars with a diagonal texture applied to the second series, showing the pattern fallback for colour-blind readers, print and forced-colors mode"
+            >
+              <g class="grid">
+                <line x1="44" y1="30" x2="510" y2="30" />
+                <line x1="44" y1="100" x2="510" y2="100" />
+              </g>
+              <g class="axis">
+                <text x="22" y="34">100</text>
+                <text x="28" y="104">50</text>
+                <text x="34" y="174">0</text>
+              </g>
+              <rect class="bar series-1" x="70" y="83" width="44" height="87" />
+              <rect class="bar series-2 is-textured" x="118" y="103" width="44" height="67" />
+              <rect class="bar series-1" x="180" y="93" width="44" height="77" />
+              <rect class="bar series-2 is-textured" x="228" y="99" width="44" height="71" />
+              <rect class="bar series-1" x="290" y="71" width="44" height="99" />
+              <rect class="bar series-2 is-textured" x="338" y="114" width="44" height="56" />
+              <rect class="bar series-1" x="400" y="108" width="44" height="62" />
+              <rect class="bar series-2 is-textured" x="448" y="89" width="44" height="81" />
+              <g class="axis">
+                <line x1="44" y1="170" x2="510" y2="170" />
+                <text x="76" y="190">TOKENS</text>
+                <text x="192" y="190">DOCS</text>
+                <text x="296" y="190">REGISTRY</text>
+                <text x="400" y="190">COMPON</text>
+              </g>
+            </svg>
+            <figcaption>
+              <code>.is-textured</code> pairs with a series slot rather than replacing it. Reach
+              for it when the figure has to survive a photocopier or forced-colors mode.
+            </figcaption>
+          </figure>
+        </div>
+
+        <!-- Sequential / diverging / sparkline -->
+        <div class="cols" style="margin-block-start: 40px">
+          <div class="panel">
+            <h3>Sequential</h3>
+            <p>
+              Magnitude, not identity. One hue, monotone lightness — the reader ranks the steps
+              without a legend.
+            </p>
+            <div class="swatch-grid" style="grid-template-columns: repeat(5, 1fr); gap: 4px">
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-seq-1); block-size: 34px"></div>
+              </div>
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-seq-2); block-size: 34px"></div>
+              </div>
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-seq-3); block-size: 34px"></div>
+              </div>
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-seq-4); block-size: 34px"></div>
+              </div>
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-seq-5); block-size: 34px"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Diverging</h3>
+            <p>
+              Polarity around a meaningful centre. The midpoint is a neutral grey and never a hue —
+              a coloured middle invents a third category.
+            </p>
+            <div class="swatch-grid" style="grid-template-columns: repeat(5, 1fr); gap: 4px">
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-div-1); block-size: 34px"></div>
+              </div>
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-div-2); block-size: 34px"></div>
+              </div>
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-div-mid); block-size: 34px"></div>
+              </div>
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-div-4); block-size: 34px"></div>
+              </div>
+              <div class="swatch">
+                <div class="chip-color" style="background: var(--chart-div-5); block-size: 34px"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Sparkline</h3>
+            <p>
+              Shape at a glance, inside a sentence or a table cell. The endpoint is accented
+              because the last value is the one being read.
+            </p>
+            <p style="margin-block-start: 4px">
+              Weekly p99
+              <svg
+                class="sparkline"
+                viewBox="0 0 104 24"
+                style="inline-size: 104px"
+                role="img"
+                aria-label="Sparkline of weekly p99 latency, rising steadily across eight weeks"
+              >
+                <polyline
+                  class="line"
+                  fill="none"
+                  points="2,18 16,17 30,15 44,13 58,11 72,8 86,6 100,3"
+                />
+                <circle class="endpoint" cx="100" cy="3" r="2.5" />
+              </svg>
+              <span class="chip is-warning">+21%</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ DIAGRAMS ════════════════════════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>A diagram earns its place by showing a mechanism</h2>
+          <span class="note">thl.diagram.css · four forms · +4KB</span>
+        </div>
+        <p class="lede">
+          How something works, what depends on what, what is inside a boundary and what is outside
+          it. If it restates a list, it is decoration — and a list is better. Four forms cover
+          almost every document; each has a job, and using the wrong one is how a diagram ends up
+          saying only that things are connected.
+        </p>
+
+        <!-- FLOW -->
+        <figure class="diagram">
+          <svg
+            viewBox="0 0 1000 200"
+            role="img"
+            aria-label="Flow of the token pipeline from theme.css through the parser and emitters to six generated artifacts and four static bundles; theme.css is the only hand-authored stage"
+          >
+            <line class="d-rule" x1="30" y1="70" x2="970" y2="70" />
+
+            <rect class="d-node is-active" x="30" y="46" width="180" height="48" />
+            <text class="d-title is-active" x="46" y="66">THEME.CSS</text>
+            <text class="d-sub" x="46" y="82">hand-authored</text>
+            <text class="d-title is-active" x="46" y="132">1 file</text>
+            <rect x="30" y="144" width="180" height="6" style="fill: var(--color-accent)" />
+
+            <rect class="d-node" x="240" y="46" width="180" height="48" />
+            <text class="d-title" x="256" y="66">PARSE</text>
+            <text class="d-sub" x="256" y="82">hand-rolled parser</text>
+            <text class="d-label" x="256" y="132">40 tokens</text>
+            <rect x="240" y="144" width="180" height="6" style="fill: var(--color-line)" />
+
+            <rect class="d-node" x="450" y="46" width="180" height="48" />
+            <text class="d-title" x="466" y="66">EMIT</text>
+            <text class="d-sub" x="466" y="82">six targets</text>
+            <text class="d-label" x="466" y="132">ts · css · json</text>
+            <rect x="450" y="144" width="180" height="6" style="fill: var(--color-line)" />
+
+            <rect class="d-node" x="660" y="46" width="180" height="48" />
+            <text class="d-title" x="676" y="66">BUNDLE</text>
+            <text class="d-sub" x="676" y="82">static tier</text>
+            <text class="d-label" x="676" y="132">4 files · 39KB</text>
+            <rect x="660" y="144" width="180" height="6" style="fill: var(--color-line)" />
+
+            <rect class="d-node" x="870" y="46" width="100" height="48" />
+            <text class="d-title" x="886" y="66">DOC</text>
+            <text class="d-sub" x="886" y="82">this page</text>
+
+            <text class="d-axis-label" x="30" y="180">
+              HAND-AUTHORED SURFACE — ONE FILE, EVERYTHING DOWNSTREAM GENERATED
+            </text>
+          </svg>
+          <figcaption>
+            <strong>Flow</strong> — for when the order is causal rather than merely sequential. The
+            band underneath is the useful part: it carries what each stage costs, so the diagram
+            answers <em>where</em> and not just <em>what</em>.
+          </figcaption>
+        </figure>
+
+        <!-- ANATOMY -->
+        <figure class="diagram" style="margin-block-start: 24px">
+          <svg
+            viewBox="0 0 1000 250"
+            role="img"
+            aria-label="Anatomy showing the report kit covers reports, audits, specs and dashboards, while forms, navigation, application state and light mode sit outside it and are not provided"
+          >
+            <text class="d-axis-label" x="24" y="22">EVERY DOCUMENT A PROJECT MIGHT NEED</text>
+            <rect class="d-node" x="24" y="34" width="952" height="196" />
+
+            <rect
+              x="46"
+              y="60"
+              width="300"
+              height="54"
+              style="fill: color-mix(in srgb, var(--color-accent) 12%, transparent); stroke: var(--color-accent)"
+            />
+            <text class="d-title is-active" x="64" y="82">report · audit · spec · dashboard</text>
+            <text class="d-sub" x="64" y="100">styled by construction, no build step</text>
+            <text class="d-title is-active" x="46" y="140">▲ WHAT THE KIT COVERS</text>
+            <line x1="46" y1="150" x2="346" y2="150" style="stroke: var(--color-accent)" />
+
+            <g class="d-node is-ghost">
+              <rect x="386" y="60" width="280" height="44" />
+              <rect x="386" y="116" width="280" height="44" />
+              <rect x="700" y="60" width="276" height="44" />
+              <rect x="700" y="116" width="276" height="44" />
+            </g>
+            <g>
+              <text class="d-sub" x="404" y="80">forms and inputs</text>
+              <text class="d-sub" x="404" y="96">a document does not collect data</text>
+              <text class="d-sub" x="404" y="136">navigation</text>
+              <text class="d-sub" x="404" y="152">standalone pages have nowhere to go</text>
+              <text class="d-sub" x="718" y="80">application state</text>
+              <text class="d-sub" x="718" y="96">no router, no store, no lifecycle</text>
+              <text class="d-sub" x="718" y="136">light mode</text>
+              <text class="d-sub" x="718" y="152">deferred by policy, not forgotten</text>
+            </g>
+            <text class="d-sub" x="386" y="184">▲ WHAT IT DELIBERATELY DOES NOT</text>
+            <line class="d-rule is-soft" x1="386" y1="192" x2="976" y2="192" />
+
+            <text class="d-title" x="46" y="216">
+              The boundary is the argument: a report kit that grew inputs would be a UI library.
+            </text>
+          </svg>
+          <figcaption>
+            <strong>Anatomy</strong> — the strongest way to draw a scope or a blind spot. The boxes
+            on the right are dashed because they exist in the problem but not in the kit. A dashed
+            ghost box says "absent" and nothing else; never use dashes for emphasis.
+          </figcaption>
+        </figure>
+
+        <!-- GRAPH + FIELD -->
+        <div class="cols" style="margin-block-start: 24px">
+          <figure class="diagram">
+            <svg
+              viewBox="0 0 640 260"
+              role="img"
+              aria-label="Dependency graph showing theme.css must be generated before the bundles, the bundles before the catalogue, and the registry only after the bundles exist; the docs app depends softly on the catalogue"
+            >
+              <text class="d-axis-label" x="20" y="20">BUILD ORDER — SOLID EDGES ARE FORCED</text>
+
+              <rect class="d-node is-active" x="20" y="44" width="150" height="42" />
+              <text class="d-title is-active" x="34" y="70">theme.css</text>
+
+              <path class="d-edge is-hard" d="M170 65 L 250 65" />
+              <path class="d-edge is-hard" d="M244 60 L 254 65 L 244 70 Z" />
+
+              <rect class="d-node" x="254" y="44" width="150" height="42" />
+              <text class="d-title" x="268" y="70">generated/</text>
+
+              <path class="d-edge is-hard" d="M329 86 L 329 134" />
+              <path class="d-edge is-hard" d="M324 128 L 329 138 L 334 128 Z" />
+
+              <rect class="d-node" x="254" y="138" width="150" height="42" />
+              <text class="d-title" x="268" y="164">thl.*.css</text>
+
+              <path class="d-edge is-hard" d="M254 159 L 180 159" />
+              <path class="d-edge is-hard" d="M186 154 L 176 159 L 186 164 Z" />
+
+              <rect class="d-node" x="20" y="138" width="150" height="42" />
+              <text class="d-title" x="34" y="164">catalog.html</text>
+
+              <path class="d-edge is-hard" d="M404 159 L 470 159" />
+              <path class="d-edge is-hard" d="M464 154 L 474 159 L 464 164 Z" />
+
+              <rect class="d-node" x="474" y="138" width="146" height="42" />
+              <text class="d-title" x="488" y="164">registry</text>
+
+              <path class="d-edge" d="M95 180 L 95 214 L 470 214" stroke-dasharray="4 4" />
+              <rect class="d-node" x="474" y="196" width="146" height="38" />
+              <text class="d-sub" x="488" y="220">apps/docs</text>
+
+              <text class="d-sub" x="20" y="252">
+                Dashed: the docs app renders the catalogue but does not gate on it.
+              </text>
+            </svg>
+            <figcaption>
+              <strong>Graph</strong> — for when the point is that the order is <em>forced</em>. If
+              every edge looks the same, the diagram is only saying that things are connected.
+            </figcaption>
+          </figure>
+
+          <figure class="diagram">
+            <svg
+              viewBox="0 0 640 260"
+              role="img"
+              aria-label="Field plot placing kit primitives by how often they are needed against how costly they are to hand-roll; tables and charts are frequent and expensive, so they ship first"
+            >
+              <rect class="d-quadrant" x="330" y="30" width="290" height="95" />
+
+              <line class="d-rule" x1="40" y1="220" x2="620" y2="220" />
+              <line class="d-rule" x1="330" y1="20" x2="330" y2="220" />
+              <line class="d-rule is-soft" x1="40" y1="125" x2="620" y2="125" />
+
+              <text class="d-axis-label" x="40" y="240">RARELY NEEDED →→→ NEEDED IN EVERY DOC</text>
+              <text class="d-axis-label" x="44" y="18">COSTLY TO HAND-ROLL</text>
+              <text class="d-axis-label" x="44" y="214">CHEAP TO HAND-ROLL</text>
+
+              <text class="d-title is-active" x="344" y="48">SHIP FIRST</text>
+              <text class="d-sub" x="344" y="112">defer</text>
+              <text class="d-sub" x="52" y="48">build only on demand</text>
+              <text class="d-sub" x="52" y="112">never — inline it</text>
+
+              <circle class="d-dot is-accent" cx="470" cy="62" />
+              <text class="d-sub" x="482" y="66">charts</text>
+              <circle class="d-dot is-accent" cx="420" cy="88" />
+              <text class="d-sub" x="432" y="92">tables</text>
+              <circle class="d-dot is-accent" cx="540" cy="76" />
+              <text class="d-sub" x="552" y="80">diagrams</text>
+              <circle class="d-dot is-muted" cx="390" cy="150" />
+              <text class="d-sub" x="402" y="154">chips</text>
+              <circle class="d-dot is-muted" cx="450" cy="178" />
+              <text class="d-sub" x="462" y="182">rules</text>
+              <circle class="d-dot is-warning" cx="250" cy="70" />
+              <text class="d-sub" x="262" y="74">tabs</text>
+              <circle class="d-dot is-muted" cx="180" cy="168" />
+              <text class="d-sub" x="192" y="172">scan-line</text>
+            </svg>
+            <figcaption>
+              <strong>Field</strong> — for placing many items at once, when the placement itself is
+              the argument. Label the quadrants with verbs. Tabs sit left of centre: not every
+              document needs them, but the ones that do cannot hand-roll them accessibly.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ═══ SPEC LIST · SWATCHES · CODE ═════════════════════════════════ -->
+      <section class="section">
+        <div class="section-head">
+          <h2>Reference forms</h2>
+          <span class="note">.spec-list · .swatch-grid · pre · .tree · .scan-line</span>
+        </div>
+
+        <p class="margin-note">
+          A margin note glosses; a footnote sources. Below 1180px this drops back into the flow as
+          an indented block, which is a fine second state.
+        </p>
+
+        <dl class="spec-list">
+          <dt>System</dt>
+          <dd>human-laboratory</dd>
+          <dt>Namespace</dt>
+          <dd>@thl</dd>
+          <dt>Theming</dt>
+          <dd>Dark only, by policy<a class="fn-ref" href="#fn-1" id="fn-1-ref">[1]</a></dd>
+          <dt>Radius</dt>
+          <dd>0 everywhere — a constraint, not an omission</dd>
+          <dt>Surface fill</dt>
+          <dd>None. Every boundary is a line<a class="fn-ref" href="#fn-2" id="fn-2-ref">[2]</a></dd>
+        </dl>
+
+        <div class="swatch-grid" style="margin-block-start: 28px">
+          <div class="swatch">
+            <div class="chip-color" style="background: var(--color-canvas)"></div>
+            <div class="meta"><span>CANVAS</span><span class="v">#0F0F0F</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip-color" style="background: var(--color-accent)"></div>
+            <div class="meta"><span>ACCENT</span><span class="v">#DFFF00</span></div>
+          </div>
+          <div class="swatch">
+            <div class="chip-color" style="background: var(--color-critical)"></div>
+            <div class="meta"><span>CRITICAL</span><span class="v">#FF4A4A</span></div>
+          </div>
+          <!-- Success has no token of its own: it IS the accent. Drawn rather than
+               left blank, because an empty bordered box reads as a missing asset
+               instead of as a statement. `.is-absent` marks it as "no separate
+               value", and the chip shows what it resolves to. -->
+          <div class="swatch is-absent">
+            <div class="chip-color" style="background: var(--color-accent)"></div>
+            <div class="meta"><span>SUCCESS</span><span class="v">= accent</span></div>
+          </div>
+        </div>
+
+        <div class="cols" style="margin-block-start: 28px">
+          <div>
+            <p class="lede">
+              Inline <code>--color-accent</code> reads as code — a register, not a signal. Blocks
+              scroll rather than widening the page.
+            </p>
+            <pre class="tree"><b>systems/human-laboratory/static/</b>
+├── parts/           <u>authored — edit these</u>
+│   ├── components.css
+│   ├── chart.css
+│   ├── diagram.css
+│   └── interact.js
+├── <i>thl.css</i>          <u>generated — never edit</u>
+└── catalog.html     <u>this page</u></pre>
+          </div>
+
+          <div class="panel" style="position: relative; overflow: hidden">
+            <div class="scan-line"></div>
+            <h3>The scan line</h3>
+            <p>
+              The CRT motif. Decorative, so it is an empty element with nothing for a screen reader
+              to announce, and it stops moving under <code>prefers-reduced-motion</code>. It needs a
+              positioned parent.
+            </p>
+            <p>
+              Spend it once per document at most. It is the loudest thing the kit ships and it
+              carries no information.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="footnotes">
+        <ol>
+          <li id="fn-1">
+            Deferred rather than forgotten — the role layer is what would make adding a light theme
+            small. No date is attached to it.
+            <a class="fn-ref" href="#fn-1-ref">↩</a>
+          </li>
+          <li id="fn-2">
+            A surface fill measured 1.03:1 against this canvas and never rendered. Pure black
+            reaches only 1.14:1, so a panel cannot be made perceptibly darker on this ground.
+            <a class="fn-ref" href="#fn-2-ref">↩</a>
+          </li>
+        </ol>
+      </div>
+
+      <footer class="report-footer">
+        <span>THE_HUMAN_LABORATORY // REPORT_KIT // CATALOG</span>
+        <span>STATUS: <span style="color: var(--color-accent)">NOMINAL</span></span>
+      </footer>
+    </div>
+
+    <!-- Optional. Everything above already works without it: tabs switch, tables
+         read, detail rows stay visible, charts render. This adds sorting,
+         filtering, row expansion, chart tooltips and arrow-key tabs. -->
+    <script src="./thl.interact.js"></script>
+  </body>
+</html>

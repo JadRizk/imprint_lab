@@ -1,0 +1,34 @@
+{
+  "name": "docs",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run sync:static && next dev --port 3001",
+    "build": "bun run sync:static && bun run registry:build && next build",
+    "start": "next start",
+    "lint": "biome check .",
+    "check-types": "next typegen && tsc --noEmit",
+    "registry:build": "node scripts/build-registries.mjs",
+    "sync:static": "node scripts/sync-static.mjs"
+  },
+  "dependencies": {
+    "@thl/tokens": "*",
+    "@thl/ui": "*",
+    "lucide-react": "^0.563.0",
+    "marked": "^18.0.9",
+    "next": "16.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^22.15.3",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "shadcn": "^3.5.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "5.9.2"
+  }
+}

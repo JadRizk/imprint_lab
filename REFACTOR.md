@@ -1,0 +1,672 @@
+# REFACTOR.md — `imprint_lab`
+
+Working spec for turning this repo from *a portfolio that contains a design system* into
+**a house that publishes several**. The Human Laboratory becomes inhabitant #1, not the trunk.
+
+Companion report: the rendered version of this plan lives as an artifact. This file is the
+one that executes — each phase below is a session's worth of work.
+
+**Baseline commit:** `47588b3` (contrast floor, closed type scale, unified primitives)
+
+---
+
+## 0. How to use this document
+
+Each phase is one session. Start it with:
+
+> Execute Phase `<N>` from `REFACTOR.md`.
+
+Then **stop**. Do not chain phases. The verification for each phase must pass and be reviewed
+before the next begins — the failure mode this avoids is a subtle loss in an early phase
+becoming archaeology by a later one.
+
+One branch and one commit per phase, so any phase reverts without unwinding the others.
+
+---
+
+## 1. Current state
+
+Already landed in `47588b3`, so **not** to-do items:
+
+- `--text-*` is reset and the scale is explicit and closed, including `--text-micro` (10px).
+- `--tracking-label` (0.2em) exists; stop hand-picking `tracking-widest` for eyebrows.
+- `--color-ambient` `#3A3A3A` exists as a **decoration-only** token.
+- `--color-text-tertiary` raised to `#7C7C7C` (4.59:1) so labels clear the contrast floor.
+- `--color-text` `#8E8E93` removed — it had no consumers.
+- `cn()` carries an `extendTailwindMerge` config; custom scale names must be registered there
+  or `tailwind-merge` silently drops colours that collide with font sizes.
+- `PageShell` and `SectionHeader` exist as layout primitives.
+
+Components in scope for the port: `Button`, `BentoCard`, `BentoGrid`, `ImageFrame`,
+`PageShell`, `SectionHeader`.
+
+### Resolved — why token CSS is excluded from Biome
+
+The old config excluded `packages/tailwind-config` wholesale, which read like a preference.
+It isn't: **Biome 2.2's CSS parser cannot parse Tailwind v4's namespace-reset syntax.**
+
+```
+--color-*: initial;
+          ^ expected `,` but instead found `*`
+```
+
+One such line cascades into 399 parse errors across the file. `noUnknownAtRules: off` does not
+help — that silences a *lint* rule, while this fails in the *parser*. `@theme`, `@utility` and
+`--text-x--line-height` all parse fine on their own; the asterisk is the sole blocker.
+
+So the exclusion is now narrow and reasoned, rather than a whole dark directory:
+
+| Excluded | Why |
+|---|---|
+| `systems/*/tokens/theme.css` | Parser limitation above. Revisit when Biome supports it. |
+| `systems/*/tokens/tokens.generated.ts`, `systems/*/tokens/generated` | Generated. Formatting them churns — verified: the formatter's output is reverted by the next `generate:tokens` run. |
+| `.refactor` | Captured build output, not source. |
+
+Everything else in `tokens/` is now linted, including `base.css` — which the old blanket
+exclusion had been hiding.
+
+---
+
+## 2. Target structure
+
+```
+imprint_lab/
+├── systems/                          # self-contained · no cross-imports between systems
+│   └── human-laboratory/
+│       ├── registry.json             # namespace @thl · registry:style · extends: none
+│       ├── tokens/
+│       │   ├── theme.css             # SOURCE OF TRUTH — primitives + roles
+│       │   ├── base.css              # opinions, selector-scopable
+│       │   └── generated/            # never hand-edited
+│       │       ├── theme.scoped.css  # [data-system="…"] — for apps/docs
+│       │       ├── tokens.css        # plain :root — for HTML reports
+│       │       ├── tokens.json       # DTCG — for Figma
+│       │       ├── tokens.ts         # typed — for docs tables
+│       │       └── tw-merge.ts       # extendTailwindMerge config
+│       ├── ui/                       # React · roles only · lint-enforced
+│       ├── static/                   # pure HTML/CSS tier
+│       │   ├── thl.css               # tokens + base + ~15 primitives · zero deps
+│       │   ├── thl.fonts.css         # optional · Space Grotesk as data URI
+│       │   ├── thl.chart.css         # axes · grids · series palette · sparklines
+│       │   ├── catalog.html          # every class rendered · copy-paste ready
+│       │   ├── report.html           # starter skeleton
+│       │   └── SKILL.md              # agent instructions
+│       ├── brand/                    # wordmark · favicon · OG card
+│       ├── BRAND.md
+│       └── SKILL.md
+├── packages/
+│   ├── token-tools/                  # parser + 5 emitters · shared day one
+│   ├── system-template/              # scaffold for `bun run new-system`
+│   └── typescript-config/
+└── apps/
+    └── docs/                         # THE SHOWCASE — every system in its own skin — and registry host
+```
+
+There is deliberately **no `packages/core`**. The shared component layer is the abstraction we
+would get wrong today; designed now it would be The Human Laboratory wearing a generic name.
+Rule of two — wait for system 02 to say what is actually common.
+
+---
+
+## 3. The four contracts
+
+These are what make this a collection rather than four forks. They migrate into `CLAUDE.md`
+as each phase lands (see §7).
+
+### 3.1 Components speak roles, never primitives
+
+Anything in `systems/*/ui/` may reference only role tokens — `bg-canvas`, `text-accent`,
+`border-line`. Never `bg-lime`. App code and one-off compositions stay free to use primitives.
+
+**A Biome rule fails the build on violation.** Without enforcement this is a wish.
+
+### 3.2 The system version is the atomic unit
+
+Tokens and components ship together at one version. A consumer adopts a version deliberately
+rather than receiving token updates live — otherwise a role rename breaks every project
+silently, which is unacceptable once systems evolve on their own timelines.
+
+### 3.3 Decoration and text are different roles
+
+`--color-ambient` is for grid overlays, idle brackets, rules. **Never text.** Text roles carry
+a 4.5:1 floor against the canvas. Every system feels the pull to dim a label until it
+disappears; splitting the tokens makes that impossible rather than merely discouraged.
+
+### 3.4 Base layers must be scopable
+
+`base.css` rules are authored so they can bind to either `:root` or `[data-system="…"]`.
+Otherwise THL's crosshair cursor follows you into system 02's documentation. **Enforced from
+system #1** — retrofitting across four is miserable.
+
+---
+
+## 4. Role vocabulary v1
+
+Reverse-engineered from what the six components actually reference. **Expected to need revision
+when system 02 arrives** — a system built on elevation rather than borders will want shadow
+roles THL has no use for. That revision is cheap precisely because only `ui/` touches these.
+
+| Role | Utility | THL maps to | Job |
+|---|---|---|---|
+| `--color-canvas` | `bg-canvas` | obsidian `#0F0F0F` | Page ground |
+| `--color-surface` | `bg-surface` | `#0A0A0A` | Panels, table headers, insets |
+| `--color-line` | `border-line` | steel `#333333` | Structural hairline |
+| `--color-ambient` | `border-ambient` | `#3A3A3A` | Decoration only. **Never text.** |
+| `--color-ink` | `text-ink` | white `#FFFFFF` | Headings, emphasis |
+| `--color-ink-muted` | `text-ink-muted` | `#A3A3A3` · 7.62:1 | Body copy |
+| `--color-ink-subtle` | `text-ink-subtle` | `#7C7C7C` · 4.59:1 | Labels, metadata, eyebrows |
+| `--color-accent` | `bg-accent` `text-accent` | lime `#DFFF00` | Signal — **and success** |
+| `--color-accent-ink` | `text-accent-ink` | black `#000000` | Text on the accent |
+| `--color-critical` | `text-critical` | `#FF4A4A` | **New.** Errors, destructive |
+| `--color-warning` | `text-warning` | `#FF8A00` | **New.** Orange, not amber |
+
+**Success has no token.** The codebase already renders `NOMINAL`, `RENDERING` and
+`IMG_SRC_LOADED` in lime. A green would duplicate that and collide with the accent.
+
+**Warning is orange, not amber.** Amber sits too close to lime's yellow-green on a dark ground
+and reads as accent. Permanent constraint of a lime-accented system, not a preference.
+
+Non-colour roles: declare `--radius-*` explicitly as `0` (so system 02 can be rounded without
+restructuring). `--text-*`, `--tracking-label`, `--font-sans` / `--font-mono` already landed.
+
+Shadows stay **primitives** — `--shadow-lime-glow` names an appearance, not a job. Roles-only
+components simply do not use them. Same for the `.scan-line` utility.
+
+---
+
+## 5. Phases
+
+### Phase 00 — Prerequisite ✅ CLEARED
+
+The contrast/type-scale/layout-primitive work landed in `47588b3`. Nothing blocks Phase 01.
+
+### Phase 01 — Restructure
+
+Move everything, change nothing.
+
+- Rename the repo to `imprint_lab`.
+- `packages/tailwind-config/` → `systems/human-laboratory/tokens/`
+- `packages/ui/src/` → `systems/human-laboratory/ui/`
+- Split `theme.css` into `theme.css` (tokens) + `base.css` (opinions).
+- Scaffold `packages/token-tools/` around the existing generator, logic unchanged for now.
+- Use `git mv` so history follows.
+
+> **Claim:** nothing changed but paths.
+> **Falsify it:** diff the baseline capture (§6) against the same routes afterwards. Any delta
+> means an import or token was lost. `git log --follow` must still trace every moved file.
+
+### Phase 02 — Role layer ✅ DONE
+
+Nine role tokens added; `--color-surface` and `--color-ambient` already carried role names and
+role semantics, so aliasing them to themselves would have added a second name for one idea.
+Eleven roles total. `--color-critical` and `--color-warning` hold literals rather than aliases —
+this system has no appearance-name for either hue, and one consumer does not earn a primitive.
+
+**Reversal: `--radius-*` was not declared.** The plan called for declaring it as `0` for the
+sake of system 02. But **zero components use `rounded-*`** — so there is nothing to restructure
+later, and five tokens with no consumers is exactly the speculative abstraction Standing Judgment
+3 exists to prevent. The first component that needs a radius is when the token gets added.
+
+**Finding: Tailwind v4 tree-shakes unused theme variables.** The first verification pass reported
+a clean diff, which looked like success and was actually vacuous — the roles had been defined but
+never emitted, because nothing referenced them. Adopting `@theme static` fixes this, and it is
+the right default for a design system rather than a workaround:
+
+- The tokens are a *contract*. Hand-authored CSS must be able to rely on a variable existing.
+- This was already a latent bug: `image-frame.module.css` reads `var(--color-ambient)` and only
+  works today because an unrelated `border-ambient` utility happens to be used elsewhere. Remove
+  that utility and the CSS module silently loses its colour.
+- Phase 05's `[data-system]` scoping needs every role present regardless of use.
+- Cost is ~1KB for 36 tokens.
+
+The tenth token to appear in the diff was `--shadow-lime-glow-lg` — defined in `theme.css` since
+before this refactor and never once delivered to a browser. That is the tree-shaking finding
+confirming itself.
+
+`@theme` may now carry options, so `token-tools` matches `@theme(\s+[a-z]+)*` rather than
+`@theme\s*` — caught by the build failing, not by inspection.
+
+> **Claim:** roles alias primitives exactly, and nothing consumes them yet.
+> **Verified:** all seven aliasing roles emit as `var(--color-<primitive>)` and each primitive
+> resolves to its expected hex. `utilities.txt` identical at 279 — no component uses a role yet.
+> `tokens.txt` +10, **zero removals or changes**. Additions-only is the correct shape for this
+> phase; a modification would mean a role had overwritten a primitive.
+
+### Phase 03 — Pipeline ✅ DONE
+
+`packages/token-tools` now parses `theme.css` into a token model and emits five artifacts into
+`systems/<system>/tokens/generated/`:
+
+| Artifact | For |
+|---|---|
+| `tokens.ts` | docs tables, introspection |
+| `tokens.css` | plain `:root` — what an HTML report inlines |
+| `theme.scoped.css` | `[data-system="…"]` — per-system skinning in `apps/docs` |
+| `tokens.json` | W3C DTCG — Figma, Style Dictionary |
+| `tw-merge.ts` | `extendTailwindMerge` config, consumed by `cn()` |
+
+**Deviation: lightningcss is not used.** It parses `theme.css` without complaint, but treats
+`@theme` as an unknown at-rule — a `Declaration` visitor sees **zero** custom properties inside
+it, and `--color-*` is re-emitted as `--color- * `. A real CSS parser buys nothing here. What it
+would have bought is robustness against comments and multi-line values, and `lib/parse.mjs`
+handles both directly: comments stripped, declarations split on `;` at brace depth zero.
+
+`var()` chains resolve only for tokens this file defines. `--font-sans: var(--font-sans-face,
+sans-serif)` survives intact, because `--font-sans-face` is the consumer's contract and
+flattening it to the fallback would break font wiring.
+
+`cn()` no longer hand-keeps its scale list — it imports the generated config, so adding a scale
+value to `theme.css` registers it automatically. Emitting the whole scale rather than a diff
+against Tailwind's defaults: redundancy is harmless, omission is the bug.
+
+> **Claim:** the five emitters agree with the source.
+> **Verified:**
+> - Old `tokens.generated.ts` vs new `tokens.ts`: 36 tokens both sides, **zero changed, zero
+>   added** — every name→value pair preserved across the rewrite.
+> - `tokens.css` vs browser-computed values: **45 exact, 2 equivalent** (`rgba(223,255,0,0.3)`
+>   against `#dfff004d` — Lightning CSS's minifier, same colour).
+> - `cn()` behaviour tested directly, since a class-merge regression would never show up in a
+>   CSS diff: `text-micro text-lime` keeps both, competing sizes and colours resolve last-wins.
+> - `capture.sh --compare` unchanged at 120 / 279.
+>
+> **Bug the cross-check caught:** `tokens.css` was emitting `--text-micro: 0.625rem / 1rem`. That
+> folding is a docs-table convenience, and as CSS it is an invalid font size — every report
+> inlining the file would have had a broken type scale. The CSS emitters now take raw
+> declarations rather than the token model.
+
+### ⏸ CHECKPOINT — review the role vocabulary before components move
+
+Phases 01–03 are mechanical and interlocking, so they may run as one session. **Stop here.**
+Renaming a role after Phase 04 means sweeping six components; before it, it is a one-line edit.
+
+### Phase 04 — Port ✅ DONE
+
+All six components reference roles only, enforced by `packages/token-tools/check-roles.mjs`,
+wired into `@thl/ui`'s lint script and therefore into `turbo lint`.
+
+**The rule is not a Biome rule.** Biome 2.2 has no restricted-class lint, and a GritQL plugin
+would still need the banned list hand-kept. `check-roles` instead derives it from `theme.css`:
+any colour or shadow token that is not a declared role is banned inside `systems/*/ui/`. Add a
+primitive to `theme.css` and it is guarded automatically. It catches both Tailwind utilities
+(including `hover:` / `group-hover:` variants) and raw `var(--color-…)` in CSS modules.
+
+**The ImageFrame judgment call, resolved by adding one role.** `image-frame.module.css` reached
+straight for `--shadow-lime-glow`. Under the naming test that is a primitive — it describes an
+appearance. But the *job* it does, emphasis on an active or growing edge, is something another
+system would express differently or set to `none`. Without a role for it, ImageFrame could not
+be ported at all. So `--shadow-glow: var(--shadow-lime-glow)` — one role, two consumers, earning
+its place under Standing Judgment 3.
+
+**Also corrected here:** `--color-surface` and `--color-ambient` were still classified `semantic`
+by the generator while `theme.css` described them as roles. They are roles. The tiers are now
+5 core / 11 role / 2 semantic, and the two remaining semantics
+(`--color-text-secondary`, `--color-text-tertiary`) are superseded by `ink-muted` / `ink-subtle`
+and can go once app code stops using them.
+
+> **Claim:** roles-only changed nothing visible.
+> **Verified:**
+> - The rule was watched failing **before** the port: 43 violations across every component.
+>   Afterwards, zero. Then a single deliberate `bg-lime` was reintroduced and it failed with
+>   exit 1 naming `button.tsx:23` — a rule that has only ever passed has not been tested.
+> - Utility diff is a clean rename: 7 primitive utilities no longer generated, 14 role
+>   utilities in their place. Asymmetric because app code may still use primitives, so some
+>   generate under both names.
+> - **All 8 renamed utilities compute byte-identical values** (`bg-obsidian`/`bg-canvas` both
+>   `#0f0f0f`, and so on), resolved through the var() chains in the served CSS. `--shadow-glow`
+>   resolves to the same value as `--shadow-lime-glow`.
+> - `tokens.txt` gained exactly one entry: `--shadow-glow`.
+
+### Phase 4.5 — Report kit ✅ DONE (one test outstanding)
+
+`systems/human-laboratory/static/` — hand-authored parts in `parts/`, bundles generated by
+`token-tools` so the tokens keep exactly one source:
+
+| File | Size | Notes |
+|---|---|---|
+| `thl.css` | ~14KB | tokens + reset + ~15 primitives, zero deps, inline-able |
+| `thl.chart.css` | ~6KB | opt-in chart layer |
+| `thl.fonts.css` | ~116KB | Space Grotesk 700 as a data URI (SIL OFL) |
+| `catalog.html` | — | every class rendered, copy-paste ready |
+| `report.html` | — | starter skeleton |
+| `SKILL.md` | — | agent instructions: wiring, vocabulary, voice, chart rules |
+
+Registered as `@thl/report-kit` in `registry.json`.
+
+**The accent cannot be a chart series colour.** `--color-accent` measures OKLCH L 0.944 — far
+outside the 0.48–0.67 band a categorical palette needs on a dark ground. That is not a
+preference; the validator fails it. So the accent stays reserved for emphasis (a highlighted
+mark, a target line, a sparkline endpoint), which also resolves the original worry that every
+series would read as "the accent". `--color-critical` and `--color-warning` are status and are
+never reused as series.
+
+The five series were generated in OKLCH and validated rather than chosen by eye — the first four
+palettes tried all failed, most on blue↔purple collapsing under deuteranopia at ΔE 1.1. The
+shipped set passes all five checks against **both** surfaces: lightness band, chroma floor, CVD
+separation (worst adjacent ΔE 8.2 protan), normal-vision floor (17.9), contrast ≥3:1. Sequential
+and diverging ramps validated separately.
+
+**Deviation:** the general guidance calls for 4px rounded data-ends. This system resets
+`--radius-*` and every surface in it is hard-edged, so marks are square. The design system's
+parameter beats the default.
+
+> **Claim:** an agent can use it cold.
+> **Automated so far:** every class used in `catalog.html` and `report.html` resolves to a
+> definition in the bundles — zero undefined. Lint, build and types pass.
+> **⚠ Outstanding — the test that actually matters:** open a fresh project with only `thl.css`
+> and `SKILL.md`, no conversation history, and ask for a report. If the output is not
+> recognisably The Human Laboratory, `SKILL.md` is wrong, not the agent. This is a judgment call
+> and has not been run.
+> **⚠ Also outstanding:** no visual check. The Chrome extension was unresponsive across three
+> attempts this session, so `catalog.html` has never been looked at in a browser.
+
+### Phase 4.5 — original plan
+
+- `thl.css` — ~15 report primitives, written against roles, zero dependencies, small enough to
+  inline into a `<style>` block. Ship with system-font fallbacks.
+- `thl.fonts.css` and `thl.chart.css` as separate opt-in layers.
+- `catalog.html`, `report.html`, `SKILL.md`.
+- Register as `@thl/report-kit`.
+
+Load the `dataviz` skill before writing `thl.chart.css`. Deriving 5–6 distinguishable series
+colours from a palette whose only accent is a high-chroma lime, on near-black, without any of
+them reading as "the accent," is the hard part.
+
+> **Claim:** an agent can use it cold.
+> **Falsify it:** fresh project, only `thl.css` and `SKILL.md`, no conversation history — ask
+> for a report. If the output isn't recognisably The Human Laboratory, **the SKILL.md is wrong,
+> not the agent.** This is the only test that matters here, and it is a judgment call by design.
+
+### Phase 05 — Docs + registry ✅ DONE (one contract unmet)
+
+`apps/docs` (port 3001) is the showcase and the registry host. It imports
+`systems/*/ui/` **directly**, not through the registry, so docs never lag the source — the
+evicted portfolio in Phase 06 is what proves the install path instead.
+
+`apps/web` keeps `/` and `/demo`; its `/design-system` route moved to
+`apps/docs/app/systems/human-laboratory/`. **The `HeroSection` import went with it — deleted.**
+That was FINDING_07's coupling: a portfolio composition being documented as though it were a
+design system component. The showcase documents the system; the portfolio is a consumer.
+
+**Registries are per namespace, not per repo.** `shadcn build` takes a single registry file, so
+`systems/*/registry.json` looked fine with one system and failed with "too many arguments" the
+moment a second existed. `apps/docs/scripts/build-registries.mjs` loops instead, emitting
+`public/r/<namespace>/{name}.json` — which is also the right shape, since a namespace is the unit
+a consumer subscribes to:
+
+```json
+{ "registries": { "@thl": "https://jadrizk.github.io/imprint_lab/r/thl/{name}.json" } }
+```
+
+**The scaffold exists because cost-per-new-system decides whether this is a collection or a
+folder with one thing in it.** `bun run new-system <slug> <ns> ["Name"]` emits a system already
+wired to the pipeline, the role contract, the report kit and the registry — with the eleven roles
+stubbed and a deliberately awful magenta accent, so the first act is a real decision.
+
+> **Claim:** distribution works and skins don't leak.
+> **Verified — by scaffolding a throwaway system and deleting it afterwards:**
+> - The shared pipeline ran on an untouched scaffold: 31 tokens, 5 artifacts, correct
+>   `[data-system="proving-ground"]` scope. `check-roles` ran on it clean.
+> - **Token isolation holds**: neither system's scoped block writes to `:root`, scopes are
+>   distinct, and the same role resolves differently per scope
+>   (`--color-accent` → `var(--color-lime)` vs `var(--color-brand)`).
+> - Registry serves over HTTP: `/r/thl/report-kit.json`, 5 files, 144KB of embedded content.
+> - Baseline: 0 utilities lost, 5 added (the new index page). Tokens identical at 121.
+>
+> **Two bugs the throwaway caught**, both invisible with one system: `token-tools` assumed every
+> system ships a `parts/chart.css`, and the generated banners hardcoded `@thl/tokens` as the
+> regenerate command.
+
+> **⚠ Contract 3.4 is NOT met — base layers are still unscopable.**
+> `base.css` styles `body` (background, colour, mono font, crosshair cursor). A `body` rule
+> cannot be scoped to a `[data-system]` subtree, so when system 02 gets a page in `apps/docs`,
+> **THL's crosshair and mono body will bleed into it.** Tokens isolate; opinions do not.
+>
+> The fix is a real change, not a patch: `base.css` must target a *container* rather than `body`,
+> with standalone consumers mapping `body` onto that container. Doing it now would be guessing at
+> what system 02 needs, so it is recorded here rather than half-solved — but it must land before
+> a second system gets a docs page, which is exactly what the contract said.
+
+### Phase 05 — original plan
+
+- `apps/docs` — the showcase. Components, every variant, token tables, swatches, spacing,
+  effects, per system, with `[data-system]` skinning.
+- Imports `systems/*/ui/` **directly**, not via the registry, so docs never lag the source.
+- `registry.json` declaring `@thl` as `registry:style` with `extends: "none"`.
+- `shadcn build` → `public/r/*.json`, served from the same deploy.
+- `bun run new-system <name>` scaffold.
+- Deployed publicly; the repo stays private. Registry served without auth so `shadcn add` needs
+  no token in consuming projects. Hostnames cannot contain underscores — the deploy will be
+  `imprint-lab.*`, which does not affect the repo or git-dep path.
+
+> **Claim:** distribution works and skins don't leak.
+> **Falsify it:** `shadcn add @thl/button` into a scratch project must yield a working component
+> with no manual fixes. Two systems on one page must not bleed — check the cursor, the scrollbar
+> and the body font, the base-layer rules most likely to escape scope.
+
+### Phase 06 — One site ✅ DONE
+
+`apps/web` is deleted. `apps/docs` is the only app, five static routes:
+
+```
+/                                        systems index
+/systems/human-laboratory                thesis, rendered from BRAND.md
+/systems/human-laboratory/components     the showcase
+/systems/human-laboratory/example        a whole page built in the system
+/systems/human-laboratory/report         the report kit, live in an iframe
+```
+
+**`BRAND.md` now exists and is the single source for the prose.** The manifesto was trapped in
+`apps/web/app/page.tsx`; the thesis page reads the markdown at build time and renders it with
+`marked`, so the sentence exists once. Transcribing it into JSX would have been the same drift
+this repo is built against.
+
+**The registry went from 1 item to 8.** `style` (`extends: "none"`, carrying tokens, base layer
+and `cn()`), the six components with their npm and registry dependencies, and `report-kit`.
+
+**`cn()` had to stop importing `@thl/tokens/tw-merge`.** A registry consumer receives `lib/` as
+plain files with no workspace to resolve a scoped package against. `token-tools` now also emits
+`ui/lib/tw-merge.generated.ts` beside `utils.ts`, and the import is relative — the only form that
+works identically in the workspace and in a consumer.
+
+**No proving-ground app.** `packages/token-tools/smoke-install.mjs` replaces it: materialise every
+registry item into a temp project, typecheck it, and assert every import is declared and every
+relative import resolves to a shipped file. `bun run smoke`.
+
+> **Claim:** the one site shows everything, and the registry manifest is complete.
+> **Verified:**
+> - All five routes prerender static. `build`, `check-types`, `lint`, `check` pass.
+> - `smoke-install`: 8 items, 16 files, materialised and typechecked clean.
+> - Generated artifacts are stable — a second `generate:tokens` produces no diff.
+>
+> **Two bugs the smoke test caught, both on its first runs:**
+> - Components targeted `~/components/thl/`, so their `../lib/utils` resolved to
+>   `components/lib/utils` — outside the namespace, and broken for every consumer. Targets now
+>   mirror the source layout under `~/thl/`.
+> - **The smoke test's own first version had a false negative.** Deleting
+>   `image-frame.module.css` from the manifest passed, because the ambient
+>   `declare module '*.module.css'` that any real project has makes a missing stylesheet resolve
+>   happily. Check 3 — every relative import must resolve to a *shipped* file — was added because
+>   of it. Both negative tests now fail correctly.
+>
+> **⚠ Still unverified visually.** Five routes, none of them looked at. The Chrome extension was
+> unresponsive across every attempt this session.
+
+### Phase 06 — plan *(as revised, for reference)*
+
+**The original plan was wrong, on a stale reading.** It called for evicting `apps/web` as "the
+portfolio". Re-reading it after Phase 05: `apps/web/app/page.tsx` is not portfolio content at
+all — it is a manifesto *about the design system* ("This design system strips interfaces down to
+raw structure… constraint produces coherence"). The only portfolio-flavoured material in the
+whole app is `sections/hero/data.ts`, one data file of placeholder copy.
+
+So `apps/web` is ~90% design-system material. There is nothing meaningful to evict, and a real
+personal portfolio does not exist yet — it will be written later, in its own repo, consuming
+`@thl` like any other project. **The eviction happens by not writing it here.**
+
+`apps/docs` becomes the one site. `apps/web` dissolves into it.
+
+```
+/                                the systems index
+/systems/[system]                thesis — why this system is the way it is
+/systems/[system]/components     the showcase (exists)
+/systems/[system]/example        a whole page built in the system
+/systems/[system]/report         the report kit, live in an iframe
+```
+
+**Redistribution:**
+
+| From `apps/web` | To | Why |
+|---|---|---|
+| The manifesto (`/`) | `BRAND.md` + the thesis page | It is the system's statement of belief, currently trapped in JSX. `BRAND.md` is the source an agent reads; the page renders it. |
+| `/demo` | `/systems/[system]/example` | Component docs show parts; this shows a whole page. Nothing else covers it. |
+| `sections/hero` | Folded into the example, copy neutralised | Not a documented component — just part of a page you can look at. |
+| The app shell | — | Dissolves. |
+
+**The report tab is an `<iframe>`, not a re-implementation.** `catalog.html` carries its own reset
+and would fight the app's CSS if embedded. An iframe gives full isolation, keeps it inside the
+site's navigation, and exercises the standalone bundle exactly as a consumer receives it — it
+tests the artifact while displaying it.
+
+**No proving-ground app.** An earlier revision proposed one to prove the `shadcn add` path. It is
+not worth an app: you would discover a broken manifest within a minute of first use on project 02.
+Replaced by `packages/token-tools/smoke-install.mjs` — installs from the registry into a temp
+directory, typechecks, deletes it. Keeps the guarantee, costs no UI.
+
+**Still required first:** the registry ships exactly one item (`report-kit`). **None of the six
+React components are registered**, so `shadcn add @thl/button` does not exist. That has to be
+built before the smoke script means anything.
+
+> **Claim:** the one site shows every system's thesis, components, an example page and the report
+> kit, and nothing from `apps/web` was lost.
+> **Falsify it:** every route renders; the manifesto prose appears in exactly one source, not two;
+> the example page is the demo composition intact; the report iframe loads the real bundle. Then
+> `smoke-install.mjs` installs every registry item into a clean temp project and typechecks it —
+> **if it needs one manual patch, the manifest is incomplete.**
+
+---
+
+## 6. Baseline
+
+Reference capture for the pixel-identical claims in Phases 01, 02 and 04, stored in
+`.refactor/baseline/`.
+
+Regenerate or compare with the dev server running:
+
+```bash
+bun run dev --filter=web            # or: cd apps/web && bunx next dev --port 3117
+bun run .refactor/capture.sh        # writes/compares HTML + compiled CSS per route
+```
+
+Routes covered: `/`, `/design-system`, `/demo`.
+
+The CSS diff is the more precise signal — it catches a lost token or a dropped utility exactly,
+where a screenshot only catches it if the loss happens to be visible. Do both.
+
+**Re-baseline after each accepted phase.** Once a phase's diff has been reviewed and accepted,
+run `./.refactor/capture.sh` (no flag) to promote the current state to the baseline, and commit
+it with that phase. Otherwise diffs accumulate across phases and the check becomes unreadable
+noise that nobody reads — which is the same as having no check.
+
+**A clean diff is not automatically a pass.** Phase 02 reported zero drift while its entire
+payload was missing, because Tailwind had tree-shaken the unused tokens. Ask what the change
+*should* have produced before accepting that it produced nothing.
+
+**Capture against a cold dev server.** Turbopack's HMR does not always recompile CSS before the
+next request lands, so a capture taken moments after an edit can report the *previous* build.
+Phase 04 hit this: the same comparison read 3 dropped utilities warm and 7 cold. If a diff looks
+implausible, restart the server, delete `apps/web/.next/dev`, and re-capture before believing it.
+
+---
+
+## 7. Standing judgments
+
+The phases say what changes. These say where to think rather than follow.
+
+1. **Pixel-identical is the default expectation.** Phases 01–04 change structure, not
+   appearance. Any visible difference is a regression until proven a decision. If something
+   looks *better* afterwards, that is still a finding to surface, not a bonus to keep quietly.
+
+2. **If you can't name the job without naming the look, it isn't a role.** `--color-accent`
+   names a job. `--shadow-lime-glow` names an appearance — it stays a primitive.
+
+3. **A role with one consumer isn't a role yet.** Bias toward fewer. Adding later is a one-line
+   edit; removing after six components depend on it is a sweep. The vocabulary should feel
+   slightly too small when Phase 02 ends.
+
+4. **Prefer deleting to porting.** If something has no consumer, it does not earn a seat in the
+   new structure.
+
+5. **Don't fix what you notice in passing.** Missing components, light mode, `ImageFrame`'s
+   opinionated API — all real, all out of scope. Note them and move on. Scope creep inside a
+   structural refactor destroys the ability to verify that nothing broke.
+
+6. **Stop before anything expensive to reverse.** Role names before Phase 04. Registry item
+   names once anything has installed them. The repo name. Ask rather than pick.
+
+---
+
+## 8. Staged `CLAUDE.md` additions
+
+Apply each block to `CLAUDE.md` as its phase lands — not before, so the file never describes a
+structure that doesn't exist yet.
+
+**After Phase 01:**
+
+> ### Repository Purpose
+> `imprint_lab` produces design systems; it does not contain products. Each system under
+> `systems/<name>/` is self-contained — tokens, components, static report kit, brand, docs
+> content — and must never import from another system. Shared tooling lives in `packages/`.
+
+**After Phase 02:**
+
+> ### Role Tokens
+> Colour tokens come in two tiers. **Primitives** (`--color-lime`, `--color-obsidian`) are named
+> by appearance and are system-specific. **Roles** (`--color-accent`, `--color-canvas`) are named
+> by job and carry the same names in every system.
+>
+> If you cannot name what a token *does* without naming how it *looks*, it is a primitive.
+
+**After Phase 04:**
+
+> ### The Roles-Only Rule
+> Components in `systems/*/ui/` may reference **only** role tokens. `bg-lime` in a component is
+> a build failure; `bg-accent` is correct. App code and one-off compositions may use primitives
+> freely. This is what lets a component move to another system unchanged.
+
+**After Phase 4.5:**
+
+> ### Static Report Kit
+> Any HTML report, audit or standalone document must use `systems/<system>/static/<system>.css`
+> rather than hand-rolled CSS. See its `SKILL.md`. Never re-derive the palette inline — that is
+> the drift this kit exists to prevent.
+
+---
+
+## 9. Scope boundaries
+
+**Not in scope:**
+
+- No `packages/core` — rule of two.
+- No system 02. This builds the room, not the occupant.
+- No light mode. Dark-only stays policy; the role layer makes adding it later small.
+- No new components. The coverage gap (input, card, badge, dialog, table) is real but separate,
+  and cheaper to close after the contract exists.
+- No React Native emitter. Web-only; the emitter layer stays pluggable anyway.
+- No print stylesheet, no slide layouts.
+- **No second app.** One site — `apps/docs`. No separate portfolio, no proving-ground app. The
+  registry install path is covered by a smoke script, not a UI.
+- No personal portfolio. It does not exist yet and will not be faked into existence here; when
+  it is written it goes in its own repo and installs `@thl`.
+
+**Risks accepted:**
+
+- **The registry install path is only checked by a script, never by a real consuming app.** A
+  failure mode that only appears in a real Next.js build could survive the smoke test. Accepted:
+  the cost of finding out on project 02 is one minute; the cost of an app is permanent.
+
+- Role vocabulary v1 will be revised at system 02. The lint rule keeps that a mechanical sweep.
+- The repo name becomes permanent once a project installs from it — settled in Phase 01.
+- Registry items are copied, not linked. Consumers hold snapshots and update by re-running
+  `shadcn add`. Intended trade.
+- Component code is readable via the public registry JSON. The repo, brand files and docs source
+  stay private.

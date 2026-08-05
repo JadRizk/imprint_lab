@@ -1,0 +1,7 @@
+/* AUTO-GENERATED FROM theme.css — do not edit by hand.
+   Run: bun run --filter=@thl/tokens generate:tokens
+
+   Import from the app's globals.css so tokens rendered through a variable still
+   generate. See emitSafelist in token-tools for why this cannot be inferred. */
+
+@source inline("animate-scan bg-accent bg-accent-ink bg-ambient bg-black bg-canvas bg-critical bg-graphite bg-ink bg-ink-muted bg-ink-subtle bg-lime bg-line bg-line-strong bg-obsidian bg-slate bg-steel bg-text-secondary bg-text-tertiary bg-warning bg-white border-accent border-accent-ink border-ambient border-black border-canvas border-critical border-graphite border-ink border-ink-muted border-ink-subtle border-lime border-line border-line-strong border-obsidian border-slate border-steel border-text-secondary border-text-tertiary border-warning border-white duration-ack duration-process duration-state duration-transit font-mono font-sans leading-prose shadow-glow shadow-glow-strong shadow-lime-glow shadow-lime-glow-lg text-2xl text-3xl text-4xl text-5xl text-6xl text-accent text-accent-ink text-base text-black text-canvas text-critical text-graphite text-ink text-ink-muted text-ink-subtle text-lg text-lime text-line text-line-strong text-micro text-obsidian text-slate text-sm text-steel text-text-secondary text-text-tertiary text-warning text-white text-xl text-xs tracking-display tracking-label tracking-label-dense tracking-normal tracking-tight");

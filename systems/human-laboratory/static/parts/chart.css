@@ -1,0 +1,278 @@
+/* ── Charts ────────────────────────────────────────────────────────────────
+ *
+ * Opt-in layer. Load after the base bundle when a report carries data.
+ *
+ * THE ACCENT IS NOT A SERIES COLOUR. --color-accent measures OKLCH L 0.944 —
+ * far outside the 0.48–0.67 band a categorical palette needs on a dark ground.
+ * It is reserved for emphasis: a highlighted mark, a target line, a sparkline
+ * endpoint. --color-critical and --color-warning are status and are never
+ * reused as "series 4".
+ *
+ * FOUR SERIES, NOT FIVE. The palette clears its floors on ALL pairs, not
+ * adjacent ones — adjacency in a token list is arbitrary and any two series can
+ * share a legend. Under that stricter test a fifth slot is not available: an
+ * exhaustive search over the usable hue range found no five-colour set that
+ * clears the floors while staying clear of the accent, warning and critical
+ * hues. A fifth series folds into "Other", becomes small multiples, or means
+ * the chart is the wrong form.
+ *
+ * Verified by packages/token-tools/validate-palette.mjs, which runs in lint:
+ *
+ *   worst all-pairs CVD    ΔE 10.5 (protan) · tritan 9.8    floor 8.0
+ *   worst all-pairs normal ΔE 17.4                          floor 15.0
+ *   lightness             all 4 inside L 0.48–0.67
+ *   contrast              all 4 clear 3:1 on both surfaces
+ *
+ * Hues sit clear of the reserved ones: accent 118°, warning 57°, critical 25°,
+ * so no series colour can be mistaken for a status.
+ *
+ * Assign slots in fixed order and never cycle them.
+ */
+
+:root {
+  /* Categorical — identity. Fixed order. Four slots is the ceiling. */
+  --chart-1: #11813c; /* green   L .53 h 150 */
+  --chart-2: #2098db; /* blue    L .65 h 240 */
+  --chart-3: #7258b4; /* purple  L .53 h 294 */
+  --chart-4: #cc689e; /* pink    L .65 h 348 */
+
+  /* Sequential — magnitude. One hue, monotone lightness. */
+  --chart-seq-1: #004973;
+  --chart-seq-2: #006692;
+  --chart-seq-3: #2284b1;
+  --chart-seq-4: #48a3d2;
+  --chart-seq-5: #69c3f3;
+
+  /* Diverging — polarity. Two poles, neutral gray midpoint (never a hue). */
+  --chart-div-1: #943b84;
+  --chart-div-2: #a8719c;
+  --chart-div-mid: #6b6b70;
+  --chart-div-4: #498fb4;
+  --chart-div-5: #006da1;
+
+  /* The fold-in slot for a fifth-and-beyond category. Neutral by design. */
+  --chart-other: var(--color-line-strong);
+
+  /* Chart furniture, deliberately recessive. */
+  --chart-grid: var(--color-ambient);
+  --chart-axis: var(--color-line);
+  --chart-label: var(--color-ink-subtle);
+}
+
+.chart {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chart figcaption,
+.chart .chart-title {
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+}
+
+/* Grid and axes recede; data sits on top. */
+.chart .grid line,
+.chart .grid path {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+
+.chart .axis line,
+.chart .axis path {
+  stroke: var(--chart-axis);
+  stroke-width: 1;
+}
+
+/* Text wears text tokens, never the series colour. */
+.chart .axis text,
+.chart .tick text {
+  fill: var(--chart-label);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Marks ──
+ * Square ends, not the 4px rounded data-ends the general guidance suggests:
+ * this system resets --radius-* and every surface in it is hard-edged. The
+ * design system's parameter wins over the default.
+ */
+
+.chart .bar {
+  shape-rendering: crispEdges;
+}
+
+/* A 2px gap keeps adjacent and stacked fills legible without borders. It
+   strokes in the GROUND colour, so the gap reads as a cut rather than a line —
+   which is why it follows --color-canvas and not a panel fill. */
+.chart .bar + .bar,
+.chart .stack > * + * {
+  stroke: var(--color-canvas);
+  stroke-width: 2;
+}
+
+.chart .line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: butt;
+}
+
+.chart .area {
+  stroke: none;
+  opacity: 0.18;
+}
+
+.chart .dot {
+  r: 4; /* ≥8px diameter */
+  stroke: var(--color-canvas);
+  stroke-width: 2;
+}
+
+/* The one place the accent belongs: an emphasised mark or endpoint. */
+.chart .is-emphasis {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+.chart .target-line {
+  stroke: var(--color-accent);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  fill: none;
+}
+
+/* ── Series slots ── */
+
+.series-1 {
+  fill: var(--chart-1);
+  stroke: var(--chart-1);
+}
+.series-2 {
+  fill: var(--chart-2);
+  stroke: var(--chart-2);
+}
+.series-3 {
+  fill: var(--chart-3);
+  stroke: var(--chart-3);
+}
+.series-4 {
+  fill: var(--chart-4);
+  stroke: var(--chart-4);
+}
+/* .series-5 is deliberately absent. Four is the ceiling — see the header.
+ *
+ * What a fifth category gets instead: the fold-in slot. It is a NEUTRAL, not a
+ * hue, so it reads as "everything else" rather than as a peer of the four. It
+ * must never be #000 — on this ground black is a hole in the chart, not a
+ * category. (catalog.html used to reference an undefined --chart-5 here, which
+ * computed to nothing and rendered exactly that hole.) */
+.series-other {
+  fill: var(--chart-other);
+}
+
+.chart line.series-other,
+.chart path.series-other {
+  stroke: var(--chart-other);
+  fill: none;
+}
+
+/* Texture, for the CVD / print / forced-colors case. Pair with a series slot. */
+.is-textured {
+  mask-image: repeating-linear-gradient(45deg, #000 0 3px, transparent 3px 6px);
+}
+
+/* ── Legend ──
+ * Always present from two series up, so identity is never colour alone.
+ */
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.chart-legend .legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.chart-legend .swatch-dot {
+  inline-size: 10px;
+  block-size: 10px;
+  flex: none;
+}
+
+/* ── Tooltip ── */
+
+.chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 20;
+  background: var(--color-canvas);
+  border: 1px solid var(--color-line);
+  padding: 8px 10px;
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+.chart-tooltip .k {
+  color: var(--color-ink-subtle);
+}
+.chart-tooltip .v {
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-crosshair {
+  stroke: var(--color-ink-subtle);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+/* ── Sparkline ──
+ * Endpoint emphasised, because the last value is the one being read.
+ */
+
+.sparkline {
+  display: inline-block;
+  vertical-align: middle;
+  block-size: 24px;
+}
+
+.sparkline .line {
+  stroke: var(--chart-1);
+}
+
+.sparkline .endpoint {
+  fill: var(--color-accent);
+}
+
+@media (forced-colors: active) {
+  .chart .line,
+  .chart .bar {
+    forced-color-adjust: none;
+  }
+}
+
+/* ── Tooltip affordance ──
+ * A mark that responds to hover has to look like it does. Focus gets the same
+ * treatment, so the keyboard path is not a second-class one.
+ */
+
+.chart svg.has-tooltip [data-tip] {
+  cursor: pointer;
+}
+
+.chart svg.has-tooltip [data-tip]:hover,
+.chart svg.has-tooltip [data-tip]:focus-visible {
+  stroke: var(--color-ink);
+  stroke-width: 2;
+  outline: none;
+}

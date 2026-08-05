@@ -1,0 +1,10 @@
+{
+  "name": "@imprint/system-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scaffolds a new design system, wired to the pipeline, the role contract and the registry.",
+  "bin": {
+    "new-system": "./new-system.mjs"
+  }
+}

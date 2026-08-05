@@ -4,8 +4,54 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "tokens.generated.ts"]
+      // `../static/parts/**` reaches OUTSIDE the package on purpose. A system's
+      // token package assembles the report-kit bundles from the hand-authored
+      // parts one directory over, so those files decide the contents of
+      // static/thl.css while living outside everything $TURBO_DEFAULT$ hashes.
+      //
+      // Measured, not assumed: with the cache warm, appending a rule to
+      // static/parts/components.css and re-running gave "1 cached, FULL TURBO"
+      // and replayed the generator's own "4 bundles in static/" line, while
+      // thl.css still held the previous contents. That stale bundle is what
+      // sync-static copies to public/ and what `shadcn build` embeds in the
+      // published report-kit item — and no gate sees it, because smoke's byte
+      // check compares the registry against the same stale file on disk.
+      //
+      // Written generically rather than as an @<ns>/tokens# override so a second
+      // system is covered the day it exists. It matches nothing under apps/docs,
+      // which is the correct answer there.
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "../static/parts/**"],
+      // NEXT_PUBLIC_SITE_URL must be in the cache key. It is the one place the
+      // published location is declared, and basePath, metadataBase and the
+      // registry homepage are all derived from it — so it changes the CONTENTS of
+      // out/, not just how it is served. Undeclared, turbo hashes two different
+      // sites to the same key and replays whichever built first: a local
+      // no-basePath build restores over a subpath build, every asset URL loses
+      // its prefix, and the task still reports success.
+      //
+      // Measured, not assumed: `turbo build` after `rm -rf out/` returned "cache
+      // hit, replaying logs" and produced an icon href of
+      // /systems/human-laboratory/icon.svg where the same source built with
+      // --force gives /imprint_lab/systems/human-laboratory/icon.svg. Harmless in
+      // CI today because the cache starts cold, and a live publishing bug the day
+      // remote caching is switched on.
+      "env": ["NEXT_PUBLIC_SITE_URL"],
+      // The last two also reach outside the package, and for the same reason:
+      // token-tools writes six artifacts a system's token package does not
+      // contain — the four static/thl.* bundles, and the two *.generated.ts
+      // files that land beside cn() so a registry consumer receives them as
+      // plain files. Undeclared, a cache hit restores generated/ and leaves
+      // those six untouched: deleting all six and re-running gave FULL TURBO
+      // with the files still missing and the task reporting success.
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "out/**",
+        "generated/**",
+        "public/r/**",
+        "../static/thl.*",
+        "../ui/lib/*.generated.ts"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
