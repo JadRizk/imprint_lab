@@ -32,11 +32,30 @@ const primitives = declarations
 const bare = primitives.map((n) => n.replace(/^--(color|shadow)-/, ''));
 
 // Utility prefixes that take a colour or shadow value.
+//
+// `ring-offset` is listed ahead of `ring` for readability only — alternation
+// backtracks, so either order matches — but it has to be listed at all:
+// `ring-offset-lime` is not `ring-` followed by a primitive.
 const PREFIXES =
-  'bg|text|border|outline|ring|fill|stroke|divide|decoration|caret|placeholder|accent|from|via|to|shadow';
+  'bg|text|border|outline|ring-offset|ring|fill|stroke|divide|decoration|caret|placeholder|accent|from|via|to|shadow';
+
+// The optional side or axis segment between the prefix and the colour.
+// `border-b-lime` is `border-bottom-color: var(--color-lime)` — the primitive
+// exactly, reached by a class the un-segmented pattern could not see, because it
+// required the colour to follow the prefix immediately. `t/r/b/l` are the
+// physical sides, `x/y` the axes, `s/e` the logical inline start and end.
+//
+// This mattered rather than being theoretical: the segmented form is idiomatic
+// here — the example's sticky nav is built on `border-b-line-strong` — so the
+// hole sat directly under the shape a component is most likely to reach for,
+// and `bun run lint` stayed green over it.
+const SIDES = '(?:-[trblxyse])?';
 
 // Preceded by start, whitespace, quote, or a variant colon (hover:, group-hover:).
-const classRe = new RegExp(`(^|[\\s"'\`:])((?:${PREFIXES})-(?:${bare.join('|')}))\\b`, 'g');
+const classRe = new RegExp(
+  `(^|[\\s"'\`:])((?:${PREFIXES})${SIDES}-(?:${bare.join('|')}))\\b`,
+  'g'
+);
 
 // `[,)]` not `\)`: var(--color-lime, red) resolves to exactly the primitive and
 // used to escape a rule that required the paren to follow the name immediately.
