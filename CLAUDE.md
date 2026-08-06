@@ -513,7 +513,7 @@ of them is hand-kept, for the same reason the safelist is not.
 
 ## Skills
 
-Three, and they are loaded at different moments. **Check here before writing a
+Four, and they are loaded at different moments. **Check here before writing a
 long prompt explaining how something in this repo works — it is probably already
 a skill.**
 
@@ -521,7 +521,18 @@ a skill.**
 |---|---|---|
 | `thl-report` | `systems/human-laboratory/static/SKILL.md` | Writing any standalone HTML document |
 | `new-system` | `.claude/skills/new-system/` | Adding a system to this repo |
+| `release-system` | `.claude/skills/release-system/` | Releasing a version of an existing system — and every "is this a major?" |
 | `design-direction` | personal, `~/.claude/skills/` | Deciding a system's thesis, voice and palette — **before** `new-system` |
+
+`new-system` and `release-system` are split by **trigger, not by subject**. A
+skill is selected by its description, so an agent asked to cut `@thl v1.1.0`
+would never load one described as "stand up a new design system" — folding the
+release procedure into it would make it unreachable at the only moment it is
+wanted. `new-system` ends at 0.1.0 and hands over.
+
+The rationale for the versioning design stays in contract 2 above; the skill
+holds the **classification judgement** — what makes a change major rather than
+minor against this system's public surface — which lives in no other file.
 
 **`thl-report` is canonical in `static/`, not in `.claude/skills/`**, because it
 ships to consumers as part of the `@thl/report-kit` registry item — a project
