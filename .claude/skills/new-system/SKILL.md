@@ -125,6 +125,16 @@ cold. See [`references/verification.md`](references/verification.md).
 > **Gate:** every command green, every route rendered and looked at, and the
 > cold-start test run.
 
+### 7 · Hand off
+
+The system now exists at **0.1.0**, which under semver means it may still break
+freely — and it should, while the palette is being argued with. Everything after
+this point is `release-system`: classifying a change, writing the entry,
+regenerating, and tagging `<ns>/v<version>`.
+
+**Do not tag on the way out of this skill.** A scaffolded system has nothing to
+adopt yet, and 1.0 is forced by adoption rather than by completeness.
+
 ---
 
 ## The doctrine

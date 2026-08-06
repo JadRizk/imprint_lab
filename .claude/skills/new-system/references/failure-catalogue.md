@@ -130,6 +130,36 @@ common one (~6%).
 The same comparison read 3 dropped utilities warm and 7 cold. If a diff looks
 implausible, restart the server and delete `.next/dev` before believing it.
 
+### The build cache replays a task whose real input it never hashed
+
+Distinct from the entry above, which is the Next dev server. This is turbo's
+task cache, and it has now produced the same fault **three times**.
+
+`$TURBO_DEFAULT$` hashes the package directory. A system's token package reads
+several files that live *outside* it, and each one, undeclared, gave a green
+`FULL TURBO` while the artifacts stayed stale:
+
+| Undeclared input | What it silently did |
+|---|---|
+| `../static/parts/**` | Appending a rule to `components.css` replayed "4 bundles in static/" while `thl.css` kept the previous contents — and `smoke`'s byte check compared the registry against that same stale file, so it agreed |
+| `NEXT_PUBLIC_SITE_URL` (env, not a file) | Two different published sites hashed identically; a local no-basePath build restored over a subpath build and every asset URL lost its prefix |
+| `../CHANGELOG.md` | A version bump changed no hashed file, so every artifact kept claiming the previous version — **including the one that ships to a consumer's disk** |
+
+Measured in both directions for the third, which is the test the first two
+deserved: with the input removed, editing the changelog gave `cache hit,
+replaying logs` / `>>> FULL TURBO`; with it declared, the same edit gave
+`cache miss, executing`.
+
+**Rule:** when a task reads or writes anything outside its own package, declare
+it in `inputs` *and* `outputs`, then prove it by mutating that file with a warm
+cache. A replayed log line is indistinguishable from a real one — including the
+generator's own summary, which is why "it printed the right version" is not
+evidence.
+
+> The same asymmetry applies to `outputs`. `token-tools` writes six files the
+> token package does not contain; undeclared, deleting all six and re-running
+> gave FULL TURBO with the files still missing and the task reporting success.
+
 ---
 
 ## Documentation failures
