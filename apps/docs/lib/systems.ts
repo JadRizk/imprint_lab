@@ -1,4 +1,5 @@
 import { coreColors, roleColors, semanticColors, textTokens, tokens } from '@thl/tokens/tokens';
+import { version } from '@thl/ui/lib/version';
 
 /**
  * The systems this docs site documents.
@@ -12,6 +13,13 @@ export interface SystemEntry {
   slug: string;
   name: string;
   namespace: string;
+  /**
+   * The system's current version, read from its generated artifact — which is
+   * generated from its CHANGELOG.md. Never typed in here: an index that states
+   * a version by hand is a second declaration, and the whole point of this one
+   * is that there is only ever one.
+   */
+  version: string;
   tagline: string;
   /** Token counts, read from the system's generated module. */
   tokens: typeof tokens;
@@ -26,6 +34,7 @@ export const systems: SystemEntry[] = [
     slug: 'human-laboratory',
     name: 'The Human Laboratory',
     namespace: '@thl',
+    version,
     tagline:
       'Neo-brutalist. Obsidian ground, a single lime signal, hard borders, monospaced body. Constraint produces coherence.',
     tokens,

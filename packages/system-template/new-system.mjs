@@ -38,6 +38,11 @@ if (!/^[a-z][a-z0-9]*$/.test(ns)) {
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const root = join(repoRoot, 'systems', slug);
 const title = displayName ?? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+// en-CA is ISO-8601 in LOCAL time. `toISOString()` is UTC, which stamps
+// yesterday's date for anyone east of Greenwich working after evening — the
+// scaffold dated its own first release a day before it existed when this was
+// written at 02:31 in Beirut.
+const today = new Date().toLocaleDateString('en-CA');
 
 if (existsSync(root)) {
   console.error(`error: systems/${slug} already exists`);
@@ -186,7 +191,6 @@ write(
   `${JSON.stringify(
     {
       name: `@${ns}/tokens`,
-      version: '0.1.0',
       private: true,
       exports: {
         '.': './theme.css',
@@ -197,7 +201,11 @@ write(
         './theme.scoped.css': './generated/theme.scoped.css',
         './tokens.json': './generated/tokens.json'
       },
-      scripts: { 'generate:tokens': 'token-tools', build: 'token-tools' },
+      scripts: {
+        'generate:tokens': 'token-tools',
+        build: 'token-tools',
+        lint: 'node ../../../packages/token-tools/check-version.mjs ..'
+      },
       devDependencies: { '@imprint/token-tools': '*' }
     },
     null,
@@ -211,9 +219,11 @@ write(
   `${JSON.stringify(
     {
       name: `@${ns}/ui`,
-      version: '0.1.0',
       private: true,
-      exports: { './lib/utils': './lib/utils.ts' },
+      exports: {
+        './lib/utils': './lib/utils.ts',
+        './lib/version': './lib/version.generated.ts'
+      },
       scripts: { lint: 'check-roles .. && biome check .', 'check-types': 'tsc --noEmit' },
       dependencies: { clsx: '^2.1.1', react: '^19.2.0', 'tailwind-merge': '^3.3.0' },
       devDependencies: {
@@ -330,6 +340,56 @@ write(
   )}\n`
 );
 
+// The version lives here and nowhere else, so this file is not optional
+// furniture: `token-tools` reads it on every run and refuses without it, and a
+// scaffold that cannot generate its own tokens is not a scaffold. It starts at
+// 0.1.0 because that is what a system with a placeholder palette honestly is —
+// pre-1.0, free to break, adopted by nobody.
+write(
+  'CHANGELOG.md',
+  `# Changelog — ${title} (\`@${ns}\`)
+
+All notable changes to this system. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the system is
+versioned with [semantic versioning](https://semver.org/spec/v2.0.0.html).
+
+> ⚠ **This file is parsed.** The newest \`## [x.y.z] — date\` heading below **is**
+> the system's version — nothing else declares it. \`token-tools\` reads it and
+> emits it into \`ui/lib/version.generated.ts\`, the report-kit bundle headers and
+> the published registry, so a bump means: write the entry, then regenerate.
+> Keep the heading shape exactly — square brackets, a semver triple, a dash, an
+> ISO date. \`check-version\` fails the build if it drifts.
+
+## What a version means here
+
+The system version is the atomic unit: tokens, components, brand and report kit
+ship together at one number, and a consumer adopts it deliberately.
+
+| Bump | Means |
+|---|---|
+| **Major** | A consumer's existing copy breaks — a role renamed or removed, a component's props changed, a report-kit class deleted. |
+| **Minor** | Additive. Something existing code can ignore. |
+| **Patch** | A value moves without renaming anything. |
+
+**Primitives are private**, so moving one is a patch: nothing in \`ui/\` is
+allowed to reference it. Roles are the public surface.
+
+## [Unreleased]
+
+TODO — what you change while making this system real goes here, and moves into a
+version heading when you release it.
+
+## [0.1.0] — ${today}
+
+### Added
+
+Scaffolded from \`packages/system-template\`. **Nothing here is decided yet** —
+the palette is a placeholder that fails its own contrast floor on purpose, and
+\`BRAND.md\` is four TODOs. This entry exists so the system has a version to be
+at, not because there is anything to adopt.
+`
+);
+
 write(
   'BRAND.md',
   `# ${title}
@@ -379,6 +439,7 @@ Scaffolded systems/${slug} (@${ns})
   static/parts/         report kit source
   registry.json         @${ns} namespace
   BRAND.md              thesis and voice, unwritten
+  CHANGELOG.md          the version lives here and nowhere else — 0.1.0
 
 Next:
   1. bun install
@@ -392,6 +453,11 @@ Next:
        @import "@${ns}/tokens/theme.scoped.css";
        @source "../../../systems/${slug}/ui";
   6. Add an entry to apps/docs/lib/systems.ts and a page under
-     app/systems/${slug}/.
+     app/systems/${slug}/. Read its \`version\` from
+     @${ns}/ui/lib/version — never type the number in.
   7. bun run lint && bun run check && bun run test
+  8. When the system is real, write the entry in CHANGELOG.md, regenerate,
+     commit, then tag it:  git tag ${ns}/v<version> && git push origin ${ns}/v<version>
+     The tag publishes a GitHub Release from that entry, and refuses if the
+     two disagree.
 `);

@@ -1,0 +1,78 @@
+# Publishes a GitHub Release from a scoped tag.
+#
+# The tag is the trigger and the changelog is the content: `release-notes.mjs`
+# resolves `thl/v1.0.0` to that entry in systems/human-laboratory/CHANGELOG.md
+# and refuses if the two disagree. So a release cannot say something the
+# repository does not, and there is no second place to write release notes that
+# could drift from the first.
+#
+# Deploying the site is a separate workflow on a separate trigger. That is
+# deliberate: the docs site tracks `main`, and a release is a statement about a
+# point in history. Coupling them would mean either publishing docs only at
+# release time, or being unable to tag without redeploying.
+name: Release a system
+
+on:
+  push:
+    tags:
+      # `<namespace>/v<version>`. In GitHub's filter patterns `*` does not match
+      # `/`, so this matches thl/v1.0.0 and not a bare v1.0.0 — which is correct:
+      # a flat tag would claim to version every system in the repo at once.
+      - '*/v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag, eg thl/v1.0.0'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      # Only this job widens it, and only to create the release.
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Check out the tag's commit, not the branch head. A release describes
+          # the tree that was tagged; reading the changelog from a newer main
+          # would publish notes for a version this tag does not contain.
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.17
+
+      - run: bun install --frozen-lockfile
+
+      # The gates, before anything is published. A release is the one artifact
+      # here that consumers pin to, so it is the worst one to publish broken —
+      # unlike a deploy, it cannot be fixed by pushing again.
+      - run: bun run lint
+      - run: bun run check-types
+      - run: bun run test
+      - run: bun run smoke
+
+      - id: notes
+        env:
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          # Fails if the tag names a version the changelog does not carry.
+          node packages/token-tools/release-notes.mjs "$TAG" > /tmp/notes.md
+          # thl/v1.0.0 -> "@thl v1.0.0", in shell rather than a nested node -e:
+          # the template literal that did this sat inside single quotes inside a
+          # command substitution inside double quotes, which is three levels of
+          # quoting to get one string wrong in.
+          echo "title=@${TAG%%/*} v${TAG##*/v}" >> "$GITHUB_OUTPUT"
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          gh release create "$TAG" \
+            --title "${{ steps.notes.outputs.title }}" \
+            --notes-file /tmp/notes.md \
+            --verify-tag

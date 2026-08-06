@@ -88,6 +88,48 @@ Tokens and components ship together at one version. A consumer adopts a version
 deliberately rather than receiving token updates live — otherwise a role rename
 breaks every project silently.
 
+**The version is declared once, in `systems/<slug>/CHANGELOG.md`**, as the newest
+`## [x.y.z] — YYYY-MM-DD` heading. Nothing else declares it and nothing else may.
+That placement is not decoration: it makes it impossible to bump a version
+without writing the entry that says what changed, because they are the same edit.
+
+Everything else is derived, by `token-tools`:
+
+| Derived | Where | For |
+|---|---|---|
+| `ui/lib/version.generated.ts` | beside `cn()` | the only copy that reaches a consumer's disk |
+| report-kit bundle headers | `static/<ns>.*.css` | the no-JS tier, which has nothing to import |
+| `version` + `released` on the registry index | stamped at build | "what is current?" |
+| `meta.version` on every registry item | stamped at build | the install path — `shadcn add` never reads the index |
+| the docs site's version chip and system card | `@thl/ui/lib/version` | read, never transcribed |
+
+> ⚠ **The registry can only advertise a version; it cannot record one.**
+> `shadcn add` copies *files* and persists no item metadata, so a version living
+> only in `meta` answers "what is current?" and never "what do I have?" — which
+> is the question a consumer is actually stuck on. `version.generated.ts` ships
+> in the `style` item for exactly that reason. Also: shadcn 3.5.0's
+> registry-item schema has **no `version` field** at all; `meta` is the escape
+> hatch, verified against a throwaway registry rather than assumed.
+
+**Semver here is about roles, not primitives.** Renaming a role, changing a
+component's props or deleting a report-kit class is **major** — a consumer's copy
+breaks. Moving `--color-lime` is a **patch**, because nothing in `ui/` is allowed
+to reference it. That asymmetry is what the two tiers are for.
+
+`check-version` enforces the whole chain under `lint`: the changelog parses, its
+releases descend without duplicates, an `## [Unreleased]` section exists, no
+system `package.json` has re-grown a `version` field, and every generated
+artifact carries the **current** number. That last one is the staleness check — a
+changelog edited without a regenerate is otherwise invisible until someone
+installs.
+
+> ⚠ **`../CHANGELOG.md` is in turbo's `inputs` for the token build**, and has to
+> be. Measured, not assumed: with it removed, editing the changelog and
+> re-running gave `cache hit, replaying logs` and `>>> FULL TURBO` — the bump
+> changed no file turbo hashed, so every artifact kept claiming the previous
+> version, including the one that ships to a consumer's disk. With it declared,
+> the same edit gives `cache miss, executing`.
+
 ### 3. Decoration and text are different roles
 
 `--color-ambient` is for grid overlays, idle brackets and rules. **Never text.**
@@ -295,6 +337,7 @@ everything else:
 | `generated/tokens.json` | W3C DTCG interchange — Figma, Style Dictionary |
 | `generated/safelist.css` | `@source inline()` — see below |
 | `ui/lib/tw-merge.generated.ts` | the `extendTailwindMerge` config `cn()` consumes |
+| `ui/lib/version.generated.ts` | the version, from `CHANGELOG.md` — see contract 2 |
 | `static/thl.*` | the report-kit bundles |
 
 Regenerate with `bun run --filter=@thl/tokens generate:tokens`; `turbo build`
@@ -394,6 +437,43 @@ diagram forms, the chart rules and the editorial voice.
   and `validate-palette` runs in lint. Do not relax its thresholds.
 
 ---
+
+## Releasing a system
+
+Tags are **scoped per system** — `thl/v1.0.0`, never a bare `v1.0.0`. Systems
+here evolve on their own timelines, and a flat tag would force a THL release
+every time another system moved, which is the coupling `systems/*` exists to
+avoid. GitHub's tag filters treat `*` as not matching `/`, so the workflow's
+`'*/v*'` pattern catches the scoped form and ignores a flat one.
+
+```bash
+# 1. Write the entry. Move what is under [Unreleased] into a new heading:
+#      ## [1.1.0] — 2026-09-02
+# 2. Regenerate, so every derived artifact catches up.
+bun run --filter=@thl/tokens generate:tokens
+# 3. The gates. check-version is the one that matters here.
+bun run lint && bun run check-types && bun run test && bun run smoke
+# 4. Commit, then tag the commit that contains the entry.
+git tag thl/v1.1.0 && git push origin thl/v1.1.0
+```
+
+The tag push runs [`release.yml`](.github/workflows/release.yml), which resolves
+the tag to that changelog entry via `release-notes.mjs` and publishes it as a
+GitHub Release. **It refuses if the tag names a version the changelog does not
+carry.** That check is the point: the tag is the one artifact in this pipeline
+nobody generates — someone types it — so it is the only thing that can name a
+version the repository does not contain. Everything else reads the changelog and
+therefore agrees with itself by construction.
+
+There is deliberately **no repo-level changelog**. A release here is a statement
+about a *system*, which is the unit a consumer adopts; `token-tools` and the
+scaffold are not consumer-facing, and a change to either shows up in the systems
+that regenerate because of it.
+
+Publishing the docs site is a **separate** workflow on a separate trigger. The
+site tracks `main`; a release is a statement about a point in history. Coupling
+them would mean either publishing docs only at release time, or being unable to
+tag without redeploying.
 
 ## The brand
 
@@ -521,6 +601,9 @@ bun run check-types
 bun run smoke               # proves the registry is installable
 bun run new-system <slug> <ns> ["Name"]
 bun run brand:raster          # regenerate brand PNGs; validates every brand SVG
+
+node packages/token-tools/check-version.mjs          # every system (runs under lint)
+node packages/token-tools/release-notes.mjs thl/v1.0.0   # what a tag would publish
 ```
 
 **Adding a system: use the `new-system` skill, not the bare command.** The
@@ -634,6 +717,11 @@ carries both cannot disagree with itself.
 | Hosting | GitHub Pages, static export | The site is documentation and JSON; nothing here needs a server, and the registry host stops being a second vendor to keep alive |
 | basePath | One env var, read in config and app | A project site lives at a subpath; hardcoding it breaks `dev` and makes a rename a repo-wide search |
 | Token source | `theme.css`, hand-authored, everything generated | Native to Tailwind v4; one source, many targets |
+| Version source | The newest heading in the system's `CHANGELOG.md` | One declaration, and the one placement that makes bumping without documenting impossible — they are the same edit |
+| Version delivery | Advertised in the registry **and** shipped as a file | `shadcn add` records no metadata, so a version that never lands on disk cannot answer "what do I have?" |
+| Tags | Scoped per system, `thl/v1.0.0` | A flat tag would version every system at once, which is the coupling `systems/*` avoids |
+| Changelog | Hand-authored, Keep a Changelog | Every document here states reasons; a list generated from commit subjects would read as foreign, and PR #1 shows squashes do not preserve them anyway |
+| Release notes | Extracted from the changelog by the tag | A second place to write notes is a second thing to disagree with the first |
 | CSS parser | Hand-rolled, not lightningcss | lightningcss sees zero custom properties inside `@theme` and throws on the namespace-reset syntax |
 | Unused tokens | `@theme static` | Hand-authored CSS must be able to rely on a variable existing; measured cost 328 bytes |
 | Chart series | Four, validated on all pairs | No fifth colour clears the floors while staying clear of the accent and status hues; a fifth category folds into the neutral `--chart-other` |

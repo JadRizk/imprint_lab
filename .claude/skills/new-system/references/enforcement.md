@@ -2,7 +2,7 @@
 
 > *"Without enforcement this is a wish."* — `REFACTOR.md` §3.1
 
-Four tools in `packages/token-tools`, all system-agnostic: each takes a directory
+Five tools in `packages/token-tools`, all system-agnostic: each takes a directory
 and works the same way for every system. That is what keeps cost-per-system near
 zero, and it means **nothing here needs editing when you add a system** — with
 one exception, noted below.
@@ -79,6 +79,28 @@ them, it needs fewer series, not a lower floor.
 
 ---
 
+## `check-version [systemDir]` — the one declaration
+
+Fails when a system's version has drifted from `CHANGELOG.md`, the only place it
+is declared. Five assertions: the changelog parses; its releases descend without
+duplicates or backwards dates; an `## [Unreleased]` section exists; neither
+`package.json` has re-grown a `version` field; and every generated artifact
+carries the **current** number.
+
+**The last one is the reason this tool exists.** A version is unusually good at
+being wrong while looking right — it is a short string copied into a stylesheet
+header, a TypeScript file and a registry manifest, and every stale copy still
+parses, still builds, still deploys, and renders identically. The only symptom is
+a consumer installing 1.1.0 and receiving files that say 1.0.0, which they will
+believe.
+
+Its partner is `release-notes.mjs <tag>`, which resolves `thl/v1.0.0` to that
+changelog entry and refuses if they disagree. The tag is the only artifact in
+this pipeline that is *typed* rather than generated, so it is the only one that
+can name a version the repository does not contain.
+
+---
+
 ## `smoke-install [registryDir]` — the registry manifest
 
 Materialises every registry item into a temp project, typechecks it, then asserts
@@ -140,5 +162,22 @@ Against the parser, inside `@theme`:
 | `--font-sans: "Foo;Bar", sans-serif` | not truncated at the `;` |
 | `@theme { … }` inside a comment before the real block | ignored |
 
+Against `check-version`, on a **copy** of the system (these mutate the changelog,
+so work in a temp directory and pass it as the argument):
+
+| Fixture | Must be |
+|---|---|
+| Bump the heading to `1.1.0`, do not regenerate | caught — names every stale artifact |
+| Re-add `"version": "0.1.0"` to `tokens/package.json` | caught |
+| Rename `## [Unreleased]` to anything else | caught |
+| Insert an older release above a newer one | caught |
+| `## [1.0.0] - 6 Aug 2026` — heading shape drifted | caught |
+| Delete `CHANGELOG.md` | caught |
+
+All six were watched failing before the gate was trusted. The first is the one
+that matters: it is the only failure mode with no other symptom, since a stale
+version renders, builds and deploys exactly like a correct one.
+
 Then remember to revert every fixture. `bun run test` covers the parser cases via
-`packages/token-tools/parse.test.mjs`; the `check-roles` ones are manual.
+`packages/token-tools/parse.test.mjs`; the `check-roles` and `check-version` ones
+are manual.

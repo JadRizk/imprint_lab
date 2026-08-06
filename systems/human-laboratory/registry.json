@@ -35,6 +35,11 @@
           "path": "systems/human-laboratory/ui/lib/motion.generated.ts",
           "type": "registry:file",
           "target": "~/thl/lib/motion.generated.ts"
+        },
+        {
+          "path": "systems/human-laboratory/ui/lib/version.generated.ts",
+          "type": "registry:file",
+          "target": "~/thl/lib/version.generated.ts"
         }
       ]
     },

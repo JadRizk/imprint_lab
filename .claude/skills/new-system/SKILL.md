@@ -89,7 +89,13 @@ bun run --filter=@<ns>/tokens generate:tokens
 ```
 
 Never hand-edit anything under `generated/`, any bundle in `static/`, or
-`ui/lib/tw-merge.generated.ts`.
+`ui/lib/tw-merge.generated.ts` / `version.generated.ts`.
+
+The generator reads `CHANGELOG.md` and **refuses to run without it** — the
+newest `## [x.y.z] — YYYY-MM-DD` heading is the only declaration of the system's
+version, and the scaffold writes the file at `0.1.0`. Do not add a `version`
+field to either `package.json`; that is a second declaration, and `check-version`
+fails on it.
 
 > **Gate:** running it twice produces no diff. An unstable generator means the
 > committed artifacts and the generator disagree, and nobody finds out until a
@@ -97,11 +103,14 @@ Never hand-edit anything under `generated/`, any bundle in `static/`, or
 
 ### 5 · Enforce
 
-The four tools, and the fixtures that must still defeat nothing. See
+The five tools, and the fixtures that must still defeat nothing. See
 [`references/enforcement.md`](references/enforcement.md).
 
 > **Gate:** `check-roles` reports the expected number of guarded primitives — and
 > has been **watched failing** on a deliberate violation before being trusted.
+> Same for `check-version`: bump the changelog without regenerating and watch it
+> catch the stale artifacts, because a version is unusually good at being wrong
+> while everything still parses, builds and deploys.
 
 ### 6 · Verify
 

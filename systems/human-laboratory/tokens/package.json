@@ -1,6 +1,5 @@
 {
   "name": "@thl/tokens",
-  "version": "0.1.0",
   "private": true,
   "exports": {
     ".": "./theme.css",
@@ -14,7 +13,7 @@
   "scripts": {
     "generate:tokens": "token-tools",
     "build": "token-tools",
-    "lint": "node ../../../packages/token-tools/validate-palette.mjs"
+    "lint": "node ../../../packages/token-tools/validate-palette.mjs && node ../../../packages/token-tools/check-version.mjs .."
   },
   "devDependencies": {
     "@imprint/token-tools": "*"

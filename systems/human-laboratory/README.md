@@ -16,6 +16,7 @@ than restating it.
 | [`static/`](static) | The report kit — pure HTML/CSS, no build step |
 | [`brand/`](brand) | The mark, its monochrome and favicon variants, and the rules |
 | `registry.json` | The `@thl` namespace: a style item, eight components, the report kit, the brand |
+| [`CHANGELOG.md`](CHANGELOG.md) | Every release — and the **only** declaration of this system's version |
 
 ## Components
 
@@ -56,3 +57,12 @@ four diagram forms, the chart rules and the editorial voice.
 Then `npx shadcn add @thl/button`, or `@thl/report-kit` for the document tier.
 The `style` item carries the tokens, base layer and `cn()`, and every component
 depends on it.
+
+It also carries `version.generated.ts`, which lands at `~/thl/lib/` and is how
+you find out later which version you adopted — the registry can advertise a
+version but `shadcn add` records none, so it has to arrive as a file. Report-kit
+stylesheets carry it in their header for the same reason, since a standalone
+document has no JavaScript to import it from.
+
+Releases are tagged `thl/v<version>` and published from
+[`CHANGELOG.md`](CHANGELOG.md), which is the single declaration of the number.

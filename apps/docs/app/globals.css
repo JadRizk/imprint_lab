@@ -133,3 +133,61 @@
   color: var(--color-accent);
   border-block-end-color: var(--color-accent);
 }
+
+/* The changelog renders through the same block, and brings three elements the
+ * thesis never used. Each takes its weight from the line ladder rather than a
+ * value picked here. */
+
+.thesis ol {
+  display: grid;
+  gap: 0.625rem;
+  padding-inline-start: 1.5rem;
+  list-style: decimal;
+}
+
+.thesis table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  /* The edge OF the table is `line`; the rules INSIDE it are `ambient`. That is
+     the ladder's first distinction, and a table is the case it was written for. */
+  border: 1px solid var(--color-line);
+  font-size: 0.92em;
+}
+
+.thesis th,
+.thesis td {
+  text-align: start;
+  padding: 0.5rem 0.75rem;
+  border-block-start: 1px solid var(--color-ambient);
+  vertical-align: top;
+}
+
+.thesis thead th {
+  border-block-start: 0;
+  border-block-end: 1px solid var(--color-line);
+  font-weight: 600;
+  color: var(--color-ink);
+  text-transform: uppercase;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label-dense);
+}
+
+/* An aside outranks the paragraphs around it, so it is bounded by the tier that
+   means exactly that — and on the leading edge only, since the note is a branch
+   off the running text rather than a box within it. */
+.thesis blockquote {
+  border-inline-start: 2px solid var(--color-line-strong);
+  padding-inline-start: 1rem;
+  color: var(--color-ink-subtle);
+}
+
+.thesis blockquote > * + * {
+  margin-block-start: 0.75rem;
+}
+
+/* No `hr` rule, deliberately. The changelog was authored with `---` between
+   releases and it drew a 2px line-strong rule ~40px above the h2's own 2px
+   line-strong rule — the same boundary, at the same tier, twice. The separators
+   came out of the markdown instead of being styled around: a release division is
+   already what the h2 rule means, and there is no tier above line-strong that
+   does not spend the accent. */

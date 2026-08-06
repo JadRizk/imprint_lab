@@ -152,6 +152,38 @@ export function setPackageName(name) {
 const BANNER = (what) =>
   `AUTO-GENERATED FROM theme.css — do not edit by hand.\nRun: bun run --filter=${PKG} generate:tokens${what ? `\n${what}` : ''}`;
 
+/**
+ * The system's version, as a value JS can read.
+ *
+ * This is the half of contract 2 the registry cannot deliver on its own.
+ * `shadcn add` copies FILES — it does not record an item's `meta` anywhere in
+ * the consuming project, so a version advertised only by the registry answers
+ * "what is current?" and never "what do I have?". A shipped file answers the
+ * second, which is the one a consumer is actually stuck on.
+ *
+ * It lands beside `cn()` for the same reason `tw-merge.generated.ts` and
+ * `motion.generated.ts` do: a registry consumer receives `ui/lib/` as plain
+ * files with no workspace to resolve `@<ns>/tokens` against.
+ */
+export function emitVersion({ version, date, namespace }) {
+  return `// AUTO-GENERATED FROM CHANGELOG.md — do not edit by hand.
+// Run: bun run --filter=${PKG} generate:tokens
+//
+// The version of this system that these files were copied from. It is a
+// snapshot, not a subscription: components are copied into your project, so
+// this says what you adopted, not what is current. Compare it against the
+// registry index to find out whether you are behind.
+
+export const version = '${version}' as const;
+
+/** The date the version above was released. */
+export const released = '${date}' as const;
+
+/** The registry namespace these files came from. */
+export const namespace = '${namespace}' as const;
+`;
+}
+
 export function emitTokensTs(tokens) {
   return `// ${BANNER('').split('\n').join('\n// ')}
 
