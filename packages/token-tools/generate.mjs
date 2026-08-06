@@ -19,17 +19,31 @@ import {
   emitTokensJson,
   emitTokensTs,
   emitTwMerge,
+  emitVersion,
   setPackageName
 } from './lib/emit.mjs';
 import { parseTheme } from './lib/parse.mjs';
+import { readSystemVersion } from './lib/version.mjs';
 
 const tokenDir = resolvePath(process.argv[2] ?? process.cwd());
 const outDir = join(tokenDir, 'generated');
+const systemDir = dirname(tokenDir);
 
 // systems/<name>/tokens -> <name>
 const system = basename(dirname(tokenDir));
 
-setPackageName(JSON.parse(readFileSync(join(tokenDir, 'package.json'), 'utf8')).name);
+// The system's version, read from the one place it is declared. Throws if the
+// changelog is missing or malformed — see lib/version.mjs for why that is
+// preferable to defaulting.
+const release = readSystemVersion(systemDir);
+
+// The package scope is the registry namespace — @thl/tokens -> thl. It names the
+// report-kit bundles and the version file, so it matches what a consumer types
+// rather than initials derived from the directory name.
+const pkgName = JSON.parse(readFileSync(join(tokenDir, 'package.json'), 'utf8')).name;
+const short = pkgName.match(/^@([^/]+)\//)?.[1] ?? system;
+
+setPackageName(pkgName);
 
 const css = readFileSync(join(tokenDir, 'theme.css'), 'utf8');
 const parsed = parseTheme(css);
@@ -61,10 +75,18 @@ for (const [file, contents] of Object.entries(artifacts)) {
 // against. A relative import is the only one that works in both places.
 // motion.generated.ts is there for the same reason: Framer Motion takes seconds
 // and cannot read a custom property, so the ladder has to reach JS as values.
+// version.generated.ts is there for a third reason: it is the only way a
+// consumer can answer "which version did I install?". The registry advertises
+// the version, but `shadcn add` copies files and records no metadata, so a
+// version that never lands on disk is a version the consumer cannot read back.
 const uiLib = join(dirname(tokenDir), 'ui', 'lib');
 if (existsSync(uiLib)) {
   writeFileSync(join(uiLib, 'tw-merge.generated.ts'), artifacts['tw-merge.ts']);
   writeFileSync(join(uiLib, 'motion.generated.ts'), emitMotion(tokens));
+  writeFileSync(
+    join(uiLib, 'version.generated.ts'),
+    emitVersion({ ...release, namespace: `@${short}` })
+  );
 }
 
 // ── Static tier ────────────────────────────────────────────────────────────
@@ -74,15 +96,14 @@ if (existsSync(uiLib)) {
 // static/parts/; the bundles below are generated and must not be edited.
 const staticDir = join(dirname(tokenDir), 'static');
 const partsDir = join(staticDir, 'parts');
-// Bundle filename comes from the package scope — @thl/tokens -> thl.css — so it
-// matches the registry namespace consumers actually type, rather than initials
-// derived from the directory name.
-const pkgName = JSON.parse(readFileSync(join(tokenDir, 'package.json'), 'utf8')).name;
-const short = pkgName.match(/^@([^/]+)\//)?.[1] ?? system;
 
 const part = (name) => readFileSync(join(partsDir, name), 'utf8').trimEnd();
+// The version is stamped into the header because this tier has no JS to import
+// version.generated.ts from. A standalone report is a single file someone opens
+// two years later with no repo around it; the stylesheet saying which version
+// drew it is the only provenance it will ever have.
 const bundleHeader = (what) =>
-  `/* ${system} — ${what}\n * AUTO-GENERATED. Edit static/parts/ and re-run:\n *   bun run --filter=${pkgName} generate:tokens\n */\n\n`;
+  `/* ${system} — ${what}\n * @${short} v${release.version} (${release.date})\n * AUTO-GENERATED. Edit static/parts/ and re-run:\n *   bun run --filter=${pkgName} generate:tokens\n */\n\n`;
 
 let staticCount = 0;
 if (existsSync(partsDir)) {
@@ -110,7 +131,7 @@ if (existsSync(partsDir)) {
 
 const aliases = tokens.filter((t) => t.aliasOf).length;
 console.log(
-  `token-tools: ${system} — ${tokens.length} tokens (${aliases} aliased) → ${Object.keys(artifacts).length} artifacts in generated/, ${staticCount} bundles in static/`
+  `token-tools: ${system} @${short} v${release.version} — ${tokens.length} tokens (${aliases} aliased) → ${Object.keys(artifacts).length} artifacts in generated/, ${staticCount} bundles in static/`
 );
 
 if (dtcg.skipped.length > 0) {

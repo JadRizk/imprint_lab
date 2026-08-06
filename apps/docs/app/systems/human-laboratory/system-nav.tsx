@@ -4,11 +4,12 @@ const TABS = [
   { href: '', label: 'THESIS' },
   { href: '/components', label: 'COMPONENTS' },
   { href: '/example', label: 'EXAMPLE' },
-  { href: '/report', label: 'REPORT_KIT' }
+  { href: '/report', label: 'REPORT_KIT' },
+  { href: '/changelog', label: 'CHANGELOG' }
 ] as const;
 
 /**
- * The four faces of a system. Server component — `current` is passed by each
+ * The five faces of a system. Server component — `current` is passed by each
  * page rather than read from a hook, which keeps this off the client boundary.
  *
  * **This draws no rule and owns no spacing.** It used to carry its own

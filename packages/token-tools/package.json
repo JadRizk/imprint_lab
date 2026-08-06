@@ -7,6 +7,7 @@
   "bin": {
     "token-tools": "./generate.mjs",
     "check-roles": "./check-roles.mjs",
+    "check-version": "./check-version.mjs",
     "smoke-install": "./smoke-install.mjs",
     "validate-palette": "./validate-palette.mjs"
   },

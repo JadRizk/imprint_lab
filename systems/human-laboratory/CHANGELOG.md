@@ -1,0 +1,118 @@
+# Changelog — The Human Laboratory (`@thl`)
+
+All notable changes to this system. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the system is
+versioned with [semantic versioning](https://semver.org/spec/v2.0.0.html).
+
+> ⚠ **This file is parsed.** The newest `## [x.y.z] — date` heading below **is**
+> the system's version — nothing else declares it. `token-tools` reads it and
+> emits it into `ui/lib/version.generated.ts`, the report-kit bundle headers, and
+> the published registry. So the release procedure is: write the entry, then
+> regenerate. A version cannot be bumped without saying what changed, which is
+> the point.
+>
+> `## [Unreleased]` is ignored by the parser. Keep the heading shape exactly —
+> square brackets, a semver triple, a dash, an ISO date. `check-version` fails
+> the build if it drifts.
+
+## What a version means here
+
+The system version is the atomic unit: tokens, components, brand and report kit
+ship together at one number, and a consumer adopts it deliberately. That is what
+makes the following a real promise rather than a wish.
+
+| Bump | Means |
+|---|---|
+| **Major** | A consumer's existing copy breaks. A role renamed or removed, a component's props changed, a report-kit class deleted, a contract in `CLAUDE.md` reversed. |
+| **Minor** | Additive. A new role, component, report-kit primitive or token that existing code can ignore. |
+| **Patch** | A value moves without renaming anything — a contrast fix, a corrected ratio, a generated artifact caught up to its source. |
+
+**Primitives are private.** `--color-lime` moving is a patch, because nothing in
+`ui/` is allowed to reference it. Roles are the public surface; that asymmetry is
+the whole reason for the two tiers.
+
+## [Unreleased]
+
+Nothing yet.
+
+## [1.0.0] — 2026-08-06
+
+First release. The system has a settled role contract, an enforced token
+pipeline, a published registry, a brand and a document tier — the things that
+have to be stable before anyone can adopt a version rather than a commit.
+
+Everything below already existed at this tag; it is written out because a first
+entry is the only chance to state what the version is promising to keep. The
+thirty commits that built it are not itemised — they fixed a system nobody had
+installed yet, so there is nothing there for a consumer to act on.
+
+### Added
+
+**The token model.** `theme.css` is hand-authored and is the only source;
+`token-tools` emits typed tokens, a plain `:root` stylesheet, a scoped
+stylesheet, DTCG JSON, a Tailwind safelist, a tailwind-merge config, the motion
+ladder as JS values, and the report-kit bundles. Nothing under `generated/` is
+edited by hand.
+
+**Eleven role tokens**, the shared contract across every system in
+`imprint_lab`: `canvas` · `ambient` · `line` · `line-strong` · `ink` ·
+`ink-muted` · `ink-subtle` · `accent` · `accent-ink` · `critical` · `warning`,
+plus `--shadow-glow` and `--shadow-glow-strong`. Components reference roles only;
+`check-roles` fails the build on a primitive.
+
+**Eight components**, all roles-only: `Button` · `PageShell` · `SectionHeader` ·
+`BentoGrid` · `BentoCard` · `ImageFrame` · `Mark` · `Wordmark`.
+
+**The line ladder.** Four tiers — `ambient` (1.23:1, subdivision inside a panel),
+`line` (1.69:1, the edge of a thing), `line-strong` (2.69:1, a boundary that
+outranks its neighbours), `accent` (16.83:1, live state). There is deliberately
+no elevation and no `surface` fill: a panel measured 1.03:1 against this canvas,
+so line carries every boundary instead.
+
+**The duration ladder.** Four rungs — `ack` (0ms), `state` (120ms), `transit`
+(320ms), `process` (1200ms). Feedback enters at `ack` and decays at `state`;
+symmetric timing reads as the interface animating at you. Emitted to JS as
+`ui/lib/motion.generated.ts`, because Framer Motion cannot read a custom
+property.
+
+**A closed type scale**, `micro` through `6xl`, with letter-spacing declared per
+size step rather than picked at a call site. `--text-*`, `--tracking-*` and
+`--leading-*` are all reset, so Tailwind's own rungs do not exist here.
+
+**The report kit** — a pure HTML/CSS tier for standalone documents, with no
+React, no build step and no network request. Base bundle plus opt-in chart,
+diagram and interaction layers, a worked example, a catalogue, and the agent
+instructions in `static/SKILL.md`.
+
+**The brand**: the mark, its monochrome and favicon variants, and the rules in
+`brand/README.md`. The favicon is a separate drawing rather than an export — the
+frame is 1.69:1 and stops rendering below ~24px.
+
+**Accessibility floors, enforced by token rather than by review.** Any role used
+for text clears 4.5:1 against the canvas. `prefers-contrast: more` promotes the
+whole line ladder — `line` reaches 4.59:1, clearing WCAG 1.4.11's 3:1 for the
+visual boundary of a control — and deliberately leaves text alone, because
+promoting `ink-subtle` would merge it with `ink-muted` and cost the hierarchy
+that carries the meaning. `prefers-reduced-motion` restricts *what* may
+transition rather than flattening every duration, so colour feedback survives at
+full length while anything positional lands instantly.
+
+**Distribution** through a shadcn-compatible registry at
+`https://jadrizk.github.io/imprint_lab/r/thl/{name}.json`, with `bun run smoke`
+proving every item is installable: complete manifest, declared dependencies, and
+files byte-identical to their source.
+
+### Known gaps
+
+Recorded rather than tidied away, so the next version can close them:
+
+- **No input, card, badge, dialog or table.** The component set covers layout,
+  identity and the two display surfaces, and nothing else.
+- **Dark mode only.** Deferred, not forgotten — the role layer is what makes
+  adding light mode small.
+- **The report kit's instructions are not auto-discoverable in a consuming
+  project.** The registry lands `SKILL.md` at `~/thl/SKILL.md`, which is not a
+  skills directory, so an agent there has to be pointed at it by hand.
+
+[Unreleased]: https://github.com/JadRizk/imprint_lab/compare/thl/v1.0.0...HEAD
+[1.0.0]: https://github.com/JadRizk/imprint_lab/releases/tag/thl%2Fv1.0.0

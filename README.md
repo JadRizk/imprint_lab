@@ -74,8 +74,30 @@ Systems distribute through a shadcn-compatible registry, one namespace each:
 
 Then `npx shadcn add @thl/button`, or `@thl/report-kit` for the document tier.
 Components are copied into your project, so per-project divergence is a feature
-rather than a fork. The system version is the atomic unit: tokens and components
-ship together, and a consumer adopts a version deliberately.
+rather than a fork.
+
+**The system version is the atomic unit.** Tokens, components, brand and report
+kit ship together at one number, declared in the system's
+[`CHANGELOG.md`](systems/human-laboratory/CHANGELOG.md) and nowhere else.
+
+| Question | Answer |
+|---|---|
+| What is current? | `version` at the top of the registry index, or `meta.version` on any item |
+| What did I install? | `~/thl/lib/version.generated.ts`, which arrives with the `style` item |
+| What changed? | The changelog, and the [GitHub Release](https://github.com/JadRizk/imprint_lab/releases) published from it |
+
+The second row is the one a registry cannot answer on its own: `shadcn add`
+copies files and records no metadata, so the version has to arrive as a file or
+it does not arrive at all. Every report-kit stylesheet carries it in its header
+too, for documents that have no JavaScript to import anything from.
+
+**Major means your copy breaks** — a role renamed or removed, a component's props
+changed, a report-kit class deleted. **Minor** is additive. **Patch** moves a
+value without renaming anything; that includes primitives like `--color-lime`,
+which are private to the system and which no component is allowed to reference.
+
+Releases are tagged per system — `thl/v1.0.0` — because each one evolves on its
+own timeline.
 
 ## Working in this repo
 

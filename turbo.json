@@ -20,7 +20,17 @@
       // Written generically rather than as an @<ns>/tokens# override so a second
       // system is covered the day it exists. It matches nothing under apps/docs,
       // which is the correct answer there.
-      "inputs": ["$TURBO_DEFAULT$", ".env*", "../static/parts/**"],
+      //
+      // `../CHANGELOG.md` is here for exactly the same reason, and it is the
+      // sharper edge of the two. It is the ONLY place a system's version is
+      // declared, and the generator stamps that version into version.generated.ts
+      // and every report-kit bundle header. Undeclared, bumping the version
+      // changes no file turbo hashes: the task reports FULL TURBO, replays the
+      // old log line, and every artifact keeps claiming the previous version —
+      // including the one that ships to a consumer's disk. `check-version` would
+      // then fail the build, which is the good outcome, but only because the gate
+      // exists; the cache key is what makes the regenerate happen at all.
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "../static/parts/**", "../CHANGELOG.md"],
       // NEXT_PUBLIC_SITE_URL must be in the cache key. It is the one place the
       // published location is declared, and basePath, metadataBase and the
       // registry homepage are all derived from it — so it changes the CONTENTS of

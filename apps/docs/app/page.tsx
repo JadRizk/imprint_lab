@@ -38,7 +38,8 @@ export default function HomePage() {
                 <div className="flex items-baseline justify-between gap-4">
                   <span className="text-micro tracking-label text-accent">{system.namespace}</span>
                   <span className="text-micro tracking-label text-ink-subtle">
-                    {system.tokens.length} TOKENS · {system.roleColors.length} ROLES
+                    V{system.version} · {system.tokens.length} TOKENS · {system.roleColors.length}{' '}
+                    ROLES
                   </span>
                 </div>
                 <h2 className="mt-3 text-xl font-bold text-ink">{system.name}</h2>
