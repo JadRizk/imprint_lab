@@ -26,8 +26,12 @@ import { type ReactNode, useEffect, useState } from 'react';
  * `scrollY > 0` IS the condition, not an approximation of it: this bar is the
  * first element in the document, so it is stuck exactly when the page has
  * scrolled at all. An IntersectionObserver would need a sentinel and the bar's
- * measured height to say the same thing, and that height is variable — the nav
- * wraps to three lines at 375px.
+ * measured height to say the same thing, for no gain.
+ *
+ * The bar is now a fixed 54px at every width — the strip inside it scrolls
+ * rather than wraps — so that height is no longer variable. The argument above
+ * does not depend on it either way, which is why `scrollY > 0` survived the
+ * change unaltered.
  */
 export function StickyNav({ children }: { children: ReactNode }) {
   const [stuck, setStuck] = useState(false);
@@ -47,12 +51,16 @@ export function StickyNav({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <nav
+    // A div, not a nav. This is sticky chrome that happens to contain the
+    // navigation; SystemNav renders the `<nav>` landmark itself and now carries
+    // an accessible name, so wrapping it in a second, unnamed navigation
+    // landmark listed the same six links twice in a landmark menu.
+    <div
       className={`sticky top-0 z-50 w-full border-b-2 bg-canvas transition-colors duration-state ${
         stuck ? 'border-b-line-strong' : 'border-b-transparent'
       }`}
     >
       {children}
-    </nav>
+    </div>
   );
 }

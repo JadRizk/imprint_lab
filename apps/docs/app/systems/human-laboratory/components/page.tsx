@@ -22,7 +22,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { asset } from '../../../../lib/base-path';
-import { Label, Masthead, type SpecDef, SpecList } from '../spec';
+import { Contents, Label, Masthead, type SpecDef, SpecList } from '../spec';
 import { SystemPage } from '../system-page';
 
 export const metadata: Metadata = {
@@ -617,6 +617,7 @@ export default function ComponentsPage() {
           </>
         }
       />
+      <Contents specs={SPECS} />
       <SpecList specs={SPECS} />
     </SystemPage>
   );

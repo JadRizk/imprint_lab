@@ -1,0 +1,124 @@
+/* ── The brackets that mark the current section ──────────────────────────────
+ *
+ * They are present in EVERY state and only change colour: transparent at rest,
+ * `ink-subtle` on hover, `accent` when current. A bracket that appeared only on
+ * hover would widen the label under the pointer and shove every tab to its
+ * right — so the box is reserved, exactly as `Button` reserves a border box so
+ * heights match across a row and `StickyNav` keeps its 2px border in both
+ * states. Measured after the change: hovering a tab moves no tab by even
+ * 0.01px.
+ *
+ * ⚠ A bracket is a glyph, so it is TEXT, and contract 3 puts a 4.5:1 floor
+ * under anything used as text. `--color-ink-subtle` (4.59:1) is the quietest
+ * grey they may legally take — `--color-line` (1.69:1) and
+ * `--color-line-strong` (2.69:1) are not available to them. That is the one
+ * thing drawn corner brackets could have done and glyphs cannot, and it is why
+ * the hover pair reads slightly louder than the drawn version would have.
+ */
+
+.tab::before,
+.tab::after {
+  color: transparent;
+  /* Feedback decays at `state`; the rules below bring it in at `ack`. */
+  transition: color var(--transition-duration-state);
+}
+
+/* The `/ ""` half is the pseudo-element's ALT TEXT, which keeps the brackets
+ * decorative to assistive technology — `aria-hidden` cannot reach a
+ * pseudo-element, and without this a screen reader announces the punctuation
+ * around all six labels.
+ *
+ * Declared twice on purpose. A browser without the alt-text syntax drops the
+ * SECOND declaration as invalid and keeps the first, rather than dropping
+ * `content` altogether and rendering no brackets at all — which would take the
+ * entire current-section signal with it, silently. */
+.tab::before {
+  content: "[ ";
+  /* biome-ignore lint/suspicious/noDuplicateProperties: the fallback IS the point — a browser without the alt-text syntax must keep the plain declaration rather than lose `content` entirely */
+  content: "[ " / "";
+}
+
+.tab::after {
+  content: " ]";
+  /* biome-ignore lint/suspicious/noDuplicateProperties: see above */
+  content: " ]" / "";
+}
+
+.tab:hover::before,
+.tab:hover::after,
+.tab:focus-visible::before,
+.tab:focus-visible::after {
+  color: var(--color-ink-subtle);
+  transition-duration: var(--transition-duration-ack);
+}
+
+/* The current section. Only the BRACKETS are lime; the label is `ink` — so the
+ * accent marks rather than fills, and the row reads in three ranks (subtle,
+ * muted, ink) rather than two. One accent event per screen, which is what the
+ * budget in contract 5 allows. */
+.tab[aria-current="page"]::before,
+.tab[aria-current="page"]::after {
+  color: var(--color-accent);
+}
+
+/* ── Arrival ─────────────────────────────────────────────────────────────────
+ *
+ * The brackets close around the current section at `transit`, the rung for
+ * something entering the page. This is where the "draw" lives: it cannot be on
+ * hover, because contract 6 puts feedback in at `ack` — zero — and a draw is
+ * travel over time. Reporting where you are is an arrival, not a pointer state.
+ *
+ * Opacity, never a transform. A transform on text resamples the glyphs and they
+ * blur, which is the same argument that banned `scale` on BentoCard's border.
+ *
+ * It re-runs on every client-side navigation, because an element only starts
+ * matching this selector at the moment it becomes current. */
+@keyframes bracket-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tab[aria-current="page"]::before,
+.tab[aria-current="page"]::after {
+  animation: bracket-in var(--transition-duration-transit) linear;
+}
+
+/* Reduced motion silences travel, not feedback. The arrival is travel; the
+ * colour changes above are the machine answering, and survive at full duration.
+ *
+ * It is handled here rather than in JS because the app has NO global rule for
+ * this — the property-restricting reset lives only in the report kit's
+ * reset.css, and every React component handles the preference itself. Doing it
+ * in CSS is what keeps `SystemNav` a server component; `useReducedMotion` would
+ * drag the whole nav across the client boundary. */
+@media (prefers-reduced-motion: reduce) {
+  .tab[aria-current="page"]::before,
+  .tab[aria-current="page"]::after {
+    animation: none;
+  }
+}
+
+/* ── The strip ───────────────────────────────────────────────────────────────
+ *
+ * It scrolls rather than wraps. Measured: the row needs 648px and has 343px at
+ * 375px, and nothing closes that gap — dropping the level-up link, tightening
+ * to `tracking-label-dense` and halving the gap together still leave 460px. So
+ * the choice was scroll or disclose, and a disclosure needs open state, escape
+ * handling and outside-click, which would push this whole component across the
+ * client boundary.
+ *
+ * Hiding the scrollbar needs both declarations, and `::-webkit-scrollbar` has
+ * no Tailwind utility. The bar is hidden rather than styled because it would
+ * otherwise draw a grey rule directly above the nav's own — two horizontal
+ * lines 2px apart, one of them meaningless. */
+.strip {
+  scrollbar-width: none;
+}
+
+.strip::-webkit-scrollbar {
+  display: none;
+}
