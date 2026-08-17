@@ -8,11 +8,10 @@ import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 import { asset } from '../../../../lib/base-path';
-import { SystemNav } from '../system-nav';
+import { SystemBar } from '../system-bar';
 
 import { CENSUS, type LadderRole, LINE_LADDER, MOTION_RUNGS, TEXT_FLOOR } from './data';
 import { HeroSection } from './hero-section';
-import { StickyNav } from './sticky-nav';
 
 /**
  * How each rung of the line ladder is drawn, keyed by the role it names.
@@ -57,23 +56,23 @@ const SAMPLES = [
 
 export default function DemoPage() {
   return (
-    // The nav is sticky, not fixed, so it occupies its own height in flow and
+    // The bar is sticky, not fixed, so it occupies its own height in flow and
     // the page cannot mis-clear it. The previous `fixed` + `pt-12` pairing was
-    // a constant clearing a variable: at 375px the nav wrapped to three lines,
-    // measured 102px, and its bottom rule cut 6px into the first eyebrow.
+    // a constant clearing a variable: back when the nav wrapped it measured
+    // 102px at 375px and its bottom rule cut 6px into the first eyebrow. The
+    // strip scrolls now and the bar is a constant 54px, but sticky is still
+    // what makes the clearance impossible to get wrong rather than merely
+    // correct today.
     <div className="min-h-screen w-full">
-      {/* Navigation Bar — opaque. A translucent, blurred bar is glassmorphism,
-          which is precisely the vocabulary this system exists to reject.
-          Its rule is earned rather than permanent; see StickyNav. */}
-      <StickyNav>
-        <PageShell className="flex items-center justify-between py-3">
-          <SystemNav base="/systems/human-laboratory" current="/example" />
-          <span className="text-micro tracking-label text-ink-subtle">
-            {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
-            EXAMPLE // <span className="text-accent">FULL_PAGE</span>
-          </span>
-        </PageShell>
-      </StickyNav>
+      {/* The same bar as every other page under this route.
+       *
+       * It used to be composed here by hand, with a bespoke `EXAMPLE //
+       * FULL_PAGE` badge on the right. The badge went because it duplicated the
+       * nav: on this page the current tab IS example, so the badge and the
+       * nav's lime brackets were two accent events in one bar, 400px apart,
+       * saying the same thing. The version chip that replaced it states
+       * something the nav cannot. */}
+      <SystemBar base="/systems/human-laboratory" current="/example" />
 
       <HeroSection />
 

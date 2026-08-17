@@ -11,7 +11,7 @@ import {
   token,
   trackingTokens
 } from '../../../../lib/token-lookup';
-import { Label, Masthead, type SpecDef, SpecList } from '../spec';
+import { Contents, Label, Masthead, type SpecDef, SpecList } from '../spec';
 import { SystemPage } from '../system-page';
 
 export const metadata: Metadata = {
@@ -652,6 +652,7 @@ export default function FoundationsPage() {
           </>
         }
       />
+      <Contents specs={SPECS} />
       <SpecList specs={SPECS} />
     </SystemPage>
   );

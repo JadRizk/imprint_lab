@@ -122,6 +122,16 @@
   font-size: 0.92em;
   color: var(--color-ink);
   border-block-end: 1px solid var(--color-ambient);
+  /* Inline code is frequently one unbreakable token — a path, an identifier, a
+   * URL — and prose offers it no break opportunity. The changelog names the
+   * registry URL, `https://jadrizk.github.io/imprint_lab/r/thl/{name}.json`,
+   * which measured 441px against a 375px viewport and gave the whole document a
+   * horizontal scroll.
+   *
+   * `anywhere` rather than `break-word`: only `anywhere` also shrinks the
+   * element's min-content width, so the containing paragraph stops forcing the
+   * page wide. `break-word` would wrap the glyphs and leave the overflow. */
+  overflow-wrap: anywhere;
 }
 
 .thesis a {

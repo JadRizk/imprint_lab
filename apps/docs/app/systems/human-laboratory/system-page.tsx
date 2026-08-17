@@ -1,36 +1,23 @@
-import { PageShell } from '@thl/ui/components/page-shell';
 import type { ReactNode } from 'react';
 
-import { SystemNav } from './system-nav';
+import { SystemBar } from './system-bar';
 
 /**
  * The standard chrome for a system's documentation page.
  *
  * Every page under a system gets the same top spacing, the same gutter and
- * measure, and one rule beneath the nav at the same width. That used to be four
- * pages agreeing by hand, and they did not: the thesis put the nav inside a
- * `prose` shell so its rule ran 550px and its h1 wrapped, the components page
- * stacked the nav's rule and a `<header>` rule with the h1 wedged between them,
- * and the example page turned the nav into a flex item so its rule stopped
- * mid-air. Uniformity has to be structural or it decays.
+ * measure, and the same bar. That used to be four pages agreeing by hand, and
+ * they did not: the thesis put the nav inside a `prose` shell so its rule ran
+ * 550px and its h1 wrapped, the components page stacked the nav's rule and a
+ * `<header>` rule with the h1 wedged between them, and the example page turned
+ * the nav into a flex item so its rule stopped mid-air. Uniformity has to be
+ * structural or it decays.
+ *
+ * The header used to be defined here and separately on the example page. It is
+ * now `SystemBar` for both, which is also where the rule lives: as sticky
+ * chrome, the bar earns its rule once content passes beneath it rather than
+ * drawing one permanently.
  */
-
-/**
- * The nav and its rule, in the page gutter. Internal: the example page needs the
- * nav in a flex row beside a badge inside a full-bleed sticky bar, so it
- * composes `SystemNav` directly and draws the rule on the bar instead.
- */
-function SystemHeader({ base, current }: { base: string; current: string }) {
-  return (
-    <PageShell className="pt-10">
-      {/* The rule is the header's, not the nav's — it describes the width of
-          the page, so the element that knows that width draws it. */}
-      <div className="border-b border-line pb-3">
-        <SystemNav base={base} current={current} />
-      </div>
-    </PageShell>
-  );
-}
 
 interface SystemPageProps {
   /** Slug for `data-system`. Binds the subtree to that system's scoped tokens. */
@@ -78,7 +65,7 @@ export function SystemPage({ system, base, current, children }: SystemPageProps)
     // another system overrides it here, because colour, font and cursor all
     // inherit from the nearest data-system ancestor.
     <div data-system={system} className="min-h-screen w-full pb-20">
-      <SystemHeader base={base} current={current} />
+      <SystemBar base={base} current={current} />
       {/* Bare div, no PageShell — children bring their own gutter, and several
           render full-bleed sections. This contributes spacing and nothing else. */}
       <div className={HEADER_GAP}>{children}</div>
