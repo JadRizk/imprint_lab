@@ -33,7 +33,41 @@ the whole reason for the two tiers.
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+**`bento-card.module.css`** — a new file in the `bento-card` registry item, which
+now ships two files instead of one. It carries the no-JS floor described below.
+
+> **This one needs an action.** `shadcn add bento-card` will place the stylesheet
+> next to the component, but a copy updated by hand — or a component file diffed
+> across on its own — gets the `import` without the file it names, which is a
+> build error rather than a silent one. Take both files or neither.
+
+### Fixed
+
+**`BentoCard` and `ImageFrame` no longer render permanently invisible when
+scripts do not run.** Both stage their entrance in JavaScript, so Framer Motion
+server-renders the `initial` state as an inline style — `opacity: 0` on a card,
+`height: 0%` plus a hidden `<img>` on a frame — and with scripts off nothing ever
+arrives to undo it. The content is not merely unanimated; it is gone, and it
+stays gone. Found on this system's own components page, where thirteen cards had
+been sitting behind an IntersectionObserver that never fired.
+
+Printing failed the same way for a different reason: a print stylesheet renders
+whatever the DOM currently says, and anything not yet scrolled into view still
+says hidden. A reader printing a page got blank boxes.
+
+Each component now carries a floor under `@media (scripting: none)` and
+`@media print`. `ImageFrame` additionally drops its accent edge and emission in
+that branch — those mark the *growing* edge of a reveal, so a reveal that never
+runs would otherwise claim to be in progress for good, which is the accent spent
+on a state the machine is not in.
+
+Both rules are inert wherever scripts do run: the animated path is untouched, and
+this is a floor rather than a branch. `prefers-reduced-motion` is a separate
+question and was already handled — that preference asks for less movement from a
+page that works, while this asks what the page is when the animation layer never
+arrives at all.
 
 ## [1.0.0] — 2026-08-06
 

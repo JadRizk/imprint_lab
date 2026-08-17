@@ -1,634 +1,623 @@
-import { coreColors, roleColors, semanticColors, textTokens, tokens } from '@thl/tokens/tokens';
 import { BentoCard } from '@thl/ui/components/bento-card';
 import { BentoGrid } from '@thl/ui/components/bento-grid';
 import { Button } from '@thl/ui/components/button';
 import { ImageFrame } from '@thl/ui/components/image-frame';
+import { Mark } from '@thl/ui/components/mark';
 import { PageShell } from '@thl/ui/components/page-shell';
 import { SectionHeader } from '@thl/ui/components/section-header';
+import { Wordmark } from '@thl/ui/components/wordmark';
 import {
   ArrowDownRight,
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
   Copy,
-  Download,
   ExternalLink,
   Menu,
   Plus,
   Search,
   X
 } from 'lucide-react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+
+import { asset } from '../../../../lib/base-path';
+import { Label, Masthead, type SpecDef, SpecList } from '../spec';
 import { SystemPage } from '../system-page';
 
-const SPACING_STEPS = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24] as const;
+export const metadata: Metadata = {
+  title: 'Components — @thl',
+  description:
+    'The eight components The Human Laboratory ships: PageShell, SectionHeader, Button, ImageFrame, BentoGrid, BentoCard, Mark and Wordmark — with the states a static page cannot show.'
+};
 
-function displayName(tokenName: string) {
-  return tokenName.replace(/^--/, '').replace(/-/g, ' ').toUpperCase();
-}
+/* ────────────────────────────────────────────────────────────────────────────
+   01 PAGE_SHELL
+   ──────────────────────────────────────────────────────────────────────────── */
 
-/** A color token that carries no `text-*` utility is decoration-only. */
-function isDecorationOnly(utility: string) {
-  return !utility.includes('text-');
-}
+const SHELL_WIDTHS = [
+  { width: 'default' as const, note: 'max-w-[1280px] — dense, technical layouts' },
+  { width: 'prose' as const, note: 'max-w-[64ch] — long-form reading' },
+  { width: 'full' as const, note: 'max-w-none — gutters only' }
+];
 
-function Label({ children }: { children: ReactNode }) {
-  return <span className="block text-micro text-text-tertiary">{children}</span>;
-}
-
-interface SpecProps {
-  number: string;
-  label: string;
-  description?: ReactNode;
-  /**
-   * Render children at full page width instead of inside the shell. Used for
-   * specimens that are themselves page-level sections and bring their own
-   * PageShell — nesting those would double the gutter.
-   */
-  bleed?: boolean;
-  children: ReactNode;
-}
-
-function Spec({ number, label, description, bleed = false, children }: SpecProps) {
+function PageShellSpec() {
   return (
-    <section className="space-y-8">
-      <PageShell className="space-y-8">
-        <SectionHeader number={number} label={label} rule />
-        {description ? <p className="max-w-lg text-xs">{description}</p> : null}
+    <>
+      {/* Bleeds, because a PageShell demonstrating its own measure cannot sit
+          inside another one — that is the nesting the component forbids, and it
+          would double the gutter and misreport every width. */}
+      <div className="space-y-4">
+        {SHELL_WIDTHS.map(({ width, note }) => (
+          <div key={width}>
+            <PageShell width={width}>
+              <div className="border border-line px-4 py-6">
+                <span className="text-xs text-ink">width=&quot;{width}&quot;</span>
+                <span className="ml-4 text-micro text-ink-subtle">{note}</span>
+              </div>
+            </PageShell>
+          </div>
+        ))}
+      </div>
+      <PageShell>
+        <p className="max-w-2xl text-xs">
+          Use this instead of Tailwind&apos;s <code className="text-ink">container</code>, whose
+          width is a function of the current breakpoint rather than an explicit number.{' '}
+          <strong className="font-semibold text-ink">Never nest one inside another</strong> — a
+          section already inside a shell should lay out at full width and let the parent own the
+          gutter. The <code className="text-ink">prose</code> measure is in{' '}
+          <code className="text-ink">ch</code>, not pixels, because this system&apos;s body face is
+          monospaced: every glyph is the width of an <em>m</em>, so the comfortable line is 60–72
+          characters, not 75–90.
+        </p>
       </PageShell>
-      {bleed ? children : <PageShell className="space-y-8">{children}</PageShell>}
-    </section>
+    </>
   );
 }
 
-function Swatch({ name, value, utility }: { name: string; value: string; utility: string }) {
+/* ────────────────────────────────────────────────────────────────────────────
+   02 SECTION_HEADER
+   ──────────────────────────────────────────────────────────────────────────── */
+
+function SectionHeaderSpec() {
   return (
-    <div className="group space-y-2">
-      <div
-        className="h-24 w-full border border-steel transition-colors group-hover:border-line-strong"
-        style={{ backgroundColor: value }}
-      />
-      <div className="flex justify-between gap-2 text-xs">
-        <span>{displayName(name)}</span>
-        <span className="text-white">{value}</span>
+    <>
+      <div className="space-y-8 border border-line p-8">
+        <div className="space-y-2">
+          <Label>Default</Label>
+          <SectionHeader label="FIELD_SAMPLES" />
+        </div>
+        <div className="space-y-2">
+          <Label>With ordinal and rule</Label>
+          <SectionHeader number="03" label="SPACING_SCALE" rule />
+        </div>
+        <div className="space-y-2">
+          <Label>marked — the one section carrying the finding</Label>
+          <SectionHeader label="ANOMALY_DETECTED" marked />
+        </div>
       </div>
-      {isDecorationOnly(utility) ? (
-        <span className="block text-micro text-text-tertiary">DECORATION ONLY — NEVER TEXT</span>
-      ) : null}
-    </div>
+      <p className="max-w-2xl text-xs">
+        The marker is <strong className="font-semibold text-ink">neutral by default</strong>, and
+        that default is the point. It used to be lime on every section of every page — ten identical
+        accent events per view, varying with nothing. A marker that never varies is a bullet, not a
+        signal, and it was the largest decorative spend of the accent in the system.{' '}
+        <code className="text-ink">marked</code> lights it, plus{' '}
+        <code className="text-ink">--shadow-glow</code>, for the one section a view exists to make.
+      </p>
+      <p className="max-w-2xl text-xs">
+        <code className="text-ink">as</code> picks the heading level, so the document outline is a
+        separate decision from the visual weight. <code className="text-ink">rule</code> draws{' '}
+        <code className="text-ink">border-line-strong</code> at 2px — a section division outranks
+        the rules inside it.
+      </p>
+    </>
   );
 }
 
-/**
- * Roles carry an extra column primitives do not: what they currently point at.
- * That indirection IS the contract — the same eleven names exist in every
- * system and resolve to different values — so the table has to show both sides.
- */
-function RoleSwatch({
-  name,
-  aliasOf,
-  resolved,
-  note
-}: {
-  name: string;
-  aliasOf?: string;
-  resolved: string;
-  note?: string;
-}) {
+/* ────────────────────────────────────────────────────────────────────────────
+   03 BUTTON
+   ──────────────────────────────────────────────────────────────────────────── */
+
+const BUTTON_STATES = [
+  {
+    state: 'Rest',
+    primary: 'accent fill, accent-ink label',
+    outline: 'line edge, ink-muted label'
+  },
+  {
+    state: 'Hover',
+    primary: 'fill drops out, label goes accent',
+    outline: 'edge and label go accent'
+  },
+  {
+    state: 'Focus-visible',
+    primary: 'accent outline at 2px offset, plus shadow-glow-strong',
+    outline: 'the same — one focus indicator for the whole system'
+  },
+  {
+    state: 'Active (press)',
+    primary: 'snaps back to filled, plus shadow-glow',
+    outline: 'accent edge and label, plus shadow-glow'
+  }
+];
+
+function ButtonSpec() {
   return (
-    <div className="group space-y-2">
-      <div
-        className="h-24 w-full border border-line transition-colors group-hover:border-line-strong"
-        style={{ backgroundColor: resolved }}
-      />
-      <div className="flex justify-between gap-2 text-xs">
-        <span className="text-ink">{displayName(name)}</span>
-        <span className="text-ink">{resolved}</span>
+    <>
+      <div className="space-y-3">
+        <Label>Variants</Label>
+        <div className="flex flex-wrap items-center gap-4 border border-line p-6">
+          <Button variant="primary">Primary</Button>
+          <Button variant="outline">Outline</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="tag">Tag</Button>
+        </div>
       </div>
-      <span className="block text-micro text-ink-subtle">
-        {aliasOf ? `-> ${displayName(aliasOf)}` : 'primitive of its own'}
-      </span>
-      {note ? <span className="block text-micro text-ink-subtle">{note}</span> : null}
-    </div>
-  );
-}
 
-export default function HumanLaboratoryPage() {
-  return (
-    <SystemPage system="human-laboratory" base="/systems/human-laboratory" current="/components">
-      <div className="mt-10 space-y-24">
-        {/* Header. The masthead no longer draws a bottom rule of its own: the
-            nav's rule sat ~20px above the h1 and this one sat below the
-            standfirst, so the title was pinched between two lines and then
-            followed by a 100px void. One rule, under the nav, like every other
-            page — the space-y-24 below is what separates the masthead from the
-            first specimen. */}
-        <PageShell>
-          <header className="space-y-4">
-            {/* Responsive for the same reason as the thesis page: at 4xl the
-                title's unbreakable first word spills its box on a phone and
-                gives the document a horizontal scroll. */}
-            <h1 className="text-2xl font-bold text-white md:text-4xl">
-              {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
-              THE_HUMAN_LABORATORY // <span className="text-ink-subtle">@thl</span>
-            </h1>
-            <p className="max-w-2xl text-lg">
-              System 01. Functional, brutalist, atomic. Components below reference roles only — the
-              contract that lets them move to another system unchanged.
-            </p>
-          </header>
-        </PageShell>
+      {/* Sizes are shown in `outline`. The point of these rows is GEOMETRY — that
+          an icon button is exactly as tall as the text button beside it — and
+          rendering ten of them in `primary` spent ten accent events to say
+          nothing about colour. The accent has a budget; a size chart is not
+          where it goes. */}
+      <div className="space-y-3">
+        <Label>Sizes — text and icon align at every step</Label>
+        <div className="flex flex-wrap items-center gap-4 border border-line p-6">
+          <Button variant="outline" size="sm">
+            Small
+          </Button>
+          <Button variant="outline" size="iconSm">
+            <ArrowDownRight size={12} />
+          </Button>
+          <Button variant="outline" size="default">
+            Default
+          </Button>
+          <Button variant="outline" size="icon">
+            <ArrowDownRight size={16} />
+          </Button>
+          <Button variant="outline" size="lg">
+            Large
+          </Button>
+          <Button variant="outline" size="iconLg">
+            <ArrowDownRight size={20} />
+          </Button>
+        </div>
+      </div>
 
-        {/* 01 TYPOGRAPHY */}
-        <Spec
-          number="01"
-          label="TYPOGRAPHY"
-          description="Space Grotesk sets headings; IBM Plex Mono carries everything else. The scale below is closed — theme.css resets Tailwind's --text-* namespace, so these are the only sizes that exist."
-        >
-          <div className="grid grid-cols-1 items-center gap-8 border border-steel p-8 md:grid-cols-2">
-            <div className="space-y-6">
-              <div>
-                <Label>H1 / 5XL / BOLD</Label>
-                <h1 className="text-5xl font-bold text-white">Heading 1</h1>
-              </div>
-              <div>
-                <Label>H2 / 3XL / BOLD</Label>
-                <h2 className="text-3xl font-bold text-white">Heading 2</h2>
-              </div>
-              <div>
-                <Label>H3 / XL / BOLD</Label>
-                <h3 className="text-xl font-bold text-white">Heading 3</h3>
-              </div>
-              <div>
-                <Label>H4 / LG / BOLD (ACCENT)</Label>
-                <h4 className="text-lg font-bold text-lime">Heading 4</h4>
-              </div>
-            </div>
-            <div className="space-y-6">
-              <div>
-                <Label>BODY / BASE</Label>
-                <p className="text-base text-white">
-                  Body Text (Base) — The quick brown fox jumps over the lazy dog.
-                </p>
-              </div>
-              <div>
-                <Label>SECONDARY / SM</Label>
-                <p className="text-sm">
-                  Secondary Text — Information density is critical for technical interfaces.
-                </p>
-              </div>
-              <div>
-                <Label>TERTIARY / XS</Label>
-                <p className="text-xs text-text-tertiary">
-                  Tertiary / Metadata — SYSTEM_ID: 0x8291
-                </p>
-              </div>
-              <div>
-                <Label>MONOSPACE / MICRO / ACCENT</Label>
-                <p className="text-micro text-ink">console.log(&apos;Hello World&apos;);</p>
-              </div>
-            </div>
+      <div className="space-y-3">
+        <Label>Icon only</Label>
+        <div className="space-y-4 border border-line p-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="w-16 text-micro text-ink-subtle">PRIMARY</span>
+            <Button variant="primary" size="icon">
+              <Plus size={16} />
+            </Button>
+            <Button variant="primary" size="icon">
+              <Search size={16} />
+            </Button>
           </div>
-
-          {/* The scale itself, straight from the tokens */}
-          <div className="space-y-3">
-            <Label>SCALE / GENERATED FROM THEME.CSS</Label>
-            <div className="divide-y divide-steel border border-steel">
-              {textTokens.map((token) => {
-                const utility = token.utility;
-                return (
-                  <div
-                    key={token.name}
-                    className="flex flex-wrap items-baseline gap-x-6 gap-y-1 px-4 py-3"
-                  >
-                    <span className="w-24 shrink-0 text-xs text-ink">{utility}</span>
-                    <span className="w-32 shrink-0 text-xs text-text-tertiary">{token.value}</span>
-                    {/* Tracking is a property of the size, so it belongs in the
-                        row rather than in a table of its own. */}
-                    <span className="w-16 shrink-0 text-xs text-text-tertiary">
-                      {token.letterSpacing}
-                    </span>
-                    <span className={`${utility} text-white`}>The quick brown fox</span>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="w-16 text-micro text-ink-subtle">OUTLINE</span>
+            <Button variant="outline" size="icon">
+              <Menu size={16} />
+            </Button>
+            <Button variant="outline" size="icon">
+              <X size={16} />
+            </Button>
+            <Button variant="outline" size="icon">
+              <Copy size={16} />
+            </Button>
+            <Button variant="outline" size="icon">
+              <ExternalLink size={16} />
+            </Button>
           </div>
-        </Spec>
-
-        {/* 02 COLOR PALETTE */}
-        <Spec
-          number="02"
-          label="COLOR_PALETTE"
-          description="Every color used for text clears 4.5:1 against obsidian. Ambient is the one exception — it exists for grid lines and idle brackets, and must never carry text."
-        >
-          {/* Roles first: they are the contract components compile against.
-              Primitives below are this system's private implementation of it. */}
-          <div>
-            <p className="mb-2 text-micro font-medium uppercase tracking-label text-ink-subtle">
-              ROLE — THE CONTRACT
-            </p>
-            <p className="mb-4 max-w-2xl text-xs text-ink-muted">
-              The eleven names every component is allowed to reference. Another system defines the
-              same eleven and points them somewhere else, which is what lets a component move
-              unchanged. `check-roles` fails the build on a primitive used inside `ui/`.
-            </p>
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-              {roleColors.map((color) => (
-                <RoleSwatch
-                  key={color.name}
-                  name={color.name}
-                  aliasOf={color.aliasOf}
-                  resolved={color.resolved}
-                  note={color.note}
-                />
-              ))}
-            </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="w-16 text-micro text-ink-subtle">GHOST</span>
+            <Button variant="ghost" size="icon">
+              <ChevronLeft size={16} />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <ChevronRight size={16} />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <ArrowUpRight size={16} />
+            </Button>
           </div>
+        </div>
+      </div>
 
-          <div>
-            <p className="mb-2 text-micro font-bold uppercase tracking-label text-text-tertiary">
-              CORE — THE IMPLEMENTATION
-            </p>
-            <p className="mb-4 max-w-2xl text-xs text-ink-muted">
-              This system's private vocabulary. Reachable from app code and one-off compositions,
-              never from a component.
-            </p>
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-5">
-              {coreColors.map((color) => (
-                <Swatch
-                  key={color.name}
-                  name={color.name}
-                  value={color.value}
-                  utility={color.utility}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="mb-4 text-micro font-bold uppercase tracking-label text-text-tertiary">
-              SEMANTIC
-            </p>
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-              {semanticColors.map((color) => (
-                <Swatch
-                  key={color.name}
-                  name={color.name}
-                  value={color.value}
-                  utility={color.utility}
-                />
-              ))}
-            </div>
-          </div>
-        </Spec>
-
-        {/* 03 SPACING SCALE */}
-        <Spec number="03" label="SPACING_SCALE">
-          <div className="space-y-3 border border-steel p-8">
-            {SPACING_STEPS.map((step) => (
-              <div key={step} className="flex items-center gap-4">
-                <span className="w-8 text-right text-xs text-text-tertiary">{step}</span>
-                <div className="h-4 bg-ink-subtle" style={{ width: `${step * 4}px` }} />
-                <span className="text-xs">{step * 4}px</span>
-              </div>
+      <div className="space-y-3">
+        <Label>Tag row · disabled · asChild</Label>
+        <div className="space-y-4 border border-line p-6">
+          <div className="flex flex-wrap items-center gap-2">
+            {['React', 'TypeScript', 'Next.js', 'Tailwind', 'Node'].map((tag) => (
+              <Button key={tag} variant="tag" size="sm">
+                {tag}
+              </Button>
             ))}
           </div>
-        </Spec>
-
-        {/* 04 EFFECTS */}
-        <Spec number="04" label="EFFECTS">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="space-y-3">
-              <Label>SHADOW / LIME_GLOW</Label>
-              <div className="flex h-40 items-center justify-center border border-steel shadow-lime-glow">
-                <span className="text-xs text-lime">shadow-lime-glow</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label>BORDER / HOVER_TRANSITION</Label>
-              <div className="flex h-40 cursor-pointer items-center justify-center border border-steel transition-colors hover:border-lime">
-                <span className="text-xs">hover:border-lime</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label>ANIMATION / SCAN_LINE</Label>
-              <div className="relative flex h-40 items-center justify-center overflow-hidden border border-steel">
-                <div className="scan-line absolute" />
-                <span className="text-xs">.scan-line</span>
-              </div>
-            </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <Button variant="primary" disabled>
+              Primary
+            </Button>
+            <Button variant="outline" disabled>
+              Outline
+            </Button>
+            <Button variant="ghost" disabled>
+              Ghost
+            </Button>
+            <Button variant="tag" disabled>
+              Tag
+            </Button>
           </div>
-        </Spec>
-
-        {/* 05 TOKEN REFERENCE — auto-generated from theme.css */}
-        <Spec
-          number="05"
-          label="TOKEN_REFERENCE"
-          description={
-            <>
-              Generated at build time from{' '}
-              <code className="text-ink">systems/human-laboratory/tokens/theme.css</code>. If you
-              add a token there, run{' '}
-              <code className="text-ink">bun run --filter=@thl/tokens generate:tokens</code>.
-            </>
-          }
-        >
-          <div className="overflow-x-auto border border-steel">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-steel">
-                  <th className="px-4 py-3 font-bold text-text-secondary">CSS PROPERTY</th>
-                  <th className="px-4 py-3 font-bold text-text-secondary">VALUE</th>
-                  <th className="px-4 py-3 font-bold text-text-secondary">TAILWIND UTILITY</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tokens.map((token) => (
-                  <tr
-                    key={token.name}
-                    className="border-b border-ambient transition-colors hover:text-ink"
-                  >
-                    <td className="px-4 py-2.5 text-ink">{token.name}</td>
-                    <td className="px-4 py-2.5 text-white">{token.value}</td>
-                    <td className="px-4 py-2.5">{token.utility}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="flex flex-wrap items-center gap-4">
+            <Button asChild variant="outline">
+              <Link href="/systems/human-laboratory">Renders as a Link</Link>
+            </Button>
           </div>
-        </Spec>
-
-        {/* 06 IMAGE_FRAME */}
-        <Spec
-          number="06"
-          label="IMAGE_FRAME"
-          description="Animated image reveal with grid overlay, scan line pulse, corner markers, and status badge. Uses framer-motion for height-reveal and opacity animations."
-        >
-          <div className="h-100">
-            <ImageFrame
-              src="https://picsum.photos/seed/thl-frame/1200/800"
-              alt="Placeholder photograph demonstrating the ImageFrame reveal"
-              badge={{
-                label: 'IMG_SRC_LOADED',
-                icon: <ArrowDownRight size={12} className="text-lime" />
-              }}
-              className="h-full"
-            />
-          </div>
-        </Spec>
-
-        {/* 07 BUTTON */}
-        <Spec
-          number="07"
-          label="BUTTON"
-          description="Variant-based button with CVA + Radix Slot for polymorphism. Heights are explicit and land on the spacing grid, so an icon button is exactly as tall as the text button of the same size."
-        >
-          <div className="space-y-3">
-            <Label>VARIANTS</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
-              <Button variant="primary">Primary</Button>
-              <Button variant="outline">Outline</Button>
-              <Button variant="ghost">Ghost</Button>
-              <Button variant="tag">Tag</Button>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>SIZES / TEXT AND ICON ALIGN</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
-              <Button size="sm">Small</Button>
-              <Button size="iconSm">
-                <ArrowDownRight size={12} />
-              </Button>
-              <Button size="default">Default</Button>
-              <Button size="icon">
-                <ArrowDownRight size={16} />
-              </Button>
-              <Button size="lg">Large</Button>
-              <Button size="iconLg">
-                <ArrowDownRight size={20} />
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>OUTLINE / ALL SIZES</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
-              <Button variant="outline" size="sm">
-                Small
-              </Button>
-              <Button variant="outline" size="default">
-                Default
-              </Button>
-              <Button variant="outline" size="lg">
-                Large
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>TAG / ROW</Label>
-            <div className="flex flex-wrap items-center gap-2 border border-steel p-6">
-              {['React', 'TypeScript', 'Next.js', 'Tailwind', 'Node'].map((tag) => (
-                <Button key={tag} variant="tag" size="sm">
-                  {tag}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>ICON_ONLY</Label>
-            <div className="space-y-4 border border-steel p-6">
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="w-16 text-micro text-text-tertiary">PRIMARY</span>
-                <Button variant="primary" size="icon">
-                  <Plus size={16} />
-                </Button>
-                <Button variant="primary" size="icon">
-                  <Search size={16} />
-                </Button>
-                <Button variant="primary" size="icon">
-                  <Download size={16} />
-                </Button>
-                <Button variant="primary" size="icon">
-                  <ArrowUpRight size={16} />
-                </Button>
-              </div>
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="w-16 text-micro text-text-tertiary">OUTLINE</span>
-                <Button variant="outline" size="icon">
-                  <Menu size={16} />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <X size={16} />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <Copy size={16} />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <ExternalLink size={16} />
-                </Button>
-              </div>
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="w-16 text-micro text-text-tertiary">GHOST</span>
-                <Button variant="ghost" size="icon">
-                  <ChevronLeft size={16} />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <ChevronRight size={16} />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <X size={16} />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Search size={16} />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>DISABLED</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
-              <Button variant="primary" disabled>
-                Primary
-              </Button>
-              <Button variant="outline" disabled>
-                Outline
-              </Button>
-              <Button variant="ghost" disabled>
-                Ghost
-              </Button>
-              <Button variant="tag" disabled>
-                Tag
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>AS_CHILD / LINK</Label>
-            <div className="flex flex-wrap items-center gap-4 border border-steel p-6">
-              <Button asChild variant="primary">
-                <Link href="/">Home Link</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/">Outline Link</Link>
-              </Button>
-            </div>
-          </div>
-        </Spec>
-
-        {/* 09 BENTO_CARD */}
-        <Spec
-          number="09"
-          label="BENTO_CARD"
-          description="Animated card surface with corner brackets matching ImageFrame's geometry. Uses framer-motion for entrance, hover, and tap animations with reduced-motion support. Consumers control sizing via className grid-span utilities."
-        >
-          <div className="space-y-3">
-            <Label>SINGLE</Label>
-            <div className="max-w-sm">
-              <BentoCard>
-                <div className="p-6">
-                  <span className="text-micro font-medium tracking-label text-ink-subtle">
-                    CARD_LABEL
-                  </span>
-                  <p className="mt-2 text-sm">
-                    A single BentoCard with placeholder content. Hover to see corner brackets
-                    highlight and scale animation.
-                  </p>
-                </div>
-              </BentoCard>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>STAGGERED ENTRANCE</Label>
-            <BentoGrid className="md:grid-cols-3">
-              {[0, 1, 2].map((i) => (
-                <BentoCard key={i}>
-                  <div className="p-6">
-                    <span className="text-micro font-medium tracking-label text-ink-subtle">
-                      CARD_{String(i + 1).padStart(2, '0')}
-                    </span>
-                    <p className="mt-2 text-sm">Auto-staggered by BentoGrid</p>
-                  </div>
-                </BentoCard>
-              ))}
-            </BentoGrid>
-          </div>
-
-          <div className="space-y-3">
-            <Label>GRID SPAN SIZING</Label>
-            <BentoGrid>
-              <BentoCard className="md:col-span-2">
-                <div className="p-6">
-                  <span className="text-micro font-medium tracking-label text-ink-subtle">
-                    COL_SPAN_2
-                  </span>
-                  <p className="mt-2 text-sm">md:col-span-2</p>
-                </div>
-              </BentoCard>
-              <BentoCard>
-                <div className="p-6">
-                  <span className="text-micro font-medium tracking-label text-ink-subtle">
-                    DEFAULT
-                  </span>
-                  <p className="mt-2 text-sm">1 column</p>
-                </div>
-              </BentoCard>
-              <BentoCard>
-                <div className="p-6">
-                  <span className="text-micro font-medium tracking-label text-ink-subtle">
-                    DEFAULT
-                  </span>
-                  <p className="mt-2 text-sm">1 column</p>
-                </div>
-              </BentoCard>
-            </BentoGrid>
-          </div>
-        </Spec>
-
-        {/* 10 BENTO_GRID */}
-        <Spec
-          number="10"
-          label="BENTO_GRID"
-          description="Grid layout primitive that composes BentoCards into a responsive 4-column grid. Consumers override columns, gap, and height via className."
-        >
-          <div className="space-y-3">
-            <Label>LAYOUT / 6 CARDS</Label>
-            <BentoGrid className="md:h-[500px] md:grid-rows-[1fr_1fr_auto]">
-              {[
-                {
-                  id: 'CARD_01',
-                  note: 'col-span-2 · row-span-2',
-                  cls: 'md:col-span-2 md:row-span-2'
-                },
-                { id: 'CARD_02', note: '1×1', cls: '' },
-                { id: 'CARD_03', note: '1×1', cls: '' },
-                { id: 'CARD_04', note: '1×1', cls: '' },
-                { id: 'CARD_05', note: '1×1', cls: '' },
-                { id: 'CARD_06', note: 'col-span-2', cls: 'md:col-span-2' }
-              ].map((card) => (
-                <BentoCard key={card.id} className={card.cls}>
-                  <div className="flex h-full items-center justify-center p-6">
-                    <div className="text-center">
-                      <span className="text-micro font-medium tracking-label text-ink-subtle">
-                        {card.id}
-                      </span>
-                      <p className="mt-1 text-sm">{card.note}</p>
-                    </div>
-                  </div>
-                </BentoCard>
-              ))}
-            </BentoGrid>
-          </div>
-        </Spec>
+        </div>
       </div>
+
+      {/* The states table exists because a screenshot cannot carry it. Focus and
+          press are two of this system's most argued contracts and both are
+          invisible at rest — so the page has to name them, and you have to tab
+          and hold to see them. */}
+      <div className="space-y-3">
+        <Label>States — tab to it, then press and hold</Label>
+        <div className="overflow-x-auto border border-line">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-line">
+                <th className="px-4 py-3 font-semibold text-ink">STATE</th>
+                <th className="px-4 py-3 font-semibold text-ink">PRIMARY</th>
+                <th className="px-4 py-3 font-semibold text-ink">OUTLINE</th>
+              </tr>
+            </thead>
+            <tbody>
+              {BUTTON_STATES.map((row) => (
+                <tr key={row.state} className="border-b border-ambient last:border-b-0">
+                  <td className="px-4 py-2.5 text-ink">{row.state}</td>
+                  <td className="px-4 py-2.5">{row.primary}</td>
+                  <td className="px-4 py-2.5">{row.outline}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="max-w-2xl text-xs">
+          Every variant converges on the same press: an accent edge plus emission.{' '}
+          <code className="text-ink">:active</code> is the one state that is unambiguously{' '}
+          <em>live</em>, which is what emission is for — so a press costs no new colour. It has to
+          differ from <strong className="font-semibold text-ink">both</strong> rest and hover,
+          because touch has no hover: before this, a button on a phone gave no feedback of any kind
+          between the tap and the result. Feedback enters at{' '}
+          <code className="text-ink">duration-ack</code> and decays at{' '}
+          <code className="text-ink">duration-state</code>; symmetric timing reads as the interface
+          animating at you, asymmetric reads as it answering you.
+        </p>
+      </div>
+    </>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   04 IMAGE_FRAME
+   ──────────────────────────────────────────────────────────────────────────── */
+
+function ImageFrameSpec() {
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-3">
+          <Label>Loaded</Label>
+          <ImageFrame
+            src={asset('/samples/specimen-01.jpg')}
+            alt="Specimen plate — a dense botanical field, standing in for real artwork"
+            badge={{
+              label: 'IMG_SRC_LOADED',
+              icon: <ArrowDownRight size={12} className="text-accent" />
+            }}
+            className="h-80"
+          />
+        </div>
+        <div className="space-y-3">
+          <Label>Signal lost — a src that cannot resolve</Label>
+          <ImageFrame
+            // Deliberately broken. The error state is a shipped path through
+            // this component and a gallery that only shows the happy one is
+            // documenting half of it.
+            src={asset('/samples/does-not-exist.jpg')}
+            alt="A deliberately broken source, exercising the SIGNAL_LOST state"
+            badge={{ label: 'SIGNAL_LOST' }}
+            className="h-80"
+          />
+        </div>
+      </div>
+      <p className="max-w-2xl text-xs">
+        The reveal runs at <code className="text-ink">duration-process</code> — the one rung where
+        the duration <em>is</em> the content — and the scan line pulses at the growing edge, which
+        is a legitimate spend of the accent: the frame is live while it fills. The badge becomes a{' '}
+        <code className="text-ink">&lt;button&gt;</code> when given an{' '}
+        <code className="text-ink">onClick</code>, and picks up the system focus ring with it.
+      </p>
+    </>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   05 · 06 BENTO
+   ──────────────────────────────────────────────────────────────────────────── */
+
+const BENTO_LAYOUT = [
+  { id: 'CARD_01', note: 'col-span-2 · row-span-2', cls: 'md:col-span-2 md:row-span-2' },
+  { id: 'CARD_02', note: '1×1', cls: '' },
+  { id: 'CARD_03', note: '1×1', cls: '' },
+  { id: 'CARD_04', note: '1×1', cls: '' },
+  { id: 'CARD_05', note: '1×1', cls: '' },
+  { id: 'CARD_06', note: 'col-span-2', cls: 'md:col-span-2' }
+];
+
+function BentoGridSpec() {
+  return (
+    <>
+      <div className="space-y-3">
+        <Label>Layout — six cards, mixed spans</Label>
+        <BentoGrid className="md:grid-rows-[1fr_1fr_auto]">
+          {BENTO_LAYOUT.map((card) => (
+            <BentoCard key={card.id} className={card.cls}>
+              <div className="flex h-full items-center justify-center p-6">
+                <div className="space-y-1 text-center">
+                  <span className="block text-micro font-medium tracking-label text-ink-subtle">
+                    {card.id}
+                  </span>
+                  <p className="text-sm">{card.note}</p>
+                </div>
+              </div>
+            </BentoCard>
+          ))}
+        </BentoGrid>
+      </div>
+      <p className="max-w-2xl text-xs">
+        A responsive 4-column grid; consumers override columns, gap and height via{' '}
+        <code className="text-ink">className</code>, and size individual cards with grid-span
+        utilities. <code className="text-ink">dense</code> turns on{' '}
+        <code className="text-ink">grid-flow-dense</code> so later cards backfill the gaps a
+        multi-span card leaves. The grid orchestrates its children&apos;s entrance through context —
+        a card inside one defers to the parent&apos;s stagger instead of self-triggering.
+      </p>
+    </>
+  );
+}
+
+function BentoCardSpec() {
+  return (
+    <>
+      <div className="space-y-3">
+        <Label>Standalone — enters on its own</Label>
+        <div className="max-w-sm">
+          <BentoCard>
+            <div className="space-y-2 p-6">
+              <span className="block text-micro font-medium tracking-label text-ink-subtle">
+                CARD_LABEL
+              </span>
+              <p className="text-sm">
+                Outside a BentoGrid a card triggers its own entrance when it scrolls into view.
+              </p>
+            </div>
+          </BentoCard>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label>Staggered by the grid</Label>
+        <BentoGrid className="md:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <BentoCard key={i}>
+              <div className="space-y-2 p-6">
+                <span className="block text-micro font-medium tracking-label text-ink-subtle">
+                  CARD_{String(i + 1).padStart(2, '0')}
+                </span>
+                <p className="text-sm">Auto-staggered by BentoGrid</p>
+              </div>
+            </BentoCard>
+          ))}
+        </BentoGrid>
+      </div>
+
+      {/* Rewritten. This description used to promise "hover to see corner
+          brackets highlight and scale animation" — the scale was deliberately
+          removed, and the component's own comments now argue against it at
+          length. A description that outlives its behaviour is worse than none. */}
+      <p className="max-w-2xl text-xs">
+        The entrance is{' '}
+        <strong className="font-semibold text-ink">two beats, and neither is a transform</strong>:
+        opacity 0→1 at <code className="text-ink">duration-transit</code>, then the edge climbs{' '}
+        <code className="text-ink">ambient → line</code> at{' '}
+        <code className="text-ink">duration-state</code> once the fade has landed. The card arrives
+        as a dormant outline and only then takes its place in the hierarchy — the line ladder used
+        as motion. It spends no accent: six cards each firing lime is the accent becoming texture.
+      </p>
+      <p className="max-w-2xl text-xs">
+        Hover climbs the ladder too — <code className="text-ink">ambient</code> to{' '}
+        <code className="text-ink">line-strong</code> on the card and its corner brackets. There is
+        no scale on hover and none on entrance: a fractional transform lands a hard 1px border off
+        the pixel grid and the edge shimmers for the whole animation. There is no fill change
+        either, because there is no surface token to change it to.
+      </p>
+    </>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   07 · 08 BRAND
+   ──────────────────────────────────────────────────────────────────────────── */
+
+function MarkSpec() {
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-3">
+          <Label>tone=&quot;accent&quot; — the default</Label>
+          <div className="flex items-end gap-6 border border-line p-6">
+            <Mark label="The Human Laboratory" className="size-8" />
+            <Mark className="size-6" />
+            <Mark className="size-4" />
+          </div>
+        </div>
+        <div className="space-y-3">
+          <Label>tone=&quot;mono&quot; — print and single-colour grounds</Label>
+          <div className="flex items-end gap-6 border border-line p-6">
+            <Mark tone="mono" label="The Human Laboratory, monochrome" className="size-8" />
+            <Mark tone="mono" className="size-6" />
+            <Mark tone="mono" className="size-4" />
+          </div>
+        </div>
+      </div>
+      <p className="max-w-2xl text-xs">
+        A frame in <code className="text-ink">line</code> with one corner in{' '}
+        <code className="text-ink">accent</code> at{' '}
+        <strong className="font-semibold text-ink">twice the weight</strong> — that 1:2 ratio{' '}
+        <em>is</em> the line ladder, not a proportion picked by eye. The mark argues the
+        system&apos;s central claim rather than decorating with it. The stroke widths are
+        load-bearing: they are even, so the mark lands on whole pixels at 16, 24 and 32.
+      </p>
+      <p className="max-w-2xl text-xs">
+        It does not glow — emission follows current, and a brand mark is not live.{' '}
+        <code className="text-ink">mono</code> moves rank from hue to luminance without changing the
+        geometry.{' '}
+        <strong className="font-semibold text-ink">The favicon is a different drawing</strong>, not
+        an export of this one: the frame is 1.69:1 and stops rendering below about 24px, and a
+        transparent mark vanishes against chrome this system does not control — so it drops the
+        frame and carries its own tile.
+      </p>
+    </>
+  );
+}
+
+function WordmarkSpec() {
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-3">
+          <Label>horizontal</Label>
+          <div className="border border-line p-6">
+            <Wordmark />
+          </div>
+        </div>
+        <div className="space-y-3">
+          <Label>stacked — where width is scarce</Label>
+          <div className="border border-line p-6">
+            <Wordmark orientation="stacked" />
+          </div>
+        </div>
+        <div className="space-y-3">
+          <Label>namespace={'{false}'}</Label>
+          <div className="border border-line p-6">
+            <Wordmark namespace={false} />
+          </div>
+        </div>
+        <div className="space-y-3">
+          <Label>tone=&quot;mono&quot;</Label>
+          <div className="border border-line p-6">
+            <Wordmark tone="mono" />
+          </div>
+        </div>
+      </div>
+      <p className="max-w-2xl text-xs">
+        <strong className="font-semibold text-ink">There is no wordmark SVG.</strong> This system
+        names no font — it resolves <code className="text-ink">--font-mono</code> through a
+        consumer-defined face — so outlined letterforms would hard-code a typeface the system
+        refuses to specify, and live <code className="text-ink">&lt;text&gt;</code> would fall back
+        silently to whatever mono the viewer happens to have. The wordmark is therefore{' '}
+        <em>type</em>, set in the system&apos;s own rules. The namespace is neutral, not accent: the
+        mark already spends it, and a signal that fires twice in one lockup distinguishes nothing.
+      </p>
+    </>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────────────── */
+
+const SPECS: SpecDef[] = [
+  {
+    label: 'PAGE_SHELL',
+    description: (
+      <p>The horizontal gutter and page measure. Three widths, one of them a default.</p>
+    ),
+    bleed: true,
+    content: <PageShellSpec />
+  },
+  {
+    label: 'SECTION_HEADER',
+    description: (
+      <p>The eyebrow that labels every section in the system — and the accent budget.</p>
+    ),
+    content: <SectionHeaderSpec />
+  },
+  {
+    label: 'BUTTON',
+    description: (
+      <p>
+        Variant-based, on CVA plus a Radix Slot for polymorphism. Heights are explicit and land on
+        the 4px spacing grid, so an icon button is exactly as tall as the text button beside it.
+      </p>
+    ),
+    content: <ButtonSpec />
+  },
+  {
+    label: 'IMAGE_FRAME',
+    description: (
+      <p>
+        An image reveal with a grid overlay, a pulsing scan line, corner markers and a status badge
+        — plus a failure state for a source that will not resolve.
+      </p>
+    ),
+    content: <ImageFrameSpec />
+  },
+  {
+    label: 'BENTO_GRID',
+    description: <p>The layout primitive that composes cards and orchestrates their entrance.</p>,
+    content: <BentoGridSpec />
+  },
+  {
+    label: 'BENTO_CARD',
+    description: <p>The card surface: corner brackets, a two-beat entrance, and no transform.</p>,
+    content: <BentoCardSpec />
+  },
+  {
+    label: 'MARK',
+    description: <p>The system&apos;s mark. It belongs to the system, never to the house.</p>,
+    content: <MarkSpec />
+  },
+  {
+    label: 'WORDMARK',
+    description: <p>The lockup: mark plus name, set as type rather than drawn.</p>,
+    content: <WordmarkSpec />
+  }
+];
+
+export default function ComponentsPage() {
+  return (
+    <SystemPage system="human-laboratory" base="/systems/human-laboratory" current="/components">
+      <Masthead
+        title={
+          <>
+            {/* biome-ignore lint/suspicious/noCommentText: decorative separator */}
+            COMPONENTS // <span className="text-ink-subtle">@thl</span>
+          </>
+        }
+        standfirst={
+          <>
+            The eight components this system ships, in registry order. Every one of them references{' '}
+            <strong className="font-semibold text-ink">roles only</strong> — the contract that lets
+            a component move to another system unchanged. The token model behind them is on{' '}
+            <Link href="/systems/human-laboratory/foundations" className="text-accent">
+              Foundations
+            </Link>
+            .
+          </>
+        }
+      />
+      <SpecList specs={SPECS} />
     </SystemPage>
   );
 }
