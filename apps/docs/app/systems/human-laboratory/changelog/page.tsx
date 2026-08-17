@@ -33,7 +33,7 @@ function changelogHtml() {
 export default function ChangelogPage() {
   return (
     <SystemPage system="human-laboratory" base="/systems/human-laboratory" current="/changelog">
-      <PageShell className="mt-10">
+      <PageShell>
         <div className="mx-auto max-w-[64ch] space-y-10 text-sm leading-prose md:text-base">
           <header className="space-y-5">
             <h1 className="text-2xl font-bold text-ink md:text-4xl">CHANGELOG</h1>

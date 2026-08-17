@@ -33,6 +33,38 @@
   object-fit: cover;
 }
 
+/* ── The no-JS floor ──
+ *
+ * The reveal is a JS animation over `height`, and the image is gated on an
+ * `onLoad` that sets React state — so with scripts off, Framer Motion's SSR'd
+ * `height: 0%` and the img's `visibility: hidden` both stand for good and the
+ * frame renders permanently empty. Printing has the same shape: a frame that
+ * has not scrolled into view yet prints as an empty box.
+ *
+ * `.imageLayerBorder` has to be neutralised alongside them. It is the accent
+ * edge and emission that mark the GROWING edge of the reveal, and a reveal that
+ * never runs would otherwise sit there claiming to be in progress forever —
+ * which is the accent spent on a state the machine is not in.
+ *
+ * `!important` is competing with inline styles, which specificity cannot beat.
+ */
+@media (scripting: none), print {
+  .imageLayer {
+    /* biome-ignore lint/complexity/noImportantStyles: competing with an inline style, which no selector specificity outranks */
+    height: 100% !important;
+  }
+
+  .image {
+    /* biome-ignore lint/complexity/noImportantStyles: competing with an inline style, which no selector specificity outranks */
+    visibility: visible !important;
+  }
+
+  .imageLayerBorder {
+    border-bottom-color: transparent;
+    box-shadow: none;
+  }
+}
+
 /* ── Scan line ── */
 
 .scanLine {

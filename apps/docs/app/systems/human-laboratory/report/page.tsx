@@ -15,7 +15,7 @@ import { SystemPage } from '../system-page';
 export default function ReportPage() {
   return (
     <SystemPage system="human-laboratory" base="/systems/human-laboratory" current="/report">
-      <PageShell className="mt-10 space-y-8">
+      <PageShell className="space-y-8">
         <header className="space-y-3">
           <h1 className="text-2xl font-bold text-ink">Report kit</h1>
           <p className="max-w-2xl text-sm">

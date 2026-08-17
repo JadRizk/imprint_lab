@@ -1,0 +1,34 @@
+/* ── The no-JS floor ──
+ *
+ * The entrance is a JS animation, so Framer Motion server-renders its `initial`
+ * state as an inline `style="opacity:0"`. When scripts do not run, nothing ever
+ * animates that back — the card and everything inside it stay invisible, for
+ * good. Thirteen of them shipped that way on the components page: a documentation
+ * page whose content was hidden behind an IntersectionObserver.
+ *
+ * `prefers-reduced-motion` is already handled in the component, and it is a
+ * different question. That preference asks for less movement from a page that
+ * works; this asks what the page is when the animation layer never arrives.
+ *
+ * `!important` is required and is not laziness: it is competing with an inline
+ * style, which no amount of selector specificity outranks.
+ *
+ * The rule is inert wherever scripts DO run, so it costs the animated path
+ * nothing — it is a floor, not a branch.
+ */
+@media (scripting: none) {
+  .entranceFloor {
+    /* biome-ignore lint/complexity/noImportantStyles: competing with an inline style, which no selector specificity outranks */
+    opacity: 1 !important;
+  }
+}
+
+/* Print is the same failure with a different cause: a print stylesheet renders
+ * whatever the DOM currently says, and a card that has not yet scrolled into
+ * view says `opacity: 0`. A reader printing the page gets blank boxes. */
+@media print {
+  .entranceFloor {
+    /* biome-ignore lint/complexity/noImportantStyles: competing with an inline style, which no selector specificity outranks */
+    opacity: 1 !important;
+  }
+}

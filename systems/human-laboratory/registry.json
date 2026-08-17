@@ -105,7 +105,7 @@
       "name": "bento-card",
       "type": "registry:component",
       "title": "BentoCard",
-      "description": "Animated card surface with corner brackets. Defers to a parent BentoGrid's stagger when inside one, self-triggers when standalone.",
+      "description": "Animated card surface with corner brackets. Defers to a parent BentoGrid's stagger when inside one, self-triggers when standalone. Ships its own CSS module.",
       "dependencies": ["framer-motion"],
       "registryDependencies": ["style", "bento-grid"],
       "files": [
@@ -113,6 +113,11 @@
           "path": "systems/human-laboratory/ui/components/bento-card.tsx",
           "type": "registry:file",
           "target": "~/thl/components/bento-card.tsx"
+        },
+        {
+          "path": "systems/human-laboratory/ui/components/bento-card.module.css",
+          "type": "registry:file",
+          "target": "~/thl/components/bento-card.module.css"
         }
       ]
     },

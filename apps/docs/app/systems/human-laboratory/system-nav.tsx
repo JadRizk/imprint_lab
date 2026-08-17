@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 const TABS = [
   { href: '', label: 'THESIS' },
+  { href: '/foundations', label: 'FOUNDATIONS' },
   { href: '/components', label: 'COMPONENTS' },
   { href: '/example', label: 'EXAMPLE' },
   { href: '/report', label: 'REPORT_KIT' },
@@ -9,7 +10,7 @@ const TABS = [
 ] as const;
 
 /**
- * The five faces of a system. Server component — `current` is passed by each
+ * The six faces of a system. Server component — `current` is passed by each
  * page rather than read from a hook, which keeps this off the client boundary.
  *
  * **This draws no rule and owns no spacing.** It used to carry its own

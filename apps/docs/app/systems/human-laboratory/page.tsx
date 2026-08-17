@@ -36,7 +36,7 @@ function brandHtml() {
 export default function ThesisPage() {
   return (
     <SystemPage system="human-laboratory" base="/systems/human-laboratory" current="">
-      <PageShell className="mt-10">
+      <PageShell>
         {/*
           The reading column, centred under a full-width nav.
 

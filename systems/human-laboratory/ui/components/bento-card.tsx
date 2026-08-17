@@ -5,6 +5,7 @@ import { type ReactNode, useContext, useEffect, useState } from 'react';
 
 import { duration } from '../lib/motion.generated';
 import { cn } from '../lib/utils';
+import styles from './bento-card.module.css';
 import { BentoGridContext } from './bento-grid';
 
 interface BentoCardProps {
@@ -87,6 +88,10 @@ export function BentoCard({ className, delay = 0, children }: BentoCardProps) {
       onAnimationComplete={() => setEntered(true)}
       className={cn(
         'group relative overflow-hidden border bg-canvas',
+        // Without this the card is invisible when scripts do not run: Framer
+        // Motion SSRs `initial` as an inline `opacity:0` and nothing arrives to
+        // undo it. See bento-card.module.css.
+        styles.entranceFloor,
         // No scale on hover: a 1% transform lands a hard 1px border on
         // fractional pixels and the edge shimmers. A brutalist card snaps.
         // No fill change either — there is no surface token to change it to.
