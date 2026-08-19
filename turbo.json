@@ -64,7 +64,31 @@
       ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      // `../CHANGELOG.md` is here for the same reason it is on `build`, and it
+      // matters more here: `check-version` runs under this task, and its whole
+      // job is catching a changelog that was edited without a regenerate. The
+      // file is the ONLY declaration of a system's version and it lives one
+      // directory above the token package, so nothing in $TURBO_DEFAULT$ hashes
+      // it — which made the staleness gate able to replay a stale pass.
+      //
+      // Measured, not assumed. Cutting v1.1.0 is what surfaced it: with the
+      // cache warm, appending a line to systems/human-laboratory/CHANGELOG.md
+      // and re-running gave `@thl/tokens:lint: cache hit, replaying logs` and
+      // `>>> FULL TURBO`, and check-version printed `v1.0.0 — consistent` after
+      // the bump — correct artifacts, stale output. With it declared, the same
+      // edit gives `cache miss, executing`.
+      //
+      // Only this one input is needed, which was also measured rather than
+      // guessed. `@thl/ui`'s lint runs `check-roles ..`, which reads
+      // ../tokens/theme.css from outside its own package — but editing that file
+      // already misses, because it lives inside @thl/tokens and `^lint` cascades
+      // the miss downstream. Declaring it here too would have been cargo cult.
+      //
+      // Written generically rather than as an @<ns>/tokens# override so a second
+      // system is covered the day it exists. It matches nothing under apps/docs
+      // or packages/*, which is the correct answer there.
+      "inputs": ["$TURBO_DEFAULT$", "../CHANGELOG.md"]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
