@@ -33,6 +33,16 @@ the whole reason for the two tiers.
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-08-19
+
+Everything here is a fix, so this could defensibly have been a patch. It is a
+minor because one file is **new on disk**: `bento-card.tsx` now imports a
+stylesheet that did not ship at 1.0.0. A patch tells a reader the fix is in
+files they already have — and following that instruction here gives them an
+`import` pointing at nothing. `ImageFrame` is the control case: its module
+already shipped, so the identical fix there really is patch-class. The upgrade
+procedure changed, not just the bytes.
+
 ### Added
 
 **`bento-card.module.css`** — a new file in the `bento-card` registry item, which

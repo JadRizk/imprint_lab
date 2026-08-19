@@ -6,10 +6,10 @@
 // this says what you adopted, not what is current. Compare it against the
 // registry index to find out whether you are behind.
 
-export const version = '1.0.0' as const;
+export const version = '1.1.0' as const;
 
 /** The date the version above was released. */
-export const released = '2026-08-06' as const;
+export const released = '2026-08-19' as const;
 
 /** The registry namespace these files came from. */
 export const namespace = '@thl' as const;
