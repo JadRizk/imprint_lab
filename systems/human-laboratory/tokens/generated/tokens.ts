@@ -119,7 +119,7 @@ export const tokens: Token[] = [
     "base": "#A3A3A3",
     "category": "color",
     "utility": "bg-text-secondary · text-text-secondary · border-text-secondary",
-    "note": "7.62:1 — body copy (the body default)",
+    "note": "7.60:1 — body copy (the body default)",
     "subcategory": "semantic"
   },
   {

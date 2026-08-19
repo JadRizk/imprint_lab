@@ -16,7 +16,7 @@
   --color-graphite:              #585858; /* 2.69:1 — the loud drawn line */
   --color-white:                 #FFFFFF;
   --color-black:                 #000000;
-  --color-text-secondary:        #A3A3A3; /* 7.62:1 — body copy (the body default) */
+  --color-text-secondary:        #A3A3A3; /* 7.60:1 — body copy (the body default) */
   --color-text-tertiary:         #7C7C7C; /* 4.59:1 — labels, metadata, tags */
   --color-ambient:               var(--color-slate);
   --color-canvas:                var(--color-obsidian);
@@ -29,7 +29,7 @@
   --color-line-strong:           var(--color-graphite);
   --color-ambient--contrast:     var(--color-graphite); /* 1.23:1 -> 2.69:1 */
   --color-line--contrast:        #7c7c7c; /* 1.69:1 -> 4.59:1, clears the 3:1 floor */
-  --color-line-strong--contrast: #a3a3a3; /* 2.69:1 -> 7.62:1 */
+  --color-line-strong--contrast: #a3a3a3; /* 2.69:1 -> 7.60:1 */
   --color-critical:              #FF4A4A; /* 5.78:1 — errors, destructive actions */
   --color-warning:               #C86A00; /* 5.04:1 — warnings, degraded states */
   --font-sans:                   var(--font-sans-face, sans-serif);

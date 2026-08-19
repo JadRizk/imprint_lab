@@ -27,9 +27,14 @@ import has to be relative.
 `--color-lime`, `--color-obsidian`, `--color-steel`.
 
 **Roles** are named by job and carry the same eleven names in every system —
-`--color-accent`, `--color-canvas`, `--color-line`, `--color-ink`,
-`--color-ink-muted`, `--color-ink-subtle`, `--color-surface`, `--color-ambient`,
-`--color-accent-ink`, `--color-critical`, `--color-warning`. Plus `--shadow-glow`.
+`--color-canvas`, `--color-ambient`, `--color-line`, `--color-line-strong`,
+`--color-ink`, `--color-ink-muted`, `--color-ink-subtle`, `--color-accent`,
+`--color-accent-ink`, `--color-critical`, `--color-warning`. Plus the two
+non-colour roles, `--shadow-glow` and `--shadow-glow-strong`.
+
+There is deliberately **no `--color-surface`** — see the note in `theme.css`.
+This list is the one `check-roles` enforces (`ROLE_COLOR_NAMES` in
+`token-tools/lib/emit.mjs`) and the one CLAUDE.md contract 1 states.
 
 Components reference roles only. `check-roles` enforces it.
 
