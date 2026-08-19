@@ -64,6 +64,25 @@
   stroke: var(--color-critical);
 }
 
+/* The node box can now say what a field-plot dot could already say. `.d-dot`
+ * has carried `.is-warning` since the layer shipped while `.d-node` stopped at
+ * critical, so a diagram could draw a broken dependency and not a degraded
+ * one — and reached for `.is-critical` to do it, which overstates. */
+.d-node.is-warning {
+  stroke: var(--color-warning);
+}
+.d-node.is-nominal {
+  stroke: var(--color-nominal);
+}
+
+/* Not the same as `.is-ghost`. Ghost means absent — the thing is not there.
+ * Unmeasured means present and unread, which is a claim about the OBSERVER,
+ * and on a diagram of a system those are different findings. Dashed is spent
+ * on ghost, so this one is solid and takes the brighter grey. */
+.d-node.is-unmeasured {
+  stroke: var(--color-unmeasured);
+}
+
 /* Something absent, proposed, or invisible to the thing being described. */
 .d-node.is-ghost {
   fill: none;
@@ -81,6 +100,9 @@
 }
 .d-title.is-critical {
   fill: var(--color-critical);
+}
+.d-title.is-warning {
+  fill: var(--color-warning);
 }
 .d-label {
   fill: var(--color-ink-muted);
