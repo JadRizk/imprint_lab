@@ -237,6 +237,53 @@
   color: var(--color-warning);
   border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-line));
 }
+.chip.is-nominal {
+  color: var(--color-nominal);
+  border-color: color-mix(in srgb, var(--color-nominal) 45%, var(--color-line));
+}
+.chip.is-unmeasured {
+  color: var(--color-unmeasured);
+  border-color: color-mix(in srgb, var(--color-unmeasured) 45%, var(--color-line));
+}
+
+/* A chip names a state. A FILLED chip asserts one.
+ *
+ * Hollow stays the default and is what almost every document wants: a label
+ * with a coloured edge. `is-filled` exists for the one distinction a hollow
+ * chip cannot draw — between "this IS the state" and "this is the last state
+ * anyone could read". Fill it and it is a claim; leave it hollow and dash it
+ * and it is a report. A document that never has to say "unverified" never
+ * needs this class.
+ *
+ * Contract 5 is intact: this is a mark the width of a word, not a panel fill.
+ * The prohibition is on elevation — a surface made lighter to look raised —
+ * and a filled chip makes no claim about depth.
+ *
+ * One ink for all five, because white fails on critical at 3.32:1. */
+.chip.is-filled {
+  color: var(--color-status-ink);
+  font-weight: 500;
+}
+.chip.is-filled.is-accent {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+.chip.is-filled.is-critical {
+  background-color: var(--color-critical);
+  border-color: var(--color-critical);
+}
+.chip.is-filled.is-warning {
+  background-color: var(--color-warning);
+  border-color: var(--color-warning);
+}
+.chip.is-filled.is-nominal {
+  background-color: var(--color-nominal);
+  border-color: var(--color-nominal);
+}
+.chip.is-filled.is-unmeasured {
+  background-color: var(--color-unmeasured);
+  border-color: var(--color-unmeasured);
+}
 
 /* ── Panels ── */
 

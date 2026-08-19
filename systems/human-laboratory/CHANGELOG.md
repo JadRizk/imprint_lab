@@ -33,6 +33,39 @@ the whole reason for the two tiers.
 
 ## [Unreleased]
 
+### Added
+
+**Three roles complete the state axis: `--color-nominal`, `--color-unmeasured`
+and `--color-status-ink`.** `critical` and `warning` were always roles; these are
+the two positions a consumer needs the moment it displays data it did not itself
+produce — *measured and fine*, and *never measured, or measured and lost* — plus
+one ink for a filled mark.
+
+| Role | Value | Ratio on `#0F0F0F` |
+|---|---|---|
+| `--color-nominal` | `var(--color-text-tertiary)` | 4.59:1 |
+| `--color-unmeasured` | `var(--color-text-secondary)` | 7.60:1 |
+| `--color-status-ink` | `var(--color-black)` | 5.03–18.44:1 on the five fills |
+
+**`nominal` is not the accent, and that is a change of mind rather than an
+addition.** Success still renders in lime where the system speaks about itself.
+It does not survive an instrument panel, where `ok` is the most common state on
+the screen: lime is 16.83:1 and critical is 5.78:1, so healthy-means-lime spends
+the loudest ink in the system on the state that must be quietest. BRAND.md and
+`tokens/README.md` say so now; the old wording said flatly that success *is* the
+accent.
+
+The report kit gains `.chip.is-nominal`, `.chip.is-unmeasured` and
+`.chip.is-filled` (on any status), and the diagram layer gains
+`.d-node.is-warning`, `.is-nominal`, `.is-unmeasured` and `.d-title.is-warning`
+— `.d-dot` has carried `is-warning` since that layer shipped while `.d-node`
+stopped at critical, so a diagram could draw a broken dependency but not a
+degraded one.
+
+`system-template` defines all fourteen roles, because a role is a promise every
+system has to keep. Additive throughout: nothing renamed, nothing removed, and
+a consumer that ignores the new names renders identically.
+
 ### Changed
 
 **`report-kit` installs `SKILL.md` to `~/.claude/skills/thl-report/SKILL.md`,
