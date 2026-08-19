@@ -26,11 +26,12 @@ import has to be relative.
 **Primitives** are named by appearance and are private to this system —
 `--color-lime`, `--color-obsidian`, `--color-steel`.
 
-**Roles** are named by job and carry the same eleven names in every system —
+**Roles** are named by job and carry the same fourteen names in every system —
 `--color-canvas`, `--color-ambient`, `--color-line`, `--color-line-strong`,
 `--color-ink`, `--color-ink-muted`, `--color-ink-subtle`, `--color-accent`,
-`--color-accent-ink`, `--color-critical`, `--color-warning`. Plus the two
-non-colour roles, `--shadow-glow` and `--shadow-glow-strong`.
+`--color-accent-ink`, `--color-critical`, `--color-warning`, `--color-nominal`,
+`--color-unmeasured`, `--color-status-ink`. Plus the two non-colour roles,
+`--shadow-glow` and `--shadow-glow-strong`.
 
 There is deliberately **no `--color-surface`** — see the note in `theme.css`.
 This list is the one `check-roles` enforces (`ROLE_COLOR_NAMES` in
@@ -38,9 +39,12 @@ This list is the one `check-roles` enforces (`ROLE_COLOR_NAMES` in
 
 Components reference roles only. `check-roles` enforces it.
 
-Two decisions worth knowing: **success has no token** — lime already signals
-`NOMINAL`, so success *is* the accent — and **warning is orange, not amber**,
-because amber sits too close to lime on this ground and reads as the accent.
+Two decisions worth knowing: **`nominal` is not the accent** — lime still
+signals `NOMINAL` where the system speaks about itself, but a surface that
+reports state per item makes success the absence of colour, because the
+commonest state cannot wear the loudest ink — and **warning is orange, not
+amber**, because amber sits too close to lime on this ground and reads as the
+accent.
 
 ## Consumer bootstrap
 

@@ -94,7 +94,7 @@ weight 500, uppercase, `--tracking-label`. Set it, do not import it.
 | `.section` `.section-head` `.lede` | Section structure; `.note` is the right-aligned gloss |
 | `.stat-grid` `.stat` | Headline numbers. `.label` + `.value` + `.foot` |
 | `.table-wrap` + `table` | Any tabular data — **the wrapper is what scrolls** |
-| `.chip` | State. `.is-accent` / `.is-critical` / `.is-warning` |
+| `.chip` | State. `.is-accent` / `.is-critical` / `.is-warning` / `.is-nominal` / `.is-unmeasured`, and `.is-filled` on any of them |
 | `.panel` `.has-brackets` | A bounded block; brackets add the corner motif |
 | `.callout` | A claim that needs weight. Takes the status modifiers |
 | `.spec-list` (`dl`/`dt`/`dd`) | Label→value pairs |
@@ -186,7 +186,9 @@ Four forms cover almost every document. Wrap each in
 | **Field** | Placing many items at once, where the placement is the argument | Two axes, quadrants named. Label the quadrants with verbs — "do first", "defer" |
 
 Style with the `d-` classes rather than inline fills: `.d-node` (`.is-active`
-for the subject, `.is-ghost` for something absent or invisible), `.d-title`,
+for the subject, `.is-ghost` for something absent or invisible, and
+`.is-critical` / `.is-warning` / `.is-nominal` / `.is-unmeasured` for state),
+`.d-title`,
 `.d-label`, `.d-sub`, `.d-edge`, `.d-rule`, `.d-quadrant`, `.d-dot`.
 
 **Rules that keep them legible.**
@@ -309,6 +311,14 @@ without a foot invites the wrong conclusion.
 
 **A chip carries its own word.** State must never depend on colour alone.
 `DEGRADED` in orange, not an orange dot.
+
+**A filled chip asserts; a hollow one reports.** `.is-filled` is for the
+distinction between *this is the state* and *this is the last state anyone could
+read* — fill the first, leave the second hollow and dash it. Most documents only
+ever need hollow. `.is-nominal` and `.is-unmeasured` complete the state axis:
+nominal is deliberately the quietest mark on the page, and unmeasured means
+present-and-unread, which is not the same as absent — that is `.is-ghost` on a
+diagram node, and the two must not be swapped.
 
 **Tables lead with a key column.** The first column identifies the row; give it
 `class="key"`. Everything after it describes.

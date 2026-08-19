@@ -113,10 +113,16 @@ target, and stays interruptible — at zero overshoot.
   `--color-line` is the edge *of* a thing, `--color-line-strong` is a boundary that outranks its
   neighbours, and the accent is live state. Pick by what the boundary means. One weight doing
   every job is how a page dissolves at squint distance.
-- **One accent, and it has a budget.** Lime `#DFFF00`, used as signal. It is also the success
-  state — `NOMINAL` and `RENDERING` render in it — so the system ships no separate green. It is
-  not for uniform table columns, scale bars, inline code, or hover. If every row is lime, lime
-  distinguishes nothing.
+- **One accent, and it has a budget.** Lime `#DFFF00`, used as signal. It is the success state
+  where the system speaks *about itself* — `NOMINAL` and `RENDERING` render in it — so there is
+  still no separate green. It is not for uniform table columns, scale bars, inline code, or hover.
+  If every row is lime, lime distinguishes nothing.
+- **On a surface that reports state per item, success is the absence of colour.** The accent rule
+  above holds for a page describing itself and inverts for an instrument panel, where `ok` is the
+  most common state on the screen: lime is 16.83:1 here and critical is 5.78:1, so healthy-means-
+  lime spends the loudest ink on the quietest state and the one red mark stops arriving first.
+  `--color-nominal` is the quietest ink that still clears the text floor, and `--color-unmeasured`
+  is the state this system had no way to express at all — *present, and unread*.
 - **Glow is emission, not a drop shadow.** Zero offset, bright tight core, thin falloff. It says
   *this element is on*, so it follows current — focus, active, live, a growing edge. Never hover:
   hover is a state of the pointer, not of the machine.

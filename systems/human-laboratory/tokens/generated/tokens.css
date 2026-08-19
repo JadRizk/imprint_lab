@@ -26,6 +26,9 @@
   --color-line-strong--contrast: #a3a3a3; /* 2.69:1 -> 7.60:1 */
   --color-critical:              #FF4A4A; /* 5.78:1 — errors, destructive actions */
   --color-warning:               #C86A00; /* 5.04:1 — warnings, degraded states */
+  --color-nominal:               var(--color-text-tertiary); /* 4.59:1 — measured, and fine */
+  --color-unmeasured:            var(--color-text-secondary); /* 7.60:1 — never measured, or lost */
+  --color-status-ink:            var(--color-black);
   --font-sans:                   var(--font-sans-face, sans-serif);
   --font-mono:                   var(--font-mono-face, monospace);
   --text-micro:                  0.625rem;

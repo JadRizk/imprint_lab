@@ -22,7 +22,10 @@ export const ROLE_COLOR_NAMES = new Set([
   '--color-accent',
   '--color-accent-ink',
   '--color-critical',
-  '--color-warning'
+  '--color-warning',
+  '--color-nominal',
+  '--color-unmeasured',
+  '--color-status-ink'
 ]);
 
 // Non-colour roles. Shadows are otherwise system-specific: --shadow-lime-glow
