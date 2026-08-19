@@ -133,7 +133,7 @@ implausible, restart the server and delete `.next/dev` before believing it.
 ### The build cache replays a task whose real input it never hashed
 
 Distinct from the entry above, which is the Next dev server. This is turbo's
-task cache, and it has now produced the same fault **three times**.
+task cache, and it has now produced the same fault **four times**.
 
 `$TURBO_DEFAULT$` hashes the package directory. A system's token package reads
 several files that live *outside* it, and each one, undeclared, gave a green
@@ -144,11 +144,24 @@ several files that live *outside* it, and each one, undeclared, gave a green
 | `../static/parts/**` | Appending a rule to `components.css` replayed "4 bundles in static/" while `thl.css` kept the previous contents — and `smoke`'s byte check compared the registry against that same stale file, so it agreed |
 | `NEXT_PUBLIC_SITE_URL` (env, not a file) | Two different published sites hashed identically; a local no-basePath build restored over a subpath build and every asset URL lost its prefix |
 | `../CHANGELOG.md` | A version bump changed no hashed file, so every artifact kept claiming the previous version — **including the one that ships to a consumer's disk** |
+| `../CHANGELOG.md` **again, on `lint`** | Declaring it on `build` did not cover `check-version`, which runs under `lint`. The gate whose entire job is catching an unregenerated bump replayed a stale pass and printed the **previous** version as consistent |
 
 Measured in both directions for the third, which is the test the first two
 deserved: with the input removed, editing the changelog gave `cache hit,
 replaying logs` / `>>> FULL TURBO`; with it declared, the same edit gave
 `cache miss, executing`.
+
+**The fourth is the one to learn from, because the file was already known.**
+`../CHANGELOG.md` had been declared on `build` for exactly this reason, and the
+lesson was not carried to `lint` — where `check-version` actually runs. Cutting
+`@thl v1.1.0` surfaced it: with correct artifacts on disk, `bun run lint`
+printed `check-version: … v1.0.0 — consistent`, while `--force` and a direct
+`node packages/token-tools/check-version.mjs` both printed v1.1.0. A gate that
+reads a file must hash that file; declaring it on a *different* task protects a
+different thing. Proved end to end afterwards — bumping the heading without
+regenerating now exits 1 with `check-version: 4 problem(s)`, where before it
+exited 0 — and with a control run confirming an unedited tree still cache-hits,
+so the key was narrowed rather than the cache disabled.
 
 **Rule:** when a task reads or writes anything outside its own package, declare
 it in `inputs` *and* `outputs`, then prove it by mutating that file with a warm
