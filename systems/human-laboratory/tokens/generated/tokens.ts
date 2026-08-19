@@ -246,6 +246,38 @@ export const tokens: Token[] = [
     "subcategory": "role"
   },
   {
+    "name": "--color-nominal",
+    "value": "var(--color-text-tertiary)",
+    "resolved": "#7C7C7C",
+    "base": "#7C7C7C",
+    "category": "color",
+    "utility": "bg-nominal · text-nominal · border-nominal",
+    "aliasOf": "--color-text-tertiary",
+    "note": "4.59:1 — measured, and fine",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-unmeasured",
+    "value": "var(--color-text-secondary)",
+    "resolved": "#A3A3A3",
+    "base": "#A3A3A3",
+    "category": "color",
+    "utility": "bg-unmeasured · text-unmeasured · border-unmeasured",
+    "aliasOf": "--color-text-secondary",
+    "note": "7.60:1 — never measured, or lost",
+    "subcategory": "role"
+  },
+  {
+    "name": "--color-status-ink",
+    "value": "var(--color-black)",
+    "resolved": "#000000",
+    "base": "#000000",
+    "category": "color",
+    "utility": "bg-status-ink · text-status-ink · border-status-ink",
+    "aliasOf": "--color-black",
+    "subcategory": "role"
+  },
+  {
     "name": "--font-sans",
     "value": "var(--font-sans-face, sans-serif)",
     "resolved": "var(--font-sans-face, sans-serif)",

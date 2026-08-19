@@ -143,6 +143,51 @@
   --color-critical: #FF4A4A; /* 5.78:1 — errors, destructive actions */
   --color-warning: #C86A00; /* 5.04:1 — warnings, degraded states */
 
+  /* The quiet half of the state axis, added because only the urgent half was
+   * here. An interface notices its failures before it notices its silences,
+   * which is why critical and warning shipped first — but the moment a
+   * consumer displays data it did not itself produce, it needs two more:
+   *
+   *   nominal      measured, and fine
+   *   unmeasured   never measured, or measured and lost
+   *
+   * NOMINAL IS NOT THE ACCENT, and that is the change of mind here. Success
+   * renders in lime everywhere this system speaks about itself — NOMINAL,
+   * RENDERING, IMG_SRC_LOADED — and that stays true. It does not survive an
+   * instrument panel, where `ok` is the most common state on the screen: lime
+   * measures 16.83:1 on this ground and critical measures 5.78:1, so a map
+   * whose healthy nodes are lime spends the loudest ink in the system on the
+   * state that must be quietest, and the one red mark stops being the thing
+   * you see first. On a surface that reports state per item rather than about
+   * itself, success is the absence of colour.
+   *
+   * ⚠ These alias the text greys, deliberately. --color-ink-subtle names a rung
+   * in the TEXT hierarchy; --color-nominal names a STATE. Same value today,
+   * free to diverge tomorrow — a system with a green it is happy to spend
+   * points nominal at it and changes no body copy doing so. Two names for one
+   * value is what makes that possible; one name doing both jobs is what would
+   * prevent it. This is the opposite case to --color-ambient, which is absent
+   * from the roles above precisely because it already names its own job.
+   *
+   * The ORDER bends the luminance rule stated above, and it is forced rather
+   * than chosen. nominal must be the quietest ink that still clears 4.5:1 as
+   * text, and 4.59 is the floor — there is no room beneath it — so unmeasured
+   * has to climb to stay distinguishable, landing at 7.60 and outranking
+   * critical. Kept: unmeasured is not a position on the urgency axis at all,
+   * it is the absence of a reading, and on a surface whose whole job is to not
+   * lie, the absence is the thing that should nag. It is achromatic, so it
+   * does not compete with critical for the eye the way the two numbers imply.
+   * What actually separates these two is 1.65:1 of luminance AND a distinct
+   * glyph. Never hue, and never luminance alone. */
+  --color-nominal: var(--color-text-tertiary); /* 4.59:1 — measured, and fine */
+  --color-unmeasured: var(--color-text-secondary); /* 7.60:1 — never measured, or lost */
+
+  /* Ink on a FILLED status mark, as --color-accent-ink is ink on the accent.
+   * One ink serves all five: black clears 5.03:1 on nominal, 5.52 on warning,
+   * 6.33 on critical, 8.33 on unmeasured and 18.44 on the accent. White was
+   * the obvious alternative and fails on critical at 3.32:1. */
+  --color-status-ink: var(--color-black);
+
   /* ── Typography ──
    * Consumer must define --font-sans-face and --font-mono-face
    * (typically via next/font). Falls back to system fonts if absent.

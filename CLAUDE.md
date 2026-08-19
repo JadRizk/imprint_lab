@@ -73,9 +73,24 @@ compositions may use primitives freely.
 `check-roles` fails the build on violation. It derives its banned list from
 `theme.css`, so adding a primitive guards it automatically.
 
-The eleven roles: `canvas` · `ambient` · `line` · `line-strong` · `ink` ·
-`ink-muted` · `ink-subtle` · `accent` · `accent-ink` · `critical` · `warning`.
-Plus two non-colour roles, `--shadow-glow` and `--shadow-glow-strong`.
+The fourteen roles: `canvas` · `ambient` · `line` · `line-strong` · `ink` ·
+`ink-muted` · `ink-subtle` · `accent` · `accent-ink` · `critical` · `warning` ·
+`nominal` · `unmeasured` · `status-ink`. Plus two non-colour roles,
+`--shadow-glow` and `--shadow-glow-strong`.
+
+The last three are the **state axis**, completed rather than invented: `critical`
+and `warning` were always roles, and `nominal` / `unmeasured` are the two
+positions a consumer needs the moment it displays data it did not itself
+produce. **`nominal` is not the accent.** Success is still lime where this system
+speaks about itself; on a surface reporting state per item, success is the
+absence of colour, because spending the loudest ink on the commonest state is
+what stops the one red mark being seen. The reasoning, with the measured ratios,
+is in `theme.css` beside the tokens.
+
+> ⚠ **A role is a promise every system has to keep.** Adding one obliges the
+> next system to answer "what does *never measured* look like here?" — which is
+> the cost, and is why `system-template` defines all fourteen. Weigh it before
+> adding a fifteenth.
 
 There is deliberately **no `surface`**. It measured 1.03:1 against the canvas and
 never rendered; pure black only reaches 1.14:1 here, so a panel cannot be made

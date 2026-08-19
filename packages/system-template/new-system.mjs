@@ -105,6 +105,14 @@ write(
   --color-accent-ink: var(--color-ink-900);
   --color-critical: #ff4a4a;
   --color-warning: #ff8a00;
+  /* The quiet half of the state axis. nominal is the state an interface is in
+   * almost all the time, so it takes the quietest ink that still clears 4.5:1
+   * — NOT the accent. unmeasured must be distinguishable from it, and since
+   * nominal sits on the text floor there is no room below, so unmeasured goes
+   * up. Separate them by glyph as well as by luminance; never by hue alone. */
+  --color-nominal: var(--color-neutral-500); /* MEASURE and record the ratio */
+  --color-unmeasured: var(--color-neutral-100); /* MEASURE and record the ratio */
+  --color-status-ink: var(--color-ink-900); /* ink on a FILLED status mark */
 
   /* ── Typography ── Consumer defines the -face variables (typically next/font). */
   --font-sans: var(--font-sans-face, sans-serif);
