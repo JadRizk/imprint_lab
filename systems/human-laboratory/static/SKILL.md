@@ -15,6 +15,10 @@ in §4 and §5 — what to draw and how to write it. Read those before composing
 
 ## 1. Wiring
 
+**The bundles are at `thl/` in the project root** — `thl/thl.css` and its
+siblings, from `shadcn add report-kit`. This file installs separately, to
+`.claude/skills/thl-report/`, so do not look for them next to it.
+
 Inline into `<style>` blocks, or link if the page can reach the files. A strict
 CSP is the normal case for a standalone document, so **never link a font CDN** —
 it fails silently and the page falls back to system faces.

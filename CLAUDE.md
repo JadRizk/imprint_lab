@@ -561,14 +561,24 @@ Moving the canonical file here and pointing `registry.json` at it also works; it
 was not done because `static/SKILL.md` had uncommitted edits in a parallel
 session.
 
-> ⚠ **The report kit's instructions are not auto-discoverable in a consuming
-> project.** The registry lands `SKILL.md` at `~/thl/SKILL.md`, which is not a
-> skills directory, so an agent there must be pointed at it by hand. The
-> cold-start test that validated the kit was run by handing the agent the file
-> explicitly — so it proved the *content* is sufficient, not that the *delivery*
-> works. Retargeting it to `~/.claude/skills/thl-report/SKILL.md` would fix this
-> and is additive, but changes a published registry item: decide it before
-> anything installs from the registry, not after.
+> **The report kit's instructions install where an agent will find them.**
+> `SKILL.md` targets `~/.claude/skills/thl-report/SKILL.md`, so a project that
+> adopts the system receives the vocabulary alongside the stylesheets rather than
+> seven stylesheets and a file nothing reads.
+>
+> It landed at `~/thl/SKILL.md` until 2026-08-19, which is not a skills
+> directory. The cold-start test that validated the kit had been run by handing
+> the agent the file explicitly, so it proved the *content* was sufficient and
+> never exercised the *delivery* — the one thing that was broken was the one
+> thing not tested.
+>
+> ⚠ **A `target` is the field you cannot correct twice.** `shadcn add` copies
+> files and never removes them, so moving one after a project has installed
+> leaves the old copy orphaned on their disk with nothing to reconcile it —
+> which is why the classification reference calls a target change major and
+> effectively permanent. This one was moved while the registry had no known
+> installs; the next one will not be free. The cost of retargeting a published
+> item only goes up, so decide a target before publishing, not after.
 
 `design-direction` is deliberately outside this repo — it is stack-agnostic and
 used on projects that have nothing to do with imprint_lab. The cost is that it

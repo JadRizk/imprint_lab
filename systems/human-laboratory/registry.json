@@ -226,7 +226,7 @@
         {
           "path": "systems/human-laboratory/static/SKILL.md",
           "type": "registry:file",
-          "target": "~/thl/SKILL.md"
+          "target": "~/.claude/skills/thl-report/SKILL.md"
         },
         {
           "path": "systems/human-laboratory/static/thl.diagram.css",
