@@ -142,7 +142,7 @@ looks too loud, change the hierarchy or the size, not the contrast.
 
 | Token | Ratio | Use for |
 |---|---|---|
-| `--color-ink-muted` `#A3A3A3` | 7.62:1 | Body copy — the `body` default |
+| `--color-ink-muted` `#A3A3A3` | 7.60:1 | Body copy — the `body` default |
 | `--color-ink-subtle` `#7C7C7C` | 4.59:1 | Labels, metadata, eyebrows |
 | `--color-ambient` `#242424` | — | **Decoration only. Never text.** |
 
@@ -203,7 +203,7 @@ bounds an input.
 |---|---|---|
 | `--color-ambient` | 1.23:1 | 2.69:1 |
 | `--color-line` | 1.69:1 | **4.59:1** — clears the 3:1 floor |
-| `--color-line-strong` | 2.69:1 | 7.62:1 |
+| `--color-line-strong` | 2.69:1 | 7.60:1 |
 
 All three are promoted so every "outranks" relationship survives — the tiers are
 relative to each other, and ambient outranking line is the inversion the ladder

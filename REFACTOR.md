@@ -153,7 +153,7 @@ roles THL has no use for. That revision is cheap precisely because only `ui/` to
 | `--color-line` | `border-line` | steel `#333333` | Structural hairline |
 | `--color-ambient` | `border-ambient` | `#3A3A3A` | Decoration only. **Never text.** |
 | `--color-ink` | `text-ink` | white `#FFFFFF` | Headings, emphasis |
-| `--color-ink-muted` | `text-ink-muted` | `#A3A3A3` · 7.62:1 | Body copy |
+| `--color-ink-muted` | `text-ink-muted` | `#A3A3A3` · 7.60:1 | Body copy |
 | `--color-ink-subtle` | `text-ink-subtle` | `#7C7C7C` · 4.59:1 | Labels, metadata, eyebrows |
 | `--color-accent` | `bg-accent` `text-accent` | lime `#DFFF00` | Signal — **and success** |
 | `--color-accent-ink` | `text-accent-ink` | black `#000000` | Text on the accent |
