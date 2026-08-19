@@ -195,12 +195,17 @@ deliberately.
 
 That makes the changelog the upgrade instructions. Write it that way.
 
-> ⚠ **This side is undelivered, and knowingly so.** The registry lands
-> `SKILL.md` at `~/thl/SKILL.md`, which is not a skills directory, so an agent
-> working in a consuming project will not discover any of this unless it is
-> handed to them. `CLAUDE.md` records the same gap for the report kit. Until that
-> is fixed, **a release that changes the public surface should say so in the
-> entry loudly enough to survive being read by a human with no tooling.**
+> ⚠ **This side is still undelivered, though less of it than before.** As of
+> 2026-08-19 the registry lands the report kit's `SKILL.md` at
+> `~/.claude/skills/thl-report/SKILL.md`, so an agent in a consuming project does
+> discover the *report kit* — but that file covers the class vocabulary, not
+> versioning. Nothing in this section ships: `release-system` is repo-local by
+> design, so an agent over there still cannot be told what upgrading costs.
+>
+> What it can reach is on disk and online, not in a skill —
+> `~/thl/lib/version.generated.ts` for what they have, the published changelog
+> for what changed. So **a release that changes the public surface must say so in
+> the entry loudly enough to survive being read by a human with no tooling.**
 
 ---
 

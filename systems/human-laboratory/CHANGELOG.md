@@ -33,6 +33,28 @@ the whole reason for the two tiers.
 
 ## [Unreleased]
 
+### Changed
+
+**`report-kit` installs `SKILL.md` to `~/.claude/skills/thl-report/SKILL.md`,
+not `~/thl/SKILL.md`.** The instructions now land where an agent looks, so a
+project that adopts the system receives the class vocabulary alongside the
+stylesheets instead of seven stylesheets and a file nothing reads.
+
+> **This is a `target` change, which makes the release carrying it a major.**
+> `shadcn add` copies files and never removes them, so if you installed
+> `report-kit` before this, re-adding it places the instructions at the new path
+> and leaves your existing `thl/SKILL.md` behind. Nothing breaks and nothing
+> errors — you simply have two copies, and only one of them will be updated
+> again. **Delete the old `thl/SKILL.md` after upgrading.**
+>
+> If you have never installed `report-kit`, there is nothing to do.
+
+Why it was wrong: `~/thl/` is not a skills directory, so nothing scanned it. The
+cold-start test that validated the kit had been run by handing the agent the file
+explicitly — proving the content was sufficient while never exercising the
+delivery, which is the half that was broken.
+
+
 ## [1.1.0] — 2026-08-19
 
 Everything here is a fix, so this could defensibly have been a patch. It is a
