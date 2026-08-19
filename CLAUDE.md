@@ -238,7 +238,9 @@ which is a boundary that outranks its neighbours: `line-strong` at 2px, settling
 at `duration-state`. This is the one idea worth taking from Apple's scroll-edge
 effects; the rest of that pattern is a translucent blurred bar, which is the
 vocabulary this system exists to reject. The bar stays opaque and only the line
-reacts. See [`example/sticky-nav.tsx`](apps/docs/app/systems/human-laboratory/example/sticky-nav.tsx).
+reacts. See [`sticky-nav.tsx`](apps/docs/app/systems/human-laboratory/sticky-nav.tsx), which every page
+under a system now wears through [`system-bar.tsx`](apps/docs/app/systems/human-laboratory/system-bar.tsx) — it was the example
+page's alone until the two definitions of that bar had visibly drifted.
 
 > The border box is present at 2px in **both** states and only changes colour.
 > Growing a real border on stick changes the bar's height in flow and nudges the
@@ -758,6 +760,13 @@ carries both cannot disagree with itself.
 | The mark | Frame in `line`, one corner in `accent` at 2× | The 1:2 ratio *is* the line ladder; the mark argues the contract rather than decorating with it |
 | Favicon | A separate drawing, not an export | The frame is 1.69:1 and gone by 16px; a transparent mark vanishes on chrome the system does not control |
 | Wordmark | Type, not an SVG | The system names no font — outlined letterforms would hard-code one, live `<text>` would fall back silently |
+| Current section | Brackets, not colour | Hover and current were both `#DFFF00`, so hovering an inactive tab made it look active; shape survives a squint and a colour-blind read |
+| The bracket pair | Present in every state, colour-only change | A bracket that appears on hover widens the label under the pointer — the reservation `Button` and `StickyNav` already make, applied to glyphs |
+| Bracket colour floor | `ink-subtle`, never `line` | A bracket is a glyph, so contract 3's 4.5:1 text floor governs it — the one thing drawn corners could do and glyphs cannot |
+| Nav at 375px | Scrolls, never wraps | 648px wanted against 343px available, and no tightening closes it; a disclosure would need open state and push the nav across the client boundary |
+| The page bar | One `SystemBar` everywhere | Defined twice and already drifted — different spacing, a different rule weight, a badge on one |
+| House wordmark in chrome | Type, and outside the scrolling strip | imprint_lab has no mark to spend, and identity that scrolls away is not identity |
+| Long-page navigation | An index at the top, not a side rail | A rail must come out of the 1216px measure, narrowing the widest specimens on the site; it earns that trade only once these become child routes |
 
 ---
 
