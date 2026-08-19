@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "wtf",
@@ -46,6 +47,7 @@
       "bin": {
         "token-tools": "./generate.mjs",
         "check-roles": "./check-roles.mjs",
+        "check-version": "./check-version.mjs",
         "smoke-install": "./smoke-install.mjs",
         "validate-palette": "./validate-palette.mjs",
       },
@@ -56,14 +58,12 @@
     },
     "systems/human-laboratory/tokens": {
       "name": "@thl/tokens",
-      "version": "0.1.0",
       "devDependencies": {
         "@imprint/token-tools": "*",
       },
     },
     "systems/human-laboratory/ui": {
       "name": "@thl/ui",
-      "version": "0.1.0",
       "dependencies": {
         "@radix-ui/react-slot": "^1.2.4",
         "class-variance-authority": "^0.7.1",
