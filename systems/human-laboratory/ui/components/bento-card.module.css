@@ -16,19 +16,32 @@
  * The rule is inert wherever scripts DO run, so it costs the animated path
  * nothing — it is a floor, not a branch.
  */
-@media (scripting: none) {
-  .entranceFloor {
-    /* biome-ignore lint/complexity/noImportantStyles: competing with an inline style, which no selector specificity outranks */
-    opacity: 1 !important;
-  }
-}
-
 /* Print is the same failure with a different cause: a print stylesheet renders
  * whatever the DOM currently says, and a card that has not yet scrolled into
- * view says `opacity: 0`. A reader printing the page gets blank boxes. */
-@media print {
+ * view says `opacity: 0`. A reader printing the page gets blank boxes. Both
+ * branches want the same floor, so they share one block — as ImageFrame's does.
+ *
+ * The floor has TWO halves, because the entrance has two beats. Restoring the
+ * opacity alone leaves the second beat stranded: the edge climbs
+ * `ambient -> line` on an `onAnimationComplete` that never fires, so the
+ * server-rendered class list keeps `border-ambient` — and tailwind-merge has
+ * already dropped `border-line` from it, so there is nothing left to fall back
+ * to. Every card would render bounded at 1.23:1 by the token the line ladder
+ * reserves for subdivision INSIDE a panel and forbids as the edge OF one.
+ *
+ * So the floor lands the card in its ARRIVED state, not its dormant one. This is
+ * the same correction ImageFrame's floor makes in the opposite direction: there
+ * the accent edge marks a reveal in progress and must be dropped, because a
+ * reveal that never runs is not in progress; here the dormant edge marks an
+ * entrance not yet finished, and an entrance that never runs is not pending. In
+ * both cases the no-script render must state where the machine actually is. */
+@media (scripting: none), print {
   .entranceFloor {
     /* biome-ignore lint/complexity/noImportantStyles: competing with an inline style, which no selector specificity outranks */
     opacity: 1 !important;
+    /* No !important needed: this competes with a Tailwind utility class, not an
+     * inline style, and an unlayered rule outranks anything in @layer utilities
+     * regardless of source order. */
+    border-color: var(--color-line);
   }
 }
