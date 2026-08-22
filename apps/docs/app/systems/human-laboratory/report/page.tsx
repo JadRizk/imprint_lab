@@ -20,8 +20,8 @@ export default function ReportPage() {
           <h1 className="text-2xl font-bold text-ink">Report kit</h1>
           <p className="max-w-2xl text-sm">
             The pure HTML/CSS tier — no React, no build step, no network request. Inline{' '}
-            <code className="text-accent">thl.css</code> into a{' '}
-            <code className="text-accent">&lt;style&gt;</code> block and a document is on-brand by
+            <code className="text-ink">thl.css</code> into a{' '}
+            <code className="text-ink">&lt;style&gt;</code> block and a document is on-brand by
             construction. Below is the live catalogue, loaded as a standalone page so it renders
             exactly as a consumer would receive it.
           </p>
@@ -33,12 +33,17 @@ export default function ReportPage() {
           </p>
           <p className="flex flex-wrap gap-x-6 gap-y-2 text-micro tracking-label text-ink-subtle">
             {/* asset(), not a bare path: these are files in public/, and Next
-                rewrites <Link> but never a raw anchor. See lib/base-path.ts. */}
+                rewrites <Link> but never a raw anchor. See lib/base-path.ts.
+
+                Hover climbs `ink-subtle -> ink` rather than firing the accent —
+                hover is a state of the pointer, not of the machine. The kit these
+                links point at already keeps that rule; the page describing it
+                did not. */}
             <a
               href={asset('/thl-catalog.html')}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-accent"
+              className="hover:text-ink"
             >
               OPEN_CATALOG -&gt;
             </a>
@@ -46,7 +51,7 @@ export default function ReportPage() {
               href={asset('/example-report.html')}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-accent"
+              className="hover:text-ink"
             >
               WORKED_SPECIMEN -&gt;
             </a>
@@ -54,7 +59,7 @@ export default function ReportPage() {
               href={asset('/report.html')}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-accent"
+              className="hover:text-ink"
             >
               STARTER_SKELETON -&gt;
             </a>

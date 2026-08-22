@@ -54,6 +54,45 @@ cold-start test that validated the kit had been run by handing the agent the fil
 explicitly — proving the content was sufficient while never exercising the
 delivery, which is the half that was broken.
 
+**The contrast companions are aliases, not literals.** `--color-line--contrast`
+and `--color-line-strong--contrast` now read `var(--color-text-tertiary)` and
+`var(--color-text-secondary)` instead of repeating `#7C7C7C` and `#A3A3A3` by
+hand. **The resolved values are identical** — the only visible difference in a
+generated file is that the hex casing now matches every other value. They were
+two copies free to drift from the greys they are supposed to equal, and a comment
+was the only thing recording the relationship.
+
+Both targets are primitives the `prefers-contrast` block does not reassign, which
+is what the rule requires: a companion pointing at a promoted role would resolve
+to the promoted value and collapse the ladder onto one grey. That safety depends
+on text staying un-promoted, so if text is ever promoted these must stop pointing
+at it.
+
+### Fixed
+
+**`BentoCard` no longer renders at the wrong line tier when scripts do not run.**
+The `1.1.0` floor restored the card's opacity and stopped there, but the entrance
+has two beats — the fade, and then the edge climbing `ambient → line`. The second
+beat is driven by React state, so with no script the server-rendered class list
+keeps `border-ambient`, and tailwind-merge has already dropped `border-line` from
+it. Every card was bounded at 1.23:1 by the token the line ladder reserves for
+subdivision *inside* a panel and forbids as the edge *of* one. The card was
+visible and drawn at the wrong rank, permanently.
+
+The floor now lands the card in its arrived state rather than its dormant one.
+This is the same correction `ImageFrame`'s floor makes in the opposite direction:
+there the accent edge marks a reveal in progress and is dropped, because a reveal
+that never runs is not in progress; here the dormant edge marks an entrance not
+yet finished, and an entrance that never runs is not pending. Either way the
+no-script render has to state where the machine actually is.
+
+Measured rather than assumed: printing the components page with the floor draws
+the card edge at `#3A3A3A`, and without it at `#242424`.
+
+> **No action needed if you take the file.** `bento-card.module.css` already
+> shipped at `1.1.0`, so this is a change to bytes you have rather than a new
+> file — unlike the fix that introduced it.
+
 
 ## [1.1.0] — 2026-08-19
 
@@ -180,5 +219,6 @@ Recorded rather than tidied away, so the next version can close them:
   project.** The registry lands `SKILL.md` at `~/thl/SKILL.md`, which is not a
   skills directory, so an agent there has to be pointed at it by hand.
 
-[Unreleased]: https://github.com/JadRizk/imprint_lab/compare/thl/v1.0.0...HEAD
+[Unreleased]: https://github.com/JadRizk/imprint_lab/compare/thl/v1.1.0...HEAD
+[1.1.0]: https://github.com/JadRizk/imprint_lab/releases/tag/thl%2Fv1.1.0
 [1.0.0]: https://github.com/JadRizk/imprint_lab/releases/tag/thl%2Fv1.0.0
