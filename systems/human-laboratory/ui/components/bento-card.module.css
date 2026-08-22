@@ -16,19 +16,56 @@
  * The rule is inert wherever scripts DO run, so it costs the animated path
  * nothing — it is a floor, not a branch.
  */
-@media (scripting: none) {
+/* Print is the same failure with a different cause: a print stylesheet renders
+ * whatever the DOM currently says, and a card that has not yet scrolled into
+ * view says `opacity: 0`. A reader printing the page gets blank boxes. Both
+ * branches want the same floor, so they share one block — as ImageFrame's does.
+ *
+ * The floor has TWO halves, because the entrance has two beats. Restoring the
+ * opacity alone leaves the second beat stranded: the edge climbs
+ * `ambient -> line` on an `onAnimationComplete` that never fires, so the
+ * server-rendered class list keeps `border-ambient` — and tailwind-merge has
+ * already dropped `border-line` from it, so there is nothing left to fall back
+ * to. Every card would render bounded at 1.23:1 by the token the line ladder
+ * reserves for subdivision INSIDE a panel and forbids as the edge OF one.
+ *
+ * So the floor lands the card in its ARRIVED state, not its dormant one. This is
+ * the same correction ImageFrame's floor makes in the opposite direction: there
+ * the accent edge marks a reveal in progress and must be dropped, because a
+ * reveal that never runs is not in progress; here the dormant edge marks an
+ * entrance not yet finished, and an entrance that never runs is not pending. In
+ * both cases the no-script render must state where the machine actually is. */
+@media (scripting: none), print {
   .entranceFloor {
     /* biome-ignore lint/complexity/noImportantStyles: competing with an inline style, which no selector specificity outranks */
     opacity: 1 !important;
   }
-}
 
-/* Print is the same failure with a different cause: a print stylesheet renders
- * whatever the DOM currently says, and a card that has not yet scrolled into
- * view says `opacity: 0`. A reader printing the page gets blank boxes. */
-@media print {
-  .entranceFloor {
-    /* biome-ignore lint/complexity/noImportantStyles: competing with an inline style, which no selector specificity outranks */
-    opacity: 1 !important;
+  /* `:not(:hover)` is load-bearing, not decoration.
+   *
+   * No !important is needed here: this competes with a Tailwind utility class
+   * rather than an inline style, and an unlayered rule outranks anything in
+   * @layer utilities regardless of source order. But that is precisely the
+   * problem — it outranks EVERY border-color utility on the element, not just
+   * the `border-ambient` it means to undo, so a flat rule would also swallow
+   * `hover:border-line-strong` and leave the card with no hover response at all
+   * wherever scripts are off. That is the same cascade race the component avoids
+   * by ordering its classes instead of reaching for a `data-[entered]:` variant.
+   *
+   * Excluding the hovered state means the rule simply does not apply while the
+   * pointer is over the card, so hover falls back through to the utility layer
+   * and climbs the ladder as it always did. It costs no duplicated value: the
+   * hover tier stays declared once, in the component. Print never matches
+   * `:hover`, so the printed card is unaffected.
+   *
+   * ⚠ Known limitation: a caller passing its own resting border — say
+   * `className="border-accent"` on the one card carrying the finding — still
+   * loses it in this branch, because CSS cannot tell that border from the
+   * dormant one. Undoing a state the utility layer expressed, from outside that
+   * layer, cannot be made precise; making it so means giving the dormant state
+   * its own hook in the component rather than a colour class. No call site does
+   * this today. */
+  .entranceFloor:not(:hover) {
+    border-color: var(--color-line);
   }
 }
