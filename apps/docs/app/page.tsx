@@ -33,10 +33,15 @@ export default function HomePage() {
                 key={system.slug}
                 href={`/systems/${system.slug}`}
                 data-system={system.slug}
-                className="group relative border border-line p-6 transition-colors hover:border-accent"
+                className="group relative border border-line p-6 transition-colors duration-state hover:border-line-strong"
               >
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-micro tracking-label text-accent">{system.namespace}</span>
+                  {/* Neutral, not accent. brand/README.md: the mark already spends
+                      the accent, so the namespace does not — and `Wordmark` sets
+                      `// @thl` in a text role for exactly that reason. Rank comes
+                      from `ink` against the metadata's `ink-subtle` beside it,
+                      which costs nothing from the budget. */}
+                  <span className="text-micro tracking-label text-ink">{system.namespace}</span>
                   <span className="text-micro tracking-label text-ink-subtle">
                     V{system.version} · {system.tokens.length} TOKENS · {system.roleColors.length}{' '}
                     ROLES
@@ -44,7 +49,10 @@ export default function HomePage() {
                 </div>
                 <h2 className="mt-3 text-xl font-bold text-ink">{system.name}</h2>
                 <p className="mt-2 text-sm text-ink-muted">{system.tagline}</p>
-                <span className="mt-4 block text-micro tracking-label text-ink-subtle transition-colors group-hover:text-accent">
+                {/* Hover climbs to `ink` rather than firing the accent: hover is a
+                    state of the pointer, not of the machine. Same correction
+                    BentoCard took, and the same rule the report kit already keeps. */}
+                <span className="mt-4 block text-micro tracking-label text-ink-subtle transition-colors duration-state group-hover:text-ink">
                   OPEN -&gt;
                 </span>
               </Link>
@@ -52,10 +60,10 @@ export default function HomePage() {
           </div>
 
           <p className="max-w-2xl text-xs text-ink-subtle">
-            Each card renders inside its own <code className="text-accent">data-system</code> scope,
-            so it previews in that system&apos;s palette rather than the site&apos;s. Adding a
-            system means one entry in <code className="text-accent">lib/systems.ts</code>, one
-            import in <code className="text-accent">globals.css</code>, and a page.
+            Each card renders inside its own <code className="text-ink">data-system</code> scope, so
+            it previews in that system&apos;s palette rather than the site&apos;s. Adding a system
+            means one entry in <code className="text-ink">lib/systems.ts</code>, one import in{' '}
+            <code className="text-ink">globals.css</code>, and a page.
           </p>
         </div>
       </PageShell>
