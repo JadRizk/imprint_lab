@@ -210,7 +210,7 @@ export const tokens: Token[] = [
     "base": "#3A3A3A",
     "category": "color",
     "utility": "bg-line · text-line · border-line",
-    "contrast": "#7c7c7c",
+    "contrast": "#7C7C7C",
     "aliasOf": "--color-steel",
     "subcategory": "role"
   },
@@ -221,7 +221,7 @@ export const tokens: Token[] = [
     "base": "#585858",
     "category": "color",
     "utility": "bg-line-strong · text-line-strong · border-line-strong",
-    "contrast": "#a3a3a3",
+    "contrast": "#A3A3A3",
     "aliasOf": "--color-graphite",
     "subcategory": "role"
   },

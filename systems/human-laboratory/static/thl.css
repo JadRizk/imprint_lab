@@ -28,8 +28,8 @@
   --color-line:                  var(--color-steel);
   --color-line-strong:           var(--color-graphite);
   --color-ambient--contrast:     var(--color-graphite); /* 1.23:1 -> 2.69:1 */
-  --color-line--contrast:        #7c7c7c; /* 1.69:1 -> 4.59:1, clears the 3:1 floor */
-  --color-line-strong--contrast: #a3a3a3; /* 2.69:1 -> 7.62:1 */
+  --color-line--contrast:        var(--color-text-tertiary); /* 1.69:1 -> 4.59:1, clears the 3:1 floor */
+  --color-line-strong--contrast: var(--color-text-secondary); /* 2.69:1 -> 7.62:1 */
   --color-critical:              #FF4A4A; /* 5.78:1 — errors, destructive actions */
   --color-warning:               #C86A00; /* 5.04:1 — warnings, degraded states */
   --font-sans:                   var(--font-sans-face, sans-serif);

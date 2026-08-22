@@ -108,20 +108,27 @@
    *
    * These are the two greys the text roles already use. They are measured, and
    * high contrast is precisely the case where structure should read as strongly
-   * as secondary text does. Held as literals for the same reason --color-critical
-   * is: this system has no appearance-name for them, and one consumer does not
-   * earn a primitive.
+   * as secondary text does. So they are ALIASED to those primitives rather than
+   * written out: held as literals they were two more copies of #7C7C7C and
+   * #A3A3A3, free to drift from the values they are supposed to equal, and the
+   * comment conceding they were "the greys the text roles already use" was the
+   * only thing recording the relationship. Unlike --color-critical, which really
+   * does have no appearance-name here, both of these already had one.
    *
    * They must reference PRIMITIVES, never a role that is itself reassigned
    * below — `var(--color-line-strong)` inside the media block would resolve to
    * the promoted value, and the ladder would collapse onto one grey.
+   * --color-text-secondary and --color-text-tertiary are safe on both counts:
+   * they are primitives, and the media block does not touch them. Text staying
+   * un-promoted is what makes that true, so if text is ever promoted these must
+   * stop pointing at it.
    *
    * Text is deliberately untouched: it already clears 4.5:1 by contract, and
    * promoting --color-ink-subtle to --color-ink-muted's ratio would merge two
    * roles into one and cost the hierarchy that carries meaning. */
   --color-ambient--contrast: var(--color-graphite); /* 1.23:1 -> 2.69:1 */
-  --color-line--contrast: #7c7c7c; /* 1.69:1 -> 4.59:1, clears the 3:1 floor */
-  --color-line-strong--contrast: #a3a3a3; /* 2.69:1 -> 7.62:1 */
+  --color-line--contrast: var(--color-text-tertiary); /* 1.69:1 -> 4.59:1, clears the 3:1 floor */
+  --color-line-strong--contrast: var(--color-text-secondary); /* 2.69:1 -> 7.62:1 */
 
   /* Status roles. Held as literals rather than aliased, because this system has
    * no appearance-name for either hue and one consumer does not earn a primitive.
