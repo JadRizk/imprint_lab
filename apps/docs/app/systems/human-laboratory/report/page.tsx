@@ -36,14 +36,26 @@ export default function ReportPage() {
                 rewrites <Link> but never a raw anchor. See lib/base-path.ts.
 
                 Hover climbs `ink-subtle -> ink` rather than firing the accent —
-                hover is a state of the pointer, not of the machine. The kit these
-                links point at already keeps that rule; the page describing it
-                did not. */}
+                hover is a state of the pointer, not of the machine.
+
+                The kit these links point at does NOT yet keep that rule:
+                `parts/reset.css` colours a link with the accent at rest and
+                moves its underline to the accent on hover. That is the same
+                unsettled question as the two tiers disagreeing about link
+                colour at rest — `base.css` says `color: inherit`, `reset.css`
+                says accent — and it is decided for both tiers at once or not at
+                all. This page is app-tier, so it follows the app-tier rule and
+                leaves the kit alone.
+
+                `duration-state` because nothing gives an anchor a transition
+                globally: `base.css` sets only `color: inherit`, so without it
+                the colour snaps in both directions. Feedback enters at `ack`
+                and decays at `state`. */}
             <a
               href={asset('/thl-catalog.html')}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-ink"
+              className="transition-colors duration-state hover:text-ink"
             >
               OPEN_CATALOG -&gt;
             </a>
@@ -51,7 +63,7 @@ export default function ReportPage() {
               href={asset('/example-report.html')}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-ink"
+              className="transition-colors duration-state hover:text-ink"
             >
               WORKED_SPECIMEN -&gt;
             </a>
@@ -59,7 +71,7 @@ export default function ReportPage() {
               href={asset('/report.html')}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-ink"
+              className="transition-colors duration-state hover:text-ink"
             >
               STARTER_SKELETON -&gt;
             </a>
