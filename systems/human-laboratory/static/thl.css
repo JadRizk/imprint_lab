@@ -498,30 +498,46 @@ b {
  * The prohibition is on elevation — a surface made lighter to look raised —
  * and a filled chip makes no claim about depth.
  *
- * One ink for all five, because white fails on critical at 3.32:1. */
+ * One ink for all five, because white fails on critical at 3.32:1 — and on
+ * three of the other four besides, so black is the only ink that serves the
+ * whole set.
+ *
+ * ⚠ The ink is declared on each PAIR, never on `.is-filled` alone. `.chip` has
+ * no background, so a bare `is-filled` — or one whose state class is mistyped —
+ * would paint --color-status-ink straight onto the canvas: black on #0F0F0F is
+ * 1.14:1, the ratio this system cites for why a panel cannot be filled at all.
+ * The label would not be dim, it would be gone. Pairing the ink with the fill
+ * that justifies it means an unrecognised modifier degrades to an ordinary
+ * hollow chip, which is legible and merely wrong rather than invisible. Nothing
+ * lints this file, so the CSS has to hold the invariant that SKILL.md states in
+ * prose. */
 .chip.is-filled {
-  color: var(--color-status-ink);
   font-weight: 500;
 }
 .chip.is-filled.is-accent {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
+  color: var(--color-status-ink);
 }
 .chip.is-filled.is-critical {
   background-color: var(--color-critical);
   border-color: var(--color-critical);
+  color: var(--color-status-ink);
 }
 .chip.is-filled.is-warning {
   background-color: var(--color-warning);
   border-color: var(--color-warning);
+  color: var(--color-status-ink);
 }
 .chip.is-filled.is-nominal {
   background-color: var(--color-nominal);
   border-color: var(--color-nominal);
+  color: var(--color-status-ink);
 }
 .chip.is-filled.is-unmeasured {
   background-color: var(--color-unmeasured);
   border-color: var(--color-unmeasured);
+  color: var(--color-status-ink);
 }
 
 /* ── Panels ── */

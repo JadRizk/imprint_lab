@@ -9,7 +9,7 @@ Scaffolds a system already wired to the token pipeline, the role contract, the
 report kit and the registry — so the cost of a second system is a set of design
 decisions rather than a set-up.
 
-**It deliberately does not invent an aesthetic.** The eleven roles are stubbed
+**It deliberately does not invent an aesthetic.** The fourteen roles are stubbed
 and the placeholder accent is magenta, so the first thing you must do is make
 real decisions. Every role used for text has to clear 4.5:1 against the canvas;
 measure it and record the ratio beside the token, as system 01 does.

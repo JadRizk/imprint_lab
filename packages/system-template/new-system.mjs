@@ -56,7 +56,7 @@ const write = (rel, contents) => {
 };
 
 // ── tokens ──
-// The eleven roles are mandatory: they are the contract every system shares and
+// The fourteen roles are mandatory: they are the contract every system shares and
 // what check-roles enforces. Primitives are yours to name.
 write(
   'tokens/theme.css',
@@ -78,7 +78,7 @@ write(
   --color-neutral-900: #141414;
   --color-brand: #ff00ff; /* deliberately awful — make a real decision */
 
-  /* ── Roles ── The shared contract. These eleven names must exist in every
+  /* ── Roles ── The shared contract. These fourteen names must exist in every
    * system; components reference only these. Point them wherever you like.
    *
    * Any role used for text must clear 4.5:1 against --color-canvas. Measure it
@@ -442,7 +442,7 @@ if (fmt.status !== 0) {
 console.log(`
 Scaffolded systems/${slug} (@${ns})
 
-  tokens/theme.css      the eleven roles are stubbed — replace the palette
+  tokens/theme.css      the fourteen roles are stubbed — replace the palette
   ui/lib/utils.ts       cn(), wired to the generated tw-merge config
   static/parts/         report kit source
   registry.json         @${ns} namespace

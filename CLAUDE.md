@@ -60,7 +60,7 @@ not a style disagreement.
 
 Tokens come in two tiers. **Primitives** (`--color-lime`, `--color-obsidian`) are
 named by appearance and are a system's private vocabulary. **Roles**
-(`--color-accent`, `--color-canvas`) are named by job and carry the same eleven
+(`--color-accent`, `--color-canvas`) are named by job and carry the same fourteen
 names in every system.
 
 Anything in `systems/*/ui/` may reference **roles only**. App code and one-off

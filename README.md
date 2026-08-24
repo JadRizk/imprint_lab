@@ -51,7 +51,7 @@ system to say what is actually common.
 
 **Tokens come in two tiers.** *Primitives* (`--color-lime`) are named by
 appearance and are private to a system. *Roles* (`--color-accent`) are named by
-job and carry the same eleven names in every system. Components reference roles
+job and carry the same fourteen names in every system. Components reference roles
 only — that is what lets a component move to another system unchanged, and
 `check-roles` fails the build if one reaches for a primitive.
 

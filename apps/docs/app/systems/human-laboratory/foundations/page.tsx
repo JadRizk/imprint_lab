@@ -17,7 +17,7 @@ import { SystemPage } from '../system-page';
 export const metadata: Metadata = {
   title: 'Foundations — @thl',
   description:
-    'The token model of The Human Laboratory: the closed type scale, the eleven roles, the line ladder, the duration ladder, emission, and how the system answers prefers-contrast and prefers-reduced-motion.'
+    'The token model of The Human Laboratory: the closed type scale, the fourteen roles, the line ladder, the duration ladder, emission, and how the system answers prefers-contrast and prefers-reduced-motion.'
 };
 
 const SPACING_STEPS = [1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 24] as const;
@@ -559,7 +559,7 @@ const SPECS: SpecDef[] = [
       <>
         <p>
           Two tiers. <strong className="font-semibold text-ink">Roles</strong> are named by job and
-          carry the same eleven names in every system — they are the contract a component compiles
+          carry the same fourteen names in every system — they are the contract a component compiles
           against, which is what lets a component move to another system unchanged.{' '}
           <strong className="font-semibold text-ink">Primitives</strong> are named by appearance and
           are this system&apos;s private implementation of it.
