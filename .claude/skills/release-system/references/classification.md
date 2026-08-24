@@ -28,7 +28,7 @@ candidates.
 Read the authoritative role list from
 [`packages/token-tools/lib/emit.mjs`](../../../../packages/token-tools/lib/emit.mjs)
 — `ROLE_COLOR_NAMES` and `ROLE_OTHER_NAMES`. **Never from prose, including this
-file.** At the time of writing that is eleven colour roles plus `--shadow-glow`
+file.** At the time of writing that is fourteen colour roles plus `--shadow-glow`
 and `--shadow-glow-strong`, but the file is what ships.
 
 | Surface | Public? | Because |

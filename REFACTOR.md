@@ -399,7 +399,7 @@ a consumer subscribes to:
 
 **The scaffold exists because cost-per-new-system decides whether this is a collection or a
 folder with one thing in it.** `bun run new-system <slug> <ns> ["Name"]` emits a system already
-wired to the pipeline, the role contract, the report kit and the registry — with the eleven roles
+wired to the pipeline, the role contract, the report kit and the registry — with the fourteen roles
 stubbed and a deliberately awful magenta accent, so the first act is a real decision.
 
 > **Claim:** distribution works and skins don't leak.

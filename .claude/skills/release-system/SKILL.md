@@ -50,7 +50,7 @@ number.
 Major, minor or patch — decided against the system's **public surface**, which is
 narrower than its file list. The one-line rule:
 
-> **Public is what a consumer's copy references by name.** The eleven roles, the
+> **Public is what a consumer's copy references by name.** The fourteen roles, the
 > two shadow roles, component names and props, registry item names, report-kit
 > classes, and every utility the closed scales generate. Primitives are private,
 > because `check-roles` forbids `ui/` from referencing them.
